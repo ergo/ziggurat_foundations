@@ -399,7 +399,7 @@ class GroupMixin(BaseModel):
         return '<Group: %s>' % self.group_name
     
     @classmethod
-    def all(cls):
+    def all(cls, db_session=None):
         q = cls.get_db_session(db_session).query(cls)
         return q
     
