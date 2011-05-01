@@ -2,6 +2,7 @@ import sqlalchemy as sa
 import sqlalchemy.orm as orm
 import hashlib
 import urllib
+import random
 
 from cryptacular.bcrypt import BCRYPTPasswordManager
 from cryptacular.core import DelegatingPasswordManager
@@ -54,7 +55,7 @@ class BaseModel(object):
             return DBSession
         # finally try to read the session from instance - this can fail ;-)
         else:
-            return sqlalchemy.orm.session.object_session(cls)
+            return sa.orm.session.object_session(cls)
             
                 
 class UserMapperExtension(sa.orm.interfaces.MapperExtension):

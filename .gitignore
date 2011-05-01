@@ -3,3 +3,4 @@
 *.pyo
 *.swp
 *~
+.coverage
