@@ -56,6 +56,7 @@ def _initTestingDB():
     DBSession = scoped_session(sessionmaker())
     dbsession = DBSession()
     dbsession.configure(bind=engine)
+    pyramid_reactor.models.DBSession = DBSession
     Base.metadata.bind = engine
     Base.metadata.create_all(engine)
     return dbsession
