@@ -146,12 +146,59 @@ class UserTestCase(BaseTestCase):
 
         queried_users = User.user_names_like(u'user').all()
 
-        self.assertEqual(len(queried_users), 2)
-        self.assertEqual(user2, queried_users[0])
-        self.assertEqual(user1, queried_users[1])
+        self.assertEqual(len(queried_users), 1)
+        self.assertEqual(user1, queried_users[0])
+
+    def test_by_email(self):
+        created_user = self._addUser()
+        queried_user = User.by_email(u'email')
+
+        self.assertEqual(created_user, queried_user)
+
+    def test_by_email_wrong_email(self):
+        created_user = self._addUser()
+        queried_user = User.by_email(u'wrong_email')
+
+        self.assertEqual(queried_user, None)
+
+    def test_by_mail_and_username(self):
+        created_user = self._addUser()
+        queried_user = User.by_email_and_username(u'email', 'username')
+
+        self.assertEqual(created_user, queried_user)
+
+    def test_by_mail_and_username_wrong_mail(self):
+        created_user = self._addUser()
+        queried_user = User.by_email_and_username(u'wrong_email', 'username')
+
+        self.assertEqual(queried_user, None)
+
+    def test_by_mail_and_username_wrong_username(self):
+        created_user = self._addUser()
+        queried_user = User.by_email_and_username(u'email', 'wrong_username')
+
+        self.assertEqual(queried_user, None)
 
     def test_gravatar_url(self):
         user = self._addUser()
         self.assertEqual(user.gravatar_url(), 
                          'https://secure.gravatar.com/avatar/'
                          '0c83f57c786a0b4a39efab23731c7ebc?d=mm')
+
+
+class GroupTestCase(BaseTestCase):
+    def test_add_group(self):
+        group = Group(
+            group_name=u'example group',
+            description=u'example description'
+        )
+        self.session.add(group)
+        self.session.flush()
+
+        group = self.session.query(Group)
+        group = group.filter(Group.group_name == u'example group').first()
+        
+        self.assertEqual(group.group_name, u'example group')
+        self.assertEqual(group.description, u'example description')
+        self.assertEqual(group.member_count, 0)
+
