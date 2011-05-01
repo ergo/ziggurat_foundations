@@ -66,8 +66,8 @@ class BaseTestCase(unittest.TestCase):
     def setUp(self):
         self.session = _initTestingDB()
 
-    def _addUser(self, user_name=u'username'):
-        user = User(user_name=user_name, email=u'email', status=0)
+    def _addUser(self, user_name=u'username', email=u'email'):
+        user = User(user_name=user_name, email=email, status=0)
         user.set_password('password')
         self.session.add(user)
         self.session.flush()
@@ -129,7 +129,26 @@ class UserTestCase(BaseTestCase):
         self.assertEqual(queried_user, None)
 
     def test_by_user_names(self):
-        pass
+        user1 = self._addUser(u'user1', u'email1')
+        user2 = self._addUser(u'user2', u'email2')
+        user3 = self._addUser(u'user3', u'email3')
+
+        queried_users = User.by_user_names([u'user1', u'user3']).all()
+
+        self.assertEqual(len(queried_users), 2)
+        self.assertEqual(user1, queried_users[0])
+        self.assertEqual(user3, queried_users[1])
+
+    def test_by_user_names_like(self):
+        user1 = self._addUser(u'user1', u'email1')
+        user2 = self._addUser(u'luser2', u'email2')
+        user3 = self._addUser(u'noname', u'email3')
+
+        queried_users = User.user_names_like(u'user').all()
+
+        self.assertEqual(len(queried_users), 2)
+        self.assertEqual(user2, queried_users[0])
+        self.assertEqual(user1, queried_users[1])
 
     def test_gravatar_url(self):
         user = self._addUser()
