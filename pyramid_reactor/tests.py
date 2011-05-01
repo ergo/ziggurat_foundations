@@ -217,3 +217,43 @@ class GroupTestCase(BaseTestCase):
 
         self.assertEqual(added_group, queried_group)
 
+    def test_by_group_name_wrong_groupname(self):
+        added_group = self._addGroup()
+        queried_group = Group.by_group_name(u'not existing group')
+
+        self.assertEqual(queried_group, None)
+
+    def test_users(self):
+        user1 = self._addUser(u'user1', u'email1')
+        user2 = self._addUser(u'user2', u'email2')
+
+        group = self._addGroup()
+        group.users.append(user1)
+        group.users.append(user2)
+
+        self.assertEqual(group.users[0], user1)
+        self.assertEqual(group.users[1], user2)
+
+
+    def test_users_dynamic(self):
+        user1 = self._addUser(u'user1', u'email1')
+        user2 = self._addUser(u'user2', u'email2')
+
+        group = self._addGroup()
+        group.users.append(user1)
+        group.users.append(user2)
+        group_users = group.users_dynamic.all()
+
+        self.assertEqual(group_users[0], user1)
+        self.assertEqual(group_users[1], user2)
+
+    def test_all(self):
+        group1 = self._addGroup(u'group1')
+        group2 = self._addGroup(u'group2')
+
+        all_groups = Group.all().all()
+
+        self.assertEqual(len(all_groups), 2)
+        self.assertEqual(all_groups[0], group1)
+        self.assertEqual(all_groups[1], group2)
+
