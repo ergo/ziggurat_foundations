@@ -9,5 +9,6 @@ setup(name='pyramid_reactor',
       author_email='info@webreactor.eu',
       license='BSD',
       packages=['pyramid_reactor'],
+      test_suite='pyramid_reactor.tests',
       install_requires=["sqlalchemy", "cryptacular", 'pyramid']
       )
