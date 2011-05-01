@@ -73,6 +73,15 @@ class BaseTestCase(unittest.TestCase):
         self.session.flush()
         return user
 
+    def _addGroup(self, group_name=u'group', description=u'desc'):
+        group = Group(
+            group_name=group_name,
+            description=description
+        )
+        self.session.add(group)
+        self.session.flush()
+        return group
+
 
 class UserTestCase(BaseTestCase):
 
@@ -201,4 +210,10 @@ class GroupTestCase(BaseTestCase):
         self.assertEqual(group.group_name, u'example group')
         self.assertEqual(group.description, u'example description')
         self.assertEqual(group.member_count, 0)
+
+    def test_by_group_name(self):
+        added_group = self._addGroup()
+        queried_group = Group.by_group_name(u'group')
+
+        self.assertEqual(added_group, queried_group)
 
