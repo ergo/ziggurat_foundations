@@ -100,7 +100,7 @@ class UserTestCase(BaseTestCase):
         self.assertEqual(queried_user, None)
 
     def test_by_username_andsecurity_code_existing(self):
-        created_user = user = self._addUser()
+        created_user = self._addUser()
         security_code = created_user.security_code
         queried_user = User.by_user_name_and_security_code(
             user_name='username', 
@@ -110,7 +110,7 @@ class UserTestCase(BaseTestCase):
         self.assertEqual(created_user, queried_user)
 
     def test_by_username_andsecurity_code_not_existing(self):
-        created_user = user = self._addUser()
+        created_user = self._addUser()
         security_code = created_user.security_code
         queried_user = User.by_user_name_and_security_code(
             user_name='not_existing_user', 
@@ -120,13 +120,16 @@ class UserTestCase(BaseTestCase):
         self.assertEqual(queried_user, None)
 
     def test_by_username_andsecurity_code_wrong_code(self):
-        created_user = user = self._addUser()
+        created_user = self._addUser()
         queried_user = User.by_user_name_and_security_code(
             user_name='username', 
             security_code='wrong_code'
         )
 
         self.assertEqual(queried_user, None)
+
+    def test_by_user_names(self):
+        pass
 
     def test_gravatar_url(self):
         user = self._addUser()
