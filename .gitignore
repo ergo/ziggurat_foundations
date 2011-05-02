@@ -4,3 +4,6 @@
 *.swp
 *~
 .coverage
+/.pydevproject
+/.project
+/.settings
