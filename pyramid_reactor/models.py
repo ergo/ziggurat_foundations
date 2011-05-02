@@ -208,9 +208,11 @@ class UserMixin(BaseModel):
     
     def gravatar_url(self, default='mm'):
         # construct the url
-        gravatar_url = "https://secure.gravatar.com/avatar/" \
-                        + hashlib.md5(self.email.lower()).hexdigest() + "?"
-        gravatar_url += urllib.urlencode({'d':default})
+        hash = hashlib.md5(self.email.encode('utf8').lower()).hexdigest()
+        gravatar_url = "https://secure.gravatar.com/avatar/%s?%s"  % (
+                                                hash,                                                            
+                                                urllib.urlencode({'d':default})
+                                                                      )
         return gravatar_url
     
     
