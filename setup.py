@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 import sys
 setup(name='pyramid_reactor',
       version='0.1',
