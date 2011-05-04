@@ -172,11 +172,14 @@ class UserMixin(BaseModel):
         #if user has some groups lets try to join based on their permissions
         if group_names:
             join_conditions = (
-                          GroupResourcePermission.group_name.in_(group_names),
-                          Resource.resource_id == GroupResourcePermission.resource_id,
-                          GroupResourcePermission.perm_name.in_(perms),
+                GroupResourcePermission.group_name.in_(group_names),
+                Resource.resource_id == GroupResourcePermission.resource_id,
+                GroupResourcePermission.perm_name.in_(perms),
                           )
-            q = q.outerjoin((GroupResourcePermission, sa.and_(*join_conditions),))
+            q = q.outerjoin(
+                            (GroupResourcePermission,
+                             sa.and_(*join_conditions),)
+                            )
             #ensure outerjoin permissions are correct - dont add empty rows from join
             #conditions are - join ON possible group permissions OR owning group/user
             q = q.filter(sa.or_(
@@ -208,9 +211,11 @@ class UserMixin(BaseModel):
     
     def gravatar_url(self, default='mm'):
         # construct the url
-        gravatar_url = "https://secure.gravatar.com/avatar/" \
-                        + hashlib.md5(self.email.lower()).hexdigest() + "?"
-        gravatar_url += urllib.urlencode({'d':default})
+        hash = hashlib.md5(self.email.encode('utf8').lower()).hexdigest()
+        gravatar_url = "https://secure.gravatar.com/avatar/%s?%s" % (
+                                                hash,
+                                                urllib.urlencode({'d':default})
+                                                                      )
         return gravatar_url
     
     
@@ -228,7 +233,8 @@ class UserMixin(BaseModel):
         
     
     def regenerate_security_code(self):      
-        crypt = hashlib.sha1('%s%s' % (self.user_name.encode('utf8'), random.random(),))
+        crypt = hashlib.sha1('%s%s' % (self.user_name.encode('utf8'),
+                                       random.random(),))
         self.security_code = crypt.hexdigest()
     
     @classmethod
@@ -568,7 +574,8 @@ class UserResourcePermissionMixin(BaseModel):
     
 #    @classmethod
 #    def allowed_permissions(cls, key):
-#        """ ensures we can only use permission that can be assigned to this resource type"""
+#        """ ensures we can only use permission that can be assigned 
+#            to this resource type"""
 #        if key in cls.__possible_permissions__:
 #            return key
 #        raise KeyError
@@ -669,11 +676,16 @@ class ResourceMixin(BaseModel):
     def perms_for_user(self, user, cache='default',
                        invalidate=False, db_session=None):
         db_session = self.get_db_session(db_session)
-        q = db_session.query('group:' + GroupResourcePermission.group_name, GroupResourcePermission.perm_name)
-        q = q.filter(GroupResourcePermission.group_name.in_([gr.group_name for gr in user.groups]))
+        q = db_session.query('group:' + GroupResourcePermission.group_name,
+                             GroupResourcePermission.perm_name)
+        q = q.filter(GroupResourcePermission.group_name.in_(
+                                        [gr.group_name for gr in user.groups]
+                                        )
+                     )
         q = q.filter(GroupResourcePermission.resource_id == self.resource_id)
         
-        q2 = db_session.query(UserResourcePermission.user_name, UserResourcePermission.perm_name)
+        q2 = db_session.query(UserResourcePermission.user_name,
+                              UserResourcePermission.perm_name)
         q2 = q2.filter(UserResourcePermission.user_name == user.user_name)
         q2 = q2.filter(UserResourcePermission.resource_id == self.resource_id)
         q = q.union(q2)
@@ -691,7 +703,8 @@ class ResourceMixin(BaseModel):
     def direct_perms_for_user(self, user, cache='default',
                        invalidate=False, db_session=None):
         db_session = self.get_db_session(db_session)
-        q = db_session.query(UserResourcePermission.user_name, UserResourcePermission.perm_name)
+        q = db_session.query(UserResourcePermission.user_name,
+                             UserResourcePermission.perm_name)
         q = q.filter(UserResourcePermission.user_name == user.user_name)
         q = q.filter(UserResourcePermission.resource_id == self.resource_id)
         if cache == 'default':
@@ -707,8 +720,12 @@ class ResourceMixin(BaseModel):
     def group_perms_for_user(self, user, cache='default',
                        invalidate=False, db_session=None):
         db_session = self.get_db_session(db_session)
-        q = db_session.query('group:' + GroupResourcePermission.group_name, GroupResourcePermission.perm_name)
-        q = q.filter(GroupResourcePermission.group_name.in_([gr.group_name for gr in user.groups]))
+        q = db_session.query('group:' + GroupResourcePermission.group_name,
+                             GroupResourcePermission.perm_name)
+        q = q.filter(GroupResourcePermission.group_name.in_(
+                                    [gr.group_name for gr in user.groups]
+                                    )
+                     )
         q = q.filter(GroupResourcePermission.resource_id == self.resource_id)
         if cache:
             # cache = FromCache("default_term", "by_id")
