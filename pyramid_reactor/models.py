@@ -3,6 +3,7 @@ import sqlalchemy.orm as orm
 import hashlib
 import urllib
 import random
+import uuid
 
 from cryptacular.bcrypt import BCRYPTPasswordManager
 from cryptacular.core import DelegatingPasswordManager
@@ -229,13 +230,13 @@ class UserMixin(BaseModel):
 
     @classmethod
     def generate_random_pass(cls, chars=7):
-        return generate_random_string(chars)
+        some_uuid = uuid.uuid4().hex
+        return some_uuid[:chars]
         
     
     def regenerate_security_code(self):      
-        crypt = hashlib.sha1('%s%s' % (self.user_name.encode('utf8'),
-                                       random.random(),))
-        self.security_code = crypt.hexdigest()
+        some_uuid = uuid.uuid4().hex
+        self.security_code = some_uuid
     
     @classmethod
     def by_user_name(cls, user_name, cache='default',
