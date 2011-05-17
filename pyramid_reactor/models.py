@@ -231,7 +231,7 @@ class UserMixin(BaseModel):
     @classmethod
     def generate_random_pass(cls, chars=7):
         some_uuid = uuid.uuid4().hex
-        return some_uuid[chars]
+        return some_uuid[:chars]
         
     
     def regenerate_security_code(self):      
