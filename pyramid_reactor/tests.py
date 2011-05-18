@@ -97,13 +97,13 @@ class UserTestCase(BaseTestCase):
         self.assertEqual(user.status, 0)
 
     def test_by_user_name_existing(self):
-        created_user = user = self._addUser()
+        created_user = self._addUser()
         queried_user = User.by_user_name('username')
 
         self.assertEqual(created_user, queried_user)
 
     def test_by_user_name_not_existing(self):
-        created_user = user = self._addUser()
+        self._addUser()
         queried_user = User.by_user_name('not_existing_user')
 
         self.assertEqual(queried_user, None)
@@ -129,7 +129,7 @@ class UserTestCase(BaseTestCase):
         self.assertEqual(queried_user, None)
 
     def test_by_username_andsecurity_code_wrong_code(self):
-        created_user = self._addUser()
+        self._addUser()
         queried_user = User.by_user_name_and_security_code(
             user_name='username', 
             security_code='wrong_code'
@@ -150,8 +150,8 @@ class UserTestCase(BaseTestCase):
 
     def test_by_user_names_like(self):
         user1 = self._addUser(u'user1', u'email1')
-        user2 = self._addUser(u'luser2', u'email2')
-        user3 = self._addUser(u'noname', u'email3')
+        self._addUser(u'luser2', u'email2')
+        self._addUser(u'noname', u'email3')
 
         queried_users = User.user_names_like(u'user').all()
 
@@ -165,7 +165,7 @@ class UserTestCase(BaseTestCase):
         self.assertEqual(created_user, queried_user)
 
     def test_by_email_wrong_email(self):
-        created_user = self._addUser()
+        self._addUser()
         queried_user = User.by_email(u'wrong_email')
 
         self.assertEqual(queried_user, None)
@@ -177,13 +177,13 @@ class UserTestCase(BaseTestCase):
         self.assertEqual(created_user, queried_user)
 
     def test_by_mail_and_username_wrong_mail(self):
-        created_user = self._addUser()
+        self._addUser()
         queried_user = User.by_email_and_username(u'wrong_email', 'username')
 
         self.assertEqual(queried_user, None)
 
     def test_by_mail_and_username_wrong_username(self):
-        created_user = self._addUser()
+        self._addUser()
         queried_user = User.by_email_and_username(u'email', 'wrong_username')
 
         self.assertEqual(queried_user, None)
@@ -193,7 +193,29 @@ class UserTestCase(BaseTestCase):
         self.assertEqual(user.gravatar_url(), 
                          'https://secure.gravatar.com/avatar/'
                          '0c83f57c786a0b4a39efab23731c7ebc?d=mm')
-
+        
+    def test_generate_random_string(self):
+        rand_str = User.generate_random_string()
+        
+        self.assertEqual(len(rand_str), 7)
+        self.assertIsInstance(rand_str, unicode)
+        
+    def test_generate_random_pass(self):
+        rand_str = User.generate_random_pass()
+        
+        self.assertEqual(len(rand_str), 7)
+        self.assertIsInstance(rand_str, unicode)
+        
+        rand_str = User.generate_random_pass(20)
+        self.assertEqual(len(rand_str), 20)
+        
+    def regenerate_security_code(self):
+        user = self._addUser()
+        old_code = user.security_code
+        new_code = user.regenerate_security_code()
+        
+        self.assertNotEqual(old_code, new_code)
+        self.assertEqual(len(new_code), 32)
 
 class GroupTestCase(BaseTestCase):
     def test_add_group(self):
@@ -218,7 +240,7 @@ class GroupTestCase(BaseTestCase):
         self.assertEqual(added_group, queried_group)
 
     def test_by_group_name_wrong_groupname(self):
-        added_group = self._addGroup()
+        self._addGroup()
         queried_group = Group.by_group_name(u'not existing group')
 
         self.assertEqual(queried_group, None)
