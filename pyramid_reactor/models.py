@@ -3,6 +3,7 @@ import sqlalchemy.orm as orm
 import hashlib
 import urllib
 import random
+import string
 import uuid
 
 from cryptacular.bcrypt import BCRYPTPasswordManager
@@ -13,7 +14,6 @@ from pyramid.security import Allow, Everyone, Authenticated, ALL_PERMISSIONS
 
 
 DBSession = None
-
 
 
 class BaseModel(object):
@@ -228,15 +228,16 @@ class UserMixin(BaseModel):
         return self.passwordmanager.check(self.user_password, raw_password,
                                           setter=self.set_password)
 
+    @staticmethod
+    def generate_random_string(chars=7):
+        return u''.join(random.sample(string.printable, chars))
+
     @classmethod
     def generate_random_pass(cls, chars=7):
-        some_uuid = uuid.uuid4().hex
-        return some_uuid[:chars]
-        
-    
-    def regenerate_security_code(self):      
-        some_uuid = uuid.uuid4().hex
-        self.security_code = some_uuid
+        return cls.generate_random_string(chars)
+
+    def regenerate_security_code(self):
+        self.security_code = self.generate_random_string(32)
     
     @classmethod
     def by_user_name(cls, user_name, cache='default',
