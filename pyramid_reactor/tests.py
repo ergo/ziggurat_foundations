@@ -153,8 +153,7 @@ class UserTestCase(BaseTestCase):
         self._addUser(u'luser2', u'email2')
         self._addUser(u'noname', u'email3')
 
-        queried_users = User.user_names_like(u'user').all()
-
+        queried_users = User.user_names_like(u'user%').all()
         self.assertEqual(len(queried_users), 1)
         self.assertEqual(user1, queried_users[0])
 
