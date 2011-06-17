@@ -635,7 +635,7 @@ class ResourceMixin(BaseModel):
     
     @declared_attr
     def resource_id(cls):
-        return sa.Column(sa.BigInteger(), primary_key=True)
+        return sa.Column(sa.BigInteger(), primary_key=True, nullable=False)
     
     @declared_attr
     def resource_name(cls):
@@ -848,8 +848,7 @@ class ResourceMixin(BaseModel):
         q = q.filter(GroupResourcePermission.resource_id == res_id)
         return q.first()
     
-    @sa.orm.validates('user_permissions') 
-    @sa.orm.validates('group_permissions')
+    @sa.orm.validates('user_permissions', 'group_permissions')
     def validate_permission(self, key, permission):
         """ validate if resouce can have specific permission """
         assert permission.perm_name in self.__possible_permissions__

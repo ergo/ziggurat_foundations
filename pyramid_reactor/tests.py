@@ -36,6 +36,9 @@ class Resource(ResourceMixin, Base):
     __tablename__ = 'resources'
 pyramid_reactor.models.Resource = Resource
 
+class TestResource(Resource):
+    __mapper_args__ = {'polymorphic_identity': 'test_resource'}
+
 class UserPermission(UserPermissionMixin, Base):
     __tablename__ = 'users_permissions'
 pyramid_reactor.models.UserPermission = UserPermission
@@ -69,11 +72,23 @@ class BaseTestCase(unittest.TestCase):
     def _addUser(self, user_name=u'username', email=u'email'):
         user = User(user_name=user_name, email=email, status=0)
         user.set_password('password')
+        root_perm = UserPermission(perm_name=u'root')
+        users_perm = UserPermission(perm_name=u'alter_users')
+        user.user_permissions.append(root_perm)
+        user.user_permissions.append(users_perm)
         self.session.add(user)
         self.session.flush()
         return user
+    
+    def _addResource(self, resource_id, resource_name=u'test_resource',):
+        Resource.__possible_permissions__ = [u'test_perm', u'foo_perm']
+        resource = TestResource(resource_id=resource_id,
+                            resource_name=resource_name)
+        self.session.add(resource)
+        self.session.flush()
+        return resource
 
-    def _addGroup(self, group_name=u'group', description=u'desc'):
+    def _addGroup(self, group_name=u'group', description=u'desc',):
         group = Group(
             group_name=group_name,
             description=description
@@ -86,23 +101,23 @@ class ModelTestCase(BaseTestCase):
     
     def test_get_keys(self):
         keys = User._get_keys()
-        self.assertEqual(len(keys),7)
+        self.assertEqual(len(keys), 7)
         
     def test_get_dict(self):
         created_user = self._addUser()
         dict_ = created_user.get_dict()
-        self.assertEqual(len(dict_),7)
+        self.assertEqual(len(dict_), 7)
         
     def test_appstruct(self):
         created_user = self._addUser()
         appstruct = created_user.get_appstruct()
-        self.assertEqual(len(appstruct),7)
+        self.assertEqual(len(appstruct), 7)
 
     def test_populate_obj_appstruct(self):
         created_user = self._addUser()
         app_struct = {'user_name':'new_name'}
         created_user.populate_obj(app_struct)
-        self.assertEqual(created_user.user_name,'new_name')
+        self.assertEqual(created_user.user_name, 'new_name')
 
     def test_session(self):
         session = self._addUser().get_db_session()
@@ -130,7 +145,7 @@ class UserTestCase(BaseTestCase):
 
     def test_by_user_name_not_existing(self):
         self._addUser()
-        queried_user = User.by_user_name('not_existing_user')
+        queried_user = User.by_user_name(u'not_existing_user')
 
         self.assertEqual(queried_user, None)
 
@@ -138,7 +153,7 @@ class UserTestCase(BaseTestCase):
         created_user = self._addUser()
         security_code = created_user.security_code
         queried_user = User.by_user_name_and_security_code(
-            user_name='username', 
+            user_name='username',
             security_code=security_code
         )
 
@@ -148,7 +163,7 @@ class UserTestCase(BaseTestCase):
         created_user = self._addUser()
         security_code = created_user.security_code
         queried_user = User.by_user_name_and_security_code(
-            user_name='not_existing_user', 
+            user_name='not_existing_user',
             security_code=security_code
         )
 
@@ -157,7 +172,7 @@ class UserTestCase(BaseTestCase):
     def test_by_username_andsecurity_code_wrong_code(self):
         self._addUser()
         queried_user = User.by_user_name_and_security_code(
-            user_name='username', 
+            user_name='username',
             security_code='wrong_code'
         )
 
@@ -215,7 +230,7 @@ class UserTestCase(BaseTestCase):
 
     def test_gravatar_url(self):
         user = self._addUser()
-        self.assertEqual(user.gravatar_url(), 
+        self.assertEqual(user.gravatar_url(),
                          'https://secure.gravatar.com/avatar/'
                          '0c83f57c786a0b4a39efab23731c7ebc?d=mm')
         
@@ -234,13 +249,96 @@ class UserTestCase(BaseTestCase):
         rand_str = User.generate_random_pass(20)
         self.assertEqual(len(rand_str), 20)
         
-    def regenerate_security_code(self):
-        user = self._addUser()
-        old_code = user.security_code
-        new_code = user.regenerate_security_code()
+    def test_regenerate_security_code(self):
+        created_user = self._addUser()
+        old_code = created_user.security_code
+        created_user.regenerate_security_code()
+        new_code = created_user.security_code
         
         self.assertNotEqual(old_code, new_code)
         self.assertEqual(len(new_code), 32)
+        
+    def test_user_permissions(self):
+        created_user = self._addUser()
+        permissions = created_user.permissions
+        self.assertEqual(permissions, [u'alter_users', u'root'])
+        
+    def test_resources_with_perm(self):
+        created_user = self._addUser()
+        resource = self._addResource(1, u'test_resource')
+        permission = UserResourcePermission(perm_name=u'test_perm',
+                                            user_name=created_user.user_name,
+                                            resource_id = resource.resource_id
+                                                )
+        resource.user_permissions.append(permission)
+        self.session.flush()
+        resources = created_user.resources_with_perms([u'test_perm']).all()
+        self.assertEqual(resources[0], resource)
+        
+    def test_resources_with_wrong_perm(self):
+        with self.assertRaises(AssertionError):
+            created_user = self._addUser()
+            resource = self._addResource(1, u'test_resource')
+            permission = UserResourcePermission(perm_name=u'test_perm_BAD',
+                                        user_name=created_user.user_name,
+                                        resource_id = resource.resource_id
+                                                    )
+            resource.user_permissions.append(permission)
+            self.session.flush()
+
+    def test_multiple_resources_with_perm(self):
+        created_user = self._addUser()
+        resource = self._addResource(1, u'test_resource')
+        permission = UserResourcePermission(perm_name=u'test_perm',
+                                            user_name=created_user.user_name,
+                                            resource_id = resource.resource_id
+                                                )
+        resource.user_permissions.append(permission)
+        resource2 = self._addResource(2, u'test_resource2')
+        permission2 = UserResourcePermission(perm_name=u'test_perm',
+                                            user_name=created_user.user_name,
+                                            resource_id = resource2.resource_id
+                                                )
+        resource2.user_permissions.append(permission2)
+        resources = created_user.resources_with_perms([u'test_perm']).all()
+        self.assertEqual(resources, [resource,resource2])
+        
+    def test_resources_with_wrong_group_permission(self):
+        with self.assertRaises(AssertionError):
+            created_user = self._addUser()
+            resource = self._addResource(1, u'test_resource')
+            group = self._addGroup()
+            group.users.append(created_user)
+            group_permission = GroupResourcePermission(
+                                        perm_name=u'test_perm_BAD',
+                                        group_name=u'group',
+                                        resource_id = resource.resource_id
+                                                       )
+            resource.group_permissions.append(group_permission)
+        
+    def test_resources_with_group_permission(self):
+        created_user = self._addUser()
+        resource = self._addResource(1, u'test_resource')
+        resource2 = self._addResource(2, u'test_resource2')
+        resource3 = self._addResource(3, u'test_resource3')
+        group = self._addGroup()
+        group.users.append(created_user)
+        group_permission = GroupResourcePermission(
+                                    perm_name=u'test_perm',
+                                    group_name=u'group',
+                                    resource_id = resource.resource_id
+                                                   )
+        group_permission2 = GroupResourcePermission(
+                                    perm_name=u'foo_perm',
+                                    group_name=u'group',
+                                    resource_id = resource2.resource_id
+                                                   )
+        resource.group_permissions.append(group_permission)
+        resource2.group_permissions.append(group_permission2)
+        self.session.flush()
+        resources = created_user.resources_with_perms([u'foo_perm']).all()
+        self.assertEqual(resources[0],resource2)
+        
 
 class GroupTestCase(BaseTestCase):
     def test_add_group(self):
