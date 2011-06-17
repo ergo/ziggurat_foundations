@@ -19,9 +19,6 @@ DBSession = None
 class BaseModel(object):
     """ base class for  all other models to inherit """
     
-    def db_session(self):
-        return 
-    
     @classmethod
     def _get_keys(cls):
         """ return column names for this model """ 
@@ -42,7 +39,7 @@ class BaseModel(object):
         return l
     
     def populate_obj(self, appstruct):
-        """ populate model with data from appstruct """
+        """ populate model with data from dict """
         for k in self._get_keys():
             if k in appstruct:
                 setattr(self, k, appstruct[k])

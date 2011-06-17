@@ -82,6 +82,32 @@ class BaseTestCase(unittest.TestCase):
         self.session.flush()
         return group
 
+class ModelTestCase(BaseTestCase):
+    
+    def test_get_keys(self):
+        keys = User._get_keys()
+        self.assertEqual(len(keys),7)
+        
+    def test_get_dict(self):
+        created_user = self._addUser()
+        dict_ = created_user.get_dict()
+        self.assertEqual(len(dict_),7)
+        
+    def test_appstruct(self):
+        created_user = self._addUser()
+        appstruct = created_user.get_appstruct()
+        self.assertEqual(len(appstruct),7)
+
+    def test_populate_obj_appstruct(self):
+        created_user = self._addUser()
+        app_struct = {'user_name':'new_name'}
+        created_user.populate_obj(app_struct)
+        self.assertEqual(created_user.user_name,'new_name')
+
+    def test_session(self):
+        session = self._addUser().get_db_session()
+        from sqlalchemy.orm import ScopedSession
+        self.assertIsInstance(session, ScopedSession)
 
 class UserTestCase(BaseTestCase):
 
@@ -278,3 +304,5 @@ class GroupTestCase(BaseTestCase):
         self.assertEqual(all_groups[0], group1)
         self.assertEqual(all_groups[1], group2)
 
+if __name__ == '__main__':
+    unittest.main()
