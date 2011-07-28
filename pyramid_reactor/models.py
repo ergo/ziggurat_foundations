@@ -155,15 +155,18 @@ class UserMixin(BaseModel):
         """ returns all non-resource permissions based on what groups user
             belongs and directly set ones for this user"""
         db_session = self.get_db_session(db_session)
-        q = db_session.query(GroupPermission.perm_name.label('perm_name'))
+        q = db_session.query(('group:' + GroupPermission.group_name).label('owner_name'),
+                             GroupPermission.perm_name.label('perm_name'))
         q = q.filter(GroupPermission.group_name == UserGroup.group_name)
         q = q.filter(User.user_name == UserGroup.user_name)
         q = q.filter(User.user_name == self.user_name)
         
-        q2 = db_session.query(UserPermission.perm_name.label('perm_name'))
-        q2 = q2.filter(User.user_name == self.user_name)
+        q2 = db_session.query(UserPermission.user_name.label('owner_name'),
+                              UserPermission.perm_name.label('perm_name'))
+        q2 = q2.filter(UserPermission.user_name == self.user_name)
         q = q.union(q2)
-        return [row.perm_name for row in q]
+        print q
+        return [(row.owner_name, row.perm_name) for row in q]
         
         
     
@@ -715,7 +718,7 @@ class ResourceMixin(BaseModel):
             acls.extend([(Allow, self.owner_user_name, ALL_PERMISSIONS,), ])
             
         if self.owner_group_name:
-            acls.extend([(Allow, self.owner_group_name, ALL_PERMISSIONS,), ])
+            acls.extend([(Allow, "group:%s" % self.owner_group_name, ALL_PERMISSIONS,), ])
         return acls
     
     def perms_for_user(self, user, cache='default',
