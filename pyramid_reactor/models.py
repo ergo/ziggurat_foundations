@@ -165,7 +165,6 @@ class UserMixin(BaseModel):
                               UserPermission.perm_name.label('perm_name'))
         q2 = q2.filter(UserPermission.user_name == self.user_name)
         q = q.union(q2)
-        print q
         return [(row.owner_name, row.perm_name) for row in q]
         
         
