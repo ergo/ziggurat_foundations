@@ -787,7 +787,11 @@ class ResourceMixin(BaseModel):
         if invalidate:
             pass #q.invalidate()
             return True
-        return q
+        perms = [(row[0], row.perm_name,) for row in q]
+        #include all perms if user is the owner of this resource
+        if self.owner_user_name == user.user_name:
+            perms.append((self.owner_user_name, ALL_PERMISSIONS,))
+        return perms
     
     
     def direct_perms_for_user(self, user, cache='default',
@@ -807,7 +811,11 @@ class ResourceMixin(BaseModel):
         if invalidate:
             pass #q.invalidate()
             return True
-        return q
+        perms = [(row[0], row.perm_name,) for row in q]
+        #include all perms if user is the owner of this resource
+        if self.owner_user_name == user.user_name:
+            perms.append((self.owner_user_name, ALL_PERMISSIONS,))
+        return perms
 
     def group_perms_for_user(self, user, cache='default',
                        invalidate=False, db_session=None):
@@ -829,16 +837,19 @@ class ResourceMixin(BaseModel):
         if invalidate:
             pass #q.invalidate()
             return True
-        return q
+        perms = [(row[0], row.perm_name,) for row in q]
+#        if self.owner_group_name:
+#            perms.append(('group:' + self.owner_group_name, ALL_PERMISSIONS,))
+        return perms
     
     
     def users_for_perm(self, perm_name, cache='default',
                        invalidate=False, db_session=None):
-        """ return all users that have given permission for the resource """
+        """ return tuple (user,perm_name) that have given permission for the resource """
         db_session = self.get_db_session(db_session)
         q = db_session.query(User, GroupResourcePermission.perm_name)
         q = q.filter(User.user_name == UserGroup.user_name)
-        q = q.filter(UserGroup.user_name == GroupResourcePermission.group_name)
+        q = q.filter(UserGroup.group_name == GroupResourcePermission.group_name)
         if perm_name != '__any_permission__':
             q = q.filter(GroupResourcePermission.perm_name == perm_name)
         q = q.filter(GroupResourcePermission.resource_id == self.resource_id)        
@@ -856,7 +867,10 @@ class ResourceMixin(BaseModel):
         if invalidate:
             pass #q.invalidate()
             return True
-        return q
+        users = [(row.User, row.perm_name,) for row in q]
+        if self.owner_user_name:
+            users.append((User.by_user_name(self.owner_user_name),ALL_PERMISSIONS,))
+        return users
         
     @classmethod
     def by_resource_id(cls, resource_id, cache='default',
