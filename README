@@ -66,33 +66,33 @@ pyramid_reactor.models.DBSession = DBSession #optional for folks who pass reques
 
 
 class Group(GroupMixin, Base):
-    __tablename__ = 'groups'
+    pass
 pyramid_reactor.models.Group = Group
 
 class GroupPermission(GroupPermissionMixin, Base):
-    __tablename__ = 'groups_permissions'
+    pass
 pyramid_reactor.models.GroupPermission = GroupPermission
 
 class UserGroup(UserGroupMixin, Base):
-    __tablename__ = 'users_groups'
+    pass
 pyramid_reactor.models.UserGroup = UserGroup
 
 class GroupResourcePermission(GroupResourcePermissionMixin, Base):
-    __tablename__ = 'groups_resources_permissions'
+    pass
 pyramid_reactor.models.GroupResourcePermission = GroupResourcePermission
 
 class Resource(ResourceMixin, Base):
-    __tablename__ = 'resources'
+    pass
 pyramid_reactor.models.Resource = Resource
 
 class UserPermission(UserPermissionMixin, Base):
-    __tablename__ = 'users_permissions'
+    pass
 pyramid_reactor.models.UserPermission = UserPermission
 
 class UserResourcePermission(UserResourcePermissionMixin, Base):
-    __tablename__ = 'users_resources_permissions'
+    pass
 pyramid_reactor.models.UserResourcePermission = UserResourcePermission
         
 class User(UserMixin, Base):
-    __tablename__ = 'users'
+    pass
 pyramid_reactor.models.User = User

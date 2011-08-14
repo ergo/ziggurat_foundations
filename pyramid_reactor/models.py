@@ -69,11 +69,16 @@ class UserMapperExtension(sa.orm.interfaces.MapperExtension):
                 
 class UserMixin(BaseModel):
     """base mixin for user object"""
+    
     __mapper_args__ = {'extension': UserMapperExtension()}
     __table_args__ = {
                       'mysql_engine':'InnoDB',
                       'mysql_charset':'utf8'
                       }
+    
+    @declared_attr
+    def __tablename__(cls):
+        return 'users'
     
     @declared_attr
     def id(cls):
@@ -368,10 +373,16 @@ class UserMixin(BaseModel):
 
 class GroupMixin(BaseModel):
     """ base mixin for group object"""
+    
     __table_args__ = {
                       'mysql_engine':'InnoDB',
                       'mysql_charset':'utf8'
                       }
+    
+    @declared_attr
+    def __tablename__(cls):
+        return 'groups'
+    
     # lists app wide permissions we might want to assign to groups
     __possible_permissions__ = ('root_administration',
                                 'administration',
@@ -476,10 +487,15 @@ class GroupMixin(BaseModel):
     
 class GroupPermissionMixin(BaseModel):
     """ group permission mixin """
+    
     __table_args__ = {
                       'mysql_engine':'InnoDB',
                       'mysql_charset':'utf8'
                       }
+    
+    @declared_attr
+    def __tablename__(cls):
+        return 'groups_permissions'
     
     @declared_attr
     def group_name(cls):
@@ -503,10 +519,15 @@ class GroupPermissionMixin(BaseModel):
         return q.first()
         
 class UserPermissionMixin(BaseModel):
+    
     __table_args__ = {
                       'mysql_engine':'InnoDB',
                       'mysql_charset':'utf8'
                       }
+    
+    @declared_attr
+    def __tablename__(cls):
+        return 'users_permissions'
     
     @declared_attr
     def user_name(cls):
@@ -529,10 +550,16 @@ class UserPermissionMixin(BaseModel):
         return q.first()
 
 class UserGroupMixin(BaseModel):
+    
     __table_args__ = {
                       'mysql_engine':'InnoDB',
                       'mysql_charset':'utf8'
                       }
+    
+    @declared_attr
+    def __tablename__(cls):
+        return 'users_groups'
+    
     @declared_attr
     def group_name(cls):
         return sa.Column(sa.Unicode(50),
@@ -549,10 +576,15 @@ class UserGroupMixin(BaseModel):
         return '<UserGroup: %s, %s>' % (self.group_name, self.user_name,)
 
 class GroupResourcePermissionMixin(BaseModel):
+    
     __table_args__ = {
                       'mysql_engine':'InnoDB',
                       'mysql_charset':'utf8'
                       }
+    
+    @declared_attr
+    def __tablename__(cls):
+        return 'groups_resources_permissions'
     
     @declared_attr
     def group_name(cls):
@@ -578,10 +610,15 @@ class GroupResourcePermissionMixin(BaseModel):
                                                       self.resource_id,)
 
 class UserResourcePermissionMixin(BaseModel):
+    
     __table_args__ = {
                       'mysql_engine':'InnoDB',
                       'mysql_charset':'utf8'
                       }
+    
+    @declared_attr
+    def __tablename__(cls):
+        return 'users_resources_permissions'
     
     @declared_attr
     def user_name(cls):
@@ -634,6 +671,10 @@ class ResourceMapperExtension(sa.orm.interfaces.MapperExtension):
 class ResourceMixin(BaseModel):    
     
     __possible_permissions__ = ()
+    
+    @declared_attr
+    def __tablename__(cls):
+        return 'resources'
     
     @declared_attr
     def resource_id(cls):
