@@ -10,5 +10,5 @@ setup(name='pyramid_reactor',
       license='BSD',
       packages=['pyramid_reactor'],
       test_suite='pyramid_reactor.tests',
-      install_requires=["sqlalchemy", "cryptacular", 'pyramid']
+      install_requires=["sqlalchemy", "cryptacular", 'pyramid','webhelpers']
       )
