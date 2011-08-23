@@ -61,38 +61,34 @@ from pyramid_reactor.models import BaseModel, UserMixin, GroupMixin
 from pyramid_reactor.models import GroupPermissionMixin, UserGroupMixin 
 from pyramid_reactor.models import GroupResourcePermissionMixin, ResourceMixin 
 from pyramid_reactor.models import UserPermissionMixin, UserResourcePermissionMixin
+from pyramid_reactor import reactor_model_init
 #this is needed for pylons 1.0 / akhet approach to db session
 pyramid_reactor.models.DBSession = DBSession #optional for folks who pass request.db to model methods
 
 
 class Group(GroupMixin, Base):
     pass
-pyramid_reactor.models.Group = Group
 
 class GroupPermission(GroupPermissionMixin, Base):
     pass
-pyramid_reactor.models.GroupPermission = GroupPermission
 
 class UserGroup(UserGroupMixin, Base):
     pass
-pyramid_reactor.models.UserGroup = UserGroup
 
 class GroupResourcePermission(GroupResourcePermissionMixin, Base):
     pass
-pyramid_reactor.models.GroupResourcePermission = GroupResourcePermission
 
 class Resource(ResourceMixin, Base):
     pass
-pyramid_reactor.models.Resource = Resource
 
 class UserPermission(UserPermissionMixin, Base):
     pass
-pyramid_reactor.models.UserPermission = UserPermission
 
 class UserResourcePermission(UserResourcePermissionMixin, Base):
     pass
-pyramid_reactor.models.UserResourcePermission = UserResourcePermission
         
 class User(UserMixin, Base):
     pass
-pyramid_reactor.models.User = User
+    
+reactor_model_init(User, Group, UserGroup, GroupPermission, UserPermission,
+                   UserResourcePermission, GroupResourcePermission, Resource)
