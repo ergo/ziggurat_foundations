@@ -12,45 +12,40 @@ from pyramid_reactor.models import UserGroupMixin
 from pyramid_reactor.models import UserResourcePermissionMixin
 from pyramid_reactor.models import GroupResourcePermissionMixin
 from pyramid_reactor.models import ResourceMixin
+from pyramid_reactor import reactor_model_init
 
 
 Base = declarative_base()
 
 class Group(GroupMixin, Base):
-    __tablename__ = 'groups'
-pyramid_reactor.models.Group = Group
+    pass
 
 class GroupPermission(GroupPermissionMixin, Base):
-    __tablename__ = 'groups_permissions'
-pyramid_reactor.models.GroupPermission = GroupPermission
+    pass
 
 class UserGroup(UserGroupMixin, Base):
-    __tablename__ = 'users_groups'
-pyramid_reactor.models.UserGroup = UserGroup
+    pass
 
 class GroupResourcePermission(GroupResourcePermissionMixin, Base):
-    __tablename__ = 'groups_resources_permissions'
-pyramid_reactor.models.GroupResourcePermission = GroupResourcePermission
+    pass
 
 class Resource(ResourceMixin, Base):
-    __tablename__ = 'resources'
-pyramid_reactor.models.Resource = Resource
+    pass
 
 class TestResource(Resource):
     __mapper_args__ = {'polymorphic_identity': 'test_resource'}
 
 class UserPermission(UserPermissionMixin, Base):
-    __tablename__ = 'users_permissions'
-pyramid_reactor.models.UserPermission = UserPermission
+    pass
 
 class UserResourcePermission(UserResourcePermissionMixin, Base):
-    __tablename__ = 'users_resources_permissions'
-pyramid_reactor.models.UserResourcePermission = UserResourcePermission
+    pass
         
 class User(UserMixin, Base):
-    __tablename__ = 'users'
-pyramid_reactor.models.User = User
+    pass
 
+reactor_model_init(User, Group, UserGroup, GroupPermission, UserPermission,
+                   UserResourcePermission, GroupResourcePermission, Resource)
 
 def _initTestingDB():
     from sqlalchemy.orm import scoped_session, sessionmaker

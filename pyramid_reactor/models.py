@@ -1,20 +1,18 @@
 import sqlalchemy as sa
-import sqlalchemy.orm as orm
 import hashlib
 import urllib
 import random
 import string
-import uuid
+import webhelpers
 
 from cryptacular.bcrypt import BCRYPTPasswordManager
 from cryptacular.core import DelegatingPasswordManager
 from pyramid_reactor.utils import PlaceholderPasswordChecker
 from sqlalchemy.ext.declarative import declared_attr
-from pyramid.security import Allow, Everyone, Authenticated, ALL_PERMISSIONS
+from pyramid.security import Allow, ALL_PERMISSIONS
 
 
 DBSession = None
-
 
 class BaseModel(object):
     """ base class for  all other models to inherit """
@@ -160,15 +158,15 @@ class UserMixin(BaseModel):
         """ returns all non-resource permissions based on what groups user
             belongs and directly set ones for this user"""
         db_session = self.get_db_session(db_session)
-        q = db_session.query(('group:' + GroupPermission.group_name).label('owner_name'),
-                             GroupPermission.perm_name.label('perm_name'))
-        q = q.filter(GroupPermission.group_name == UserGroup.group_name)
-        q = q.filter(User.user_name == UserGroup.user_name)
-        q = q.filter(User.user_name == self.user_name)
+        q = db_session.query(('group:' + self.GroupPermission.group_name).label('owner_name'),
+                             self.GroupPermission.perm_name.label('perm_name'))
+        q = q.filter(self.GroupPermission.group_name == self.UserGroup.group_name)
+        q = q.filter(self.User.user_name == self.UserGroup.user_name)
+        q = q.filter(self.User.user_name == self.user_name)
         
-        q2 = db_session.query(UserPermission.user_name.label('owner_name'),
-                              UserPermission.perm_name.label('perm_name'))
-        q2 = q2.filter(UserPermission.user_name == self.user_name)
+        q2 = db_session.query(self.UserPermission.user_name.label('owner_name'),
+                              self.UserPermission.perm_name.label('perm_name'))
+        q2 = q2.filter(self.UserPermission.user_name == self.user_name)
         q = q.union(q2)
         return [(row.owner_name, row.perm_name) for row in q]
         
@@ -184,38 +182,38 @@ class UserMixin(BaseModel):
         # even without explict perms set
         # TODO: implement admin superrule perm - maybe return all apps
         db_session = self.get_db_session(db_session)
-        q = db_session.query(Resource).distinct()
+        q = db_session.query(self.Resource).distinct()
         group_names = [gr.group_name for gr in self.groups]
         #if user has some groups lets try to join based on their permissions
         if group_names:
             join_conditions = (
-                GroupResourcePermission.group_name.in_(group_names),
-                Resource.resource_id == GroupResourcePermission.resource_id,
-                GroupResourcePermission.perm_name.in_(perms),
+                self.GroupResourcePermission.group_name.in_(group_names),
+                self.Resource.resource_id == self.GroupResourcePermission.resource_id,
+                self.GroupResourcePermission.perm_name.in_(perms),
                           )
             q = q.outerjoin(
-                            (GroupResourcePermission,
+                            (self.GroupResourcePermission,
                              sa.and_(*join_conditions),)
                             )
             #ensure outerjoin permissions are correct - dont add empty rows from join
             #conditions are - join ON possible group permissions OR owning group/user
             q = q.filter(sa.or_(
-                                Resource.owner_user_name == self.user_name,
-                                Resource.owner_group_name.in_(group_names),
-                                GroupResourcePermission.perm_name != None                                
+                                self.Resource.owner_user_name == self.user_name,
+                                self.Resource.owner_group_name.in_(group_names),
+                                self.GroupResourcePermission.perm_name != None                                
                                 ,))
         else:
             #filter just by username
-            q = q.filter(Resource.owner_user_name == self.user_name)
+            q = q.filter(self.Resource.owner_user_name == self.user_name)
         # lets try by custom user permissions for resource
-        q2 = db_session.query(Resource).distinct()
-        q2 = q2.filter(UserResourcePermission.user_name == self.user_name)
-        q2 = q2.filter(Resource.resource_id == UserResourcePermission.resource_id)
-        q2 = q2.filter(UserResourcePermission.perm_name.in_(perms))
+        q2 = db_session.query(self.Resource).distinct()
+        q2 = q2.filter(self.UserResourcePermission.user_name == self.user_name)
+        q2 = q2.filter(self.Resource.resource_id == self.UserResourcePermission.resource_id)
+        q2 = q2.filter(self.UserResourcePermission.perm_name.in_(perms))
         if resource_ids:
-            q = q.filter(Resource.resource_id.in_(resource_ids))
+            q = q.filter(self.Resource.resource_id.in_(resource_ids))
         q = q.union(q2)
-        q = q.order_by(Resource.resource_name)
+        q = q.order_by(self.Resource.resource_name)
         if cache == 'default':
             #cache = FromCache("default_term", "by_id")
             pass #q = q.options(cache)
@@ -261,7 +259,7 @@ class UserMixin(BaseModel):
 
     @staticmethod
     def generate_random_string(chars=7):
-        return u''.join(random.sample(string.ascii_letters+string.digits, chars))
+        return u''.join(random.sample(string.ascii_letters + string.digits, chars))
 
     
     @classmethod
@@ -302,7 +300,7 @@ class UserMixin(BaseModel):
         q = db_session.query(cls)
         q = q.filter(sa.func.lower(cls.user_name).in_(user_names))
         if cache == 'default':
-            q = q.options(sa.orm.eagerload(User.groups))
+            q = q.options(sa.orm.eagerload(cls.groups))
             #cache = FromCache("default_term", "by_user_names")
             pass #q = q.options(cache)
         elif cache:
@@ -476,7 +474,7 @@ class GroupMixin(BaseModel):
         GET_params.pop('page', None)
         q = self.users_dynamic
         if user_names:
-            q = q.filter(UserGroup.user_name.in_(user_names))
+            q = q.filter(self.UserGroup.user_name.in_(user_names))
         return webhelpers.paginate.Page(q, page=page,
                                      item_count=item_count,
                                      items_per_page=items_per_page,
@@ -766,18 +764,18 @@ class ResourceMixin(BaseModel):
         """ returns all permissions that given user has for this resource
             from groups and directly set ones too"""
         db_session = self.get_db_session(db_session)
-        q = db_session.query('group:' + GroupResourcePermission.group_name,
-                             GroupResourcePermission.perm_name)
-        q = q.filter(GroupResourcePermission.group_name.in_(
+        q = db_session.query('group:' + self.GroupResourcePermission.group_name,
+                             self.GroupResourcePermission.perm_name)
+        q = q.filter(self.GroupResourcePermission.group_name.in_(
                                         [gr.group_name for gr in user.groups]
                                         )
                      )
-        q = q.filter(GroupResourcePermission.resource_id == self.resource_id)
+        q = q.filter(self.GroupResourcePermission.resource_id == self.resource_id)
         
-        q2 = db_session.query(UserResourcePermission.user_name,
-                              UserResourcePermission.perm_name)
-        q2 = q2.filter(UserResourcePermission.user_name == user.user_name)
-        q2 = q2.filter(UserResourcePermission.resource_id == self.resource_id)
+        q2 = db_session.query(self.UserResourcePermission.user_name,
+                              self.UserResourcePermission.perm_name)
+        q2 = q2.filter(self.UserResourcePermission.user_name == user.user_name)
+        q2 = q2.filter(self.UserResourcePermission.resource_id == self.resource_id)
         q = q.union(q2)
         if cache == 'default':
             # cache = FromCache("default_term", "by_id")
@@ -799,10 +797,10 @@ class ResourceMixin(BaseModel):
         """ returns permissions that given user has for this resource
             without ones inherited from groups that user belongs to"""
         db_session = self.get_db_session(db_session)
-        q = db_session.query(UserResourcePermission.user_name,
-                             UserResourcePermission.perm_name)
-        q = q.filter(UserResourcePermission.user_name == user.user_name)
-        q = q.filter(UserResourcePermission.resource_id == self.resource_id)
+        q = db_session.query(self.UserResourcePermission.user_name,
+                             self.UserResourcePermission.perm_name)
+        q = q.filter(self.UserResourcePermission.user_name == user.user_name)
+        q = q.filter(self.UserResourcePermission.resource_id == self.resource_id)
         if cache == 'default':
             # cache = FromCache("default_term", "by_id")
             pass #q = q.options(cache)
@@ -822,13 +820,13 @@ class ResourceMixin(BaseModel):
         """ returns permissions that given user has for this resource
             that are inherited from groups """        
         db_session = self.get_db_session(db_session)
-        q = db_session.query('group:' + GroupResourcePermission.group_name,
-                             GroupResourcePermission.perm_name)
-        q = q.filter(GroupResourcePermission.group_name.in_(
+        q = db_session.query('group:' + self.GroupResourcePermission.group_name,
+                             self.GroupResourcePermission.perm_name)
+        q = q.filter(self.GroupResourcePermission.group_name.in_(
                                     [gr.group_name for gr in user.groups]
                                     )
                      )
-        q = q.filter(GroupResourcePermission.resource_id == self.resource_id)
+        q = q.filter(self.GroupResourcePermission.resource_id == self.resource_id)
         if cache:
             # cache = FromCache("default_term", "by_id")
             pass #q = q.options(cache)
@@ -847,17 +845,17 @@ class ResourceMixin(BaseModel):
                        invalidate=False, db_session=None):
         """ return tuple (user,perm_name) that have given permission for the resource """
         db_session = self.get_db_session(db_session)
-        q = db_session.query(User, GroupResourcePermission.perm_name)
-        q = q.filter(User.user_name == UserGroup.user_name)
-        q = q.filter(UserGroup.group_name == GroupResourcePermission.group_name)
+        q = db_session.query(self.User, self.GroupResourcePermission.perm_name)
+        q = q.filter(self.User.user_name == self.UserGroup.user_name)
+        q = q.filter(self.UserGroup.group_name == self.GroupResourcePermission.group_name)
         if perm_name != '__any_permission__':
-            q = q.filter(GroupResourcePermission.perm_name == perm_name)
-        q = q.filter(GroupResourcePermission.resource_id == self.resource_id)        
-        q2 = db_session.query(User, UserResourcePermission.perm_name)
-        q2 = q2.filter(User.user_name == UserResourcePermission.user_name)
+            q = q.filter(self.GroupResourcePermission.perm_name == perm_name)
+        q = q.filter(self.GroupResourcePermission.resource_id == self.resource_id)        
+        q2 = db_session.query(self.User, self.UserResourcePermission.perm_name)
+        q2 = q2.filter(self.User.user_name == self.UserResourcePermission.user_name)
         if perm_name != '__any_permission__':
-            q2 = q2.filter(UserResourcePermission.perm_name == perm_name)
-        q2 = q2.filter(UserResourcePermission.resource_id == self.resource_id)
+            q2 = q2.filter(self.UserResourcePermission.perm_name == perm_name)
+        q2 = q2.filter(self.UserResourcePermission.resource_id == self.resource_id)
         q = q.union(q2)
         if cache == 'default':
             # cache = FromCache("default_term", "by_perm")
@@ -869,7 +867,7 @@ class ResourceMixin(BaseModel):
             return True
         users = [(row.User, row.perm_name,) for row in q]
         if self.owner_user_name:
-            users.append((User.by_user_name(self.owner_user_name),ALL_PERMISSIONS,))
+            users.append((self.User.by_user_name(self.owner_user_name), ALL_PERMISSIONS,))
         return users
         
     @classmethod
@@ -899,10 +897,10 @@ class ResourceMixin(BaseModel):
                                     db_session=None):
         """ fetch permissions by group and permission name"""
         db_session = cls.get_db_session(db_session)
-        q = db_session.query(GroupResourcePermission)
-        q = q.filter(GroupResourcePermission.group_name == group_name)
-        q = q.filter(GroupResourcePermission.perm_name == perm_name)
-        q = q.filter(GroupResourcePermission.resource_id == res_id)
+        q = db_session.query(cls.GroupResourcePermission)
+        q = q.filter(cls.GroupResourcePermission.group_name == group_name)
+        q = q.filter(cls.GroupResourcePermission.perm_name == perm_name)
+        q = q.filter(cls.GroupResourcePermission.resource_id == res_id)
         return q.first()
     
     @sa.orm.validates('user_permissions', 'group_permissions')
