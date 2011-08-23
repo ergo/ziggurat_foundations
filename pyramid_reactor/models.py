@@ -887,7 +887,7 @@ class ResourceMixin(BaseModel):
         return q.first()
     
     @classmethod
-    def all(cls):
+    def all(cls,db_session=None):
         """ fetch all permissions"""
         q = cls.get_db_session(db_session).query(cls)
         return q

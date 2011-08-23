@@ -177,7 +177,7 @@ class UserTestCase(BaseTestCase):
 
     def test_by_user_names(self):
         user1 = self._addUser(u'user1', u'email1')
-        user2 = self._addUser(u'user2', u'email2')
+        self._addUser(u'user2', u'email2')
         user3 = self._addUser(u'user3', u'email3')
 
         queried_users = User.by_user_names([u'user1', u'user3']).all()
@@ -318,7 +318,7 @@ class UserTestCase(BaseTestCase):
         created_user = self._addUser()
         resource = self._addResource(1, u'test_resource')
         resource2 = self._addResource(2, u'test_resource2')
-        resource3 = self._addResource(3, u'test_resource3')
+        self._addResource(3, u'test_resource3')
         group = self._addGroup()
         group.users.append(created_user)
         group_permission = GroupResourcePermission(
