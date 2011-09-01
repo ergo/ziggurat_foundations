@@ -63,7 +63,8 @@ from ziggurat_foundations.models import GroupResourcePermissionMixin, ResourceMi
 from ziggurat_foundations.models import UserPermissionMixin, UserResourcePermissionMixin
 from ziggurat_foundations import ziggurat_model_init
 #this is needed for pylons 1.0 / akhet approach to db session
-ziggurat_foundations.models.DBSession = DBSession #optional for folks who pass request.db to model methods
+ziggurat_foundations.models.DBSession = DBSession 
+#optional for folks who pass request.db to model methods
 
 
 class Group(GroupMixin, Base):
