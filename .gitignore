@@ -7,3 +7,5 @@
 /.pydevproject
 /.project
 /.settings
+/build
+/dist
