@@ -154,10 +154,10 @@ class UserMixin(BaseModel):
                         )
     
     @property
-    def permissions(self, db_session=None):
+    def permissions(self):
         """ returns all non-resource permissions based on what groups user
             belongs and directly set ones for this user"""
-        db_session = self.get_db_session(db_session)
+        db_session = self.get_db_session()
         q = db_session.query(('group:' + self.GroupPermission.group_name).label('owner_name'),
                              self.GroupPermission.perm_name.label('perm_name'))
         q = q.filter(self.GroupPermission.group_name == self.UserGroup.group_name)
