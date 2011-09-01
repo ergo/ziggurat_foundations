@@ -58,7 +58,7 @@ class BaseModel(object):
                 setattr(self, k, appstruct[k])
                 
                 
-    def get_db_session(self, session):
+    def get_db_session(self, session=None):
         return get_db_session(session, self)
             
                 
