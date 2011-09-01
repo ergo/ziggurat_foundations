@@ -12,8 +12,11 @@ from ziggurat_foundations.models import UserGroupMixin
 from ziggurat_foundations.models import UserResourcePermissionMixin
 from ziggurat_foundations.models import GroupResourcePermissionMixin
 from ziggurat_foundations.models import ResourceMixin
+from ziggurat_foundations.models import get_db_session
 from ziggurat_foundations import ziggurat_model_init
 
+from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy import create_engine
 
 Base = declarative_base()
 
@@ -48,16 +51,24 @@ ziggurat_model_init(User, Group, UserGroup, GroupPermission, UserPermission,
                    UserResourcePermission, GroupResourcePermission, Resource)
 
 def _initTestingDB():
-    from sqlalchemy.orm import scoped_session, sessionmaker
-    from sqlalchemy import create_engine
     engine = create_engine('sqlite://')
-    DBSession = scoped_session(sessionmaker())
-    dbsession = DBSession()
-    dbsession.configure(bind=engine)
-    ziggurat_foundations.models.DBSession = DBSession
+    # pyramid way
+    maker = sessionmaker(bind=engine)
     Base.metadata.bind = engine
+    Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
-    return dbsession
+    return maker()
+
+    # pylons/akhet monkeypatching way
+#    DBSession = scoped_session(sessionmaker())
+#    dbsession = DBSession()
+#    dbsession.configure(bind=engine)
+#    ziggurat_foundations.models.DBSession = DBSession
+#    Base.metadata.bind = engine
+#    Base.metadata.create_all(engine)
+#    return dbsession
+
+
 
 
 class BaseTestCase(unittest.TestCase):
@@ -116,10 +127,10 @@ class ModelTestCase(BaseTestCase):
         created_user.populate_obj(app_struct)
         self.assertEqual(created_user.user_name, u'new_name')
 
-    def test_session(self):
-        session = self._addUser().get_db_session()
-        from sqlalchemy.orm import ScopedSession
-        self.assertIsInstance(session, ScopedSession)
+#    def test_session(self):
+#        session = get_db_session(self._addUser())
+#        from sqlalchemy.orm import ScopedSession
+#        self.assertIsInstance(session, ScopedSession)
 
 class UserTestCase(BaseTestCase):
 
@@ -136,13 +147,14 @@ class UserTestCase(BaseTestCase):
 
     def test_by_user_name_existing(self):
         created_user = self._addUser()
-        queried_user = User.by_user_name(u'username')
+        queried_user = User.by_user_name(u'username',db_session=self.session)
 
         self.assertEqual(created_user, queried_user)
 
     def test_by_user_name_not_existing(self):
         self._addUser()
-        queried_user = User.by_user_name(u'not_existing_user')
+        queried_user = User.by_user_name(u'not_existing_user',
+                                         db_session=self.session)
 
         self.assertEqual(queried_user, None)
 
@@ -151,7 +163,8 @@ class UserTestCase(BaseTestCase):
         security_code = created_user.security_code
         queried_user = User.by_user_name_and_security_code(
             user_name=u'username',
-            security_code=security_code
+            security_code=security_code,
+            db_session=self.session
         )
 
         self.assertEqual(created_user, queried_user)
@@ -161,7 +174,8 @@ class UserTestCase(BaseTestCase):
         security_code = created_user.security_code
         queried_user = User.by_user_name_and_security_code(
             user_name=u'not_existing_user',
-            security_code=security_code
+            security_code=security_code,
+            db_session=self.session
         )
 
         self.assertEqual(queried_user, None)
@@ -170,7 +184,8 @@ class UserTestCase(BaseTestCase):
         self._addUser()
         queried_user = User.by_user_name_and_security_code(
             user_name=u'username',
-            security_code=u'wrong_code'
+            security_code=u'wrong_code',
+            db_session=self.session
         )
 
         self.assertEqual(queried_user, None)
@@ -180,7 +195,8 @@ class UserTestCase(BaseTestCase):
         self._addUser(u'user2', u'email2')
         user3 = self._addUser(u'user3', u'email3')
 
-        queried_users = User.by_user_names([u'user1', u'user3']).all()
+        queried_users = User.by_user_names([u'user1', u'user3'],
+                                           db_session=self.session).all()
 
         self.assertEqual(len(queried_users), 2)
         self.assertEqual(user1, queried_users[0])
@@ -191,37 +207,41 @@ class UserTestCase(BaseTestCase):
         self._addUser(u'luser2', u'email2')
         self._addUser(u'noname', u'email3')
 
-        queried_users = User.user_names_like(u'user%').all()
+        queried_users = User.user_names_like(u'user%',
+                                             db_session=self.session).all()
         self.assertEqual(len(queried_users), 1)
         self.assertEqual(user1, queried_users[0])
 
     def test_by_email(self):
         created_user = self._addUser()
-        queried_user = User.by_email(u'email')
+        queried_user = User.by_email(u'email',db_session=self.session)
 
         self.assertEqual(created_user, queried_user)
 
     def test_by_email_wrong_email(self):
         self._addUser()
-        queried_user = User.by_email(u'wrong_email')
+        queried_user = User.by_email(u'wrong_email',db_session=self.session)
 
         self.assertEqual(queried_user, None)
 
     def test_by_mail_and_username(self):
         created_user = self._addUser()
-        queried_user = User.by_email_and_username(u'email', u'username')
+        queried_user = User.by_email_and_username(u'email', u'username',
+                                                  db_session=self.session)
 
         self.assertEqual(created_user, queried_user)
 
     def test_by_mail_and_username_wrong_mail(self):
         self._addUser()
-        queried_user = User.by_email_and_username(u'wrong_email', u'username')
+        queried_user = User.by_email_and_username(u'wrong_email', u'username',
+                                                  db_session=self.session)
 
         self.assertEqual(queried_user, None)
 
     def test_by_mail_and_username_wrong_username(self):
         self._addUser()
-        queried_user = User.by_email_and_username(u'email', u'wrong_username')
+        queried_user = User.by_email_and_username(u'email', u'wrong_username',
+                                                  db_session=self.session)
 
         self.assertEqual(queried_user, None)
 
@@ -270,7 +290,8 @@ class UserTestCase(BaseTestCase):
                                                 )
         resource.user_permissions.append(permission)
         self.session.flush()
-        resources = created_user.resources_with_perms([u'test_perm']).all()
+        resources = created_user.resources_with_perms([u'test_perm'],
+                                        db_session=self.session).all()
         self.assertEqual(resources[0], resource)
         
     def test_resources_with_wrong_perm(self):
@@ -298,7 +319,8 @@ class UserTestCase(BaseTestCase):
                                             resource_id = resource2.resource_id
                                                 )
         resource2.user_permissions.append(permission2)
-        resources = created_user.resources_with_perms([u'test_perm']).all()
+        resources = created_user.resources_with_perms([u'test_perm'],
+                                        db_session=self.session).all()
         self.assertEqual(resources, [resource,resource2])
         
     def test_resources_with_wrong_group_permission(self):
@@ -334,7 +356,8 @@ class UserTestCase(BaseTestCase):
         resource.group_permissions.append(group_permission)
         resource2.group_permissions.append(group_permission2)
         self.session.flush()
-        resources = created_user.resources_with_perms([u'foo_perm']).all()
+        resources = created_user.resources_with_perms([u'foo_perm'],
+                                        db_session=self.session).all()
         self.assertEqual(resources[0],resource2)
         
     
@@ -394,21 +417,24 @@ class UserTestCase(BaseTestCase):
     def test_resources_with_direct_user_perms(self):
         self.__set_up_user_group_and_perms()
         # test_perm1 from group perms should be ignored
-        self.assertEqual(self.resource.direct_perms_for_user(self.user),
+        self.assertEqual(self.resource.direct_perms_for_user(self.user,
+                                                    db_session=self.session),
                 [(u'username', u'foo_perm'), (u'username', u'test_perm2')]
                          )
 
     def test_resources_with_direct_group_perms(self):
         self.__set_up_user_group_and_perms()
         # test_perm1 from group perms should be ignored
-        self.assertEqual(self.resource.group_perms_for_user(self.user),
+        self.assertEqual(self.resource.group_perms_for_user(self.user,
+                                                db_session=self.session),
                 [(u'group:group', u'group_perm')]
                 )
         
     def test_resources_with_user_perms(self):
         self.__set_up_user_group_and_perms()
         self.assertEqual(
-                sorted(self.resource.perms_for_user(self.user)),
+                sorted(self.resource.perms_for_user(self.user,
+                                                    db_session=self.session)),
                 sorted([(u'username', u'foo_perm'),
                         (u'group:group', u'group_perm'), 
                         (u'username', u'test_perm2')])
@@ -417,14 +443,16 @@ class UserTestCase(BaseTestCase):
     def test_users_for_perm(self):
         self.__set_up_user_group_and_perms()
         self.assertEqual(
-                sorted(self.resource.users_for_perm('foo_perm')),
+                sorted(self.resource.users_for_perm('foo_perm',
+                                                    db_session=self.session)),
                 sorted([(self.user, u'foo_perm',),(self.user2, u'foo_perm',)])
                         )
 
     def test_users_for_any_perm(self):
         self.__set_up_user_group_and_perms()
         self.assertEqual(
-                sorted(self.resource.users_for_perm('__any_permission__')),
+                sorted(self.resource.users_for_perm('__any_permission__',
+                                                    db_session=self.session)),
                 sorted([
                         (self.user, u'group_perm',),
                         (self.user, u'test_perm2',),
@@ -454,13 +482,15 @@ class GroupTestCase(BaseTestCase):
 
     def test_by_group_name(self):
         added_group = self._addGroup()
-        queried_group = Group.by_group_name(u'group')
+        queried_group = Group.by_group_name(u'group',
+                                            db_session=self.session)
 
         self.assertEqual(added_group, queried_group)
 
     def test_by_group_name_wrong_groupname(self):
         self._addGroup()
-        queried_group = Group.by_group_name(u'not existing group')
+        queried_group = Group.by_group_name(u'not existing group',
+                                            db_session=self.session)
 
         self.assertEqual(queried_group, None)
 
@@ -492,7 +522,7 @@ class GroupTestCase(BaseTestCase):
         group1 = self._addGroup(u'group1')
         group2 = self._addGroup(u'group2')
 
-        all_groups = Group.all().all()
+        all_groups = Group.all(db_session=self.session).all()
 
         self.assertEqual(len(all_groups), 2)
         self.assertEqual(all_groups[0], group1)
