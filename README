@@ -1,9 +1,9 @@
-This is pyramid_reactor
+This is ziggurat_foundations
 
 Framework agnostic (with slight bias towards pyramid) set of sqlalchemy 
 classes that make building applications that require permissions an easy task.
 
-pyramid_reactor supplies a set of *sqlalchemy mixins* that can be used to extend
+ziggurat_foundations supplies a set of *sqlalchemy mixins* that can be used to extend
 models in your application. The aim of this project is to supply set of generic 
 models that cover the most common needs in application development when it comes 
 to authorization - using flat and tree like data structures.
@@ -53,17 +53,17 @@ and a lot more...
 
 
 How to implement models in your applications:
-(class names like User inside pyramid_reactor.models namespace CAN NOT 
+(class names like User inside ziggurat_foundations.models namespace CAN NOT 
  be changed because they are reused in various queries) 
 
-import pyramid_reactor.models
-from pyramid_reactor.models import BaseModel, UserMixin, GroupMixin
-from pyramid_reactor.models import GroupPermissionMixin, UserGroupMixin 
-from pyramid_reactor.models import GroupResourcePermissionMixin, ResourceMixin 
-from pyramid_reactor.models import UserPermissionMixin, UserResourcePermissionMixin
-from pyramid_reactor import reactor_model_init
+import ziggurat_foundations.models
+from ziggurat_foundations.models import BaseModel, UserMixin, GroupMixin
+from ziggurat_foundations.models import GroupPermissionMixin, UserGroupMixin 
+from ziggurat_foundations.models import GroupResourcePermissionMixin, ResourceMixin 
+from ziggurat_foundations.models import UserPermissionMixin, UserResourcePermissionMixin
+from ziggurat_foundations import reactor_model_init
 #this is needed for pylons 1.0 / akhet approach to db session
-pyramid_reactor.models.DBSession = DBSession #optional for folks who pass request.db to model methods
+ziggurat_foundations.models.DBSession = DBSession #optional for folks who pass request.db to model methods
 
 
 class Group(GroupMixin, Base):
@@ -90,5 +90,5 @@ class UserResourcePermission(UserResourcePermissionMixin, Base):
 class User(UserMixin, Base):
     pass
     
-reactor_model_init(User, Group, UserGroup, GroupPermission, UserPermission,
+ziggurat_model_init(User, Group, UserGroup, GroupPermission, UserPermission,
                    UserResourcePermission, GroupResourcePermission, Resource)

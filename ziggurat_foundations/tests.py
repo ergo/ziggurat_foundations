@@ -3,16 +3,16 @@ import unittest
 
 from sqlalchemy.ext.declarative import declarative_base
 
-import pyramid_reactor
-from pyramid_reactor.models import UserMixin
-from pyramid_reactor.models import GroupMixin
-from pyramid_reactor.models import GroupPermissionMixin
-from pyramid_reactor.models import UserPermissionMixin
-from pyramid_reactor.models import UserGroupMixin
-from pyramid_reactor.models import UserResourcePermissionMixin
-from pyramid_reactor.models import GroupResourcePermissionMixin
-from pyramid_reactor.models import ResourceMixin
-from pyramid_reactor import reactor_model_init
+import ziggurat_foundations
+from ziggurat_foundations.models import UserMixin
+from ziggurat_foundations.models import GroupMixin
+from ziggurat_foundations.models import GroupPermissionMixin
+from ziggurat_foundations.models import UserPermissionMixin
+from ziggurat_foundations.models import UserGroupMixin
+from ziggurat_foundations.models import UserResourcePermissionMixin
+from ziggurat_foundations.models import GroupResourcePermissionMixin
+from ziggurat_foundations.models import ResourceMixin
+from ziggurat_foundations import ziggurat_model_init
 
 
 Base = declarative_base()
@@ -44,7 +44,7 @@ class UserResourcePermission(UserResourcePermissionMixin, Base):
 class User(UserMixin, Base):
     pass
 
-reactor_model_init(User, Group, UserGroup, GroupPermission, UserPermission,
+ziggurat_model_init(User, Group, UserGroup, GroupPermission, UserPermission,
                    UserResourcePermission, GroupResourcePermission, Resource)
 
 def _initTestingDB():
@@ -54,7 +54,7 @@ def _initTestingDB():
     DBSession = scoped_session(sessionmaker())
     dbsession = DBSession()
     dbsession.configure(bind=engine)
-    pyramid_reactor.models.DBSession = DBSession
+    ziggurat_foundations.models.DBSession = DBSession
     Base.metadata.bind = engine
     Base.metadata.create_all(engine)
     return dbsession

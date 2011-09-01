@@ -1,6 +1,6 @@
 from setuptools import setup
 import sys
-setup(name='pyramid_reactor',
+setup(name='ziggurat_foundations',
       version='0.1',
       description=""" Set of classes that are reusable across various types of
       apps, base user object, auth relationships + structured resource tree
@@ -8,7 +8,7 @@ setup(name='pyramid_reactor',
       author='Marcin Lulek',
       author_email='info@webreactor.eu',
       license='BSD',
-      packages=['pyramid_reactor'],
-      test_suite='pyramid_reactor.tests',
+      packages=['ziggurat_foundations'],
+      test_suite='ziggurat_foundations.tests',
       install_requires=["sqlalchemy", "cryptacular", 'pyramid','webhelpers']
       )

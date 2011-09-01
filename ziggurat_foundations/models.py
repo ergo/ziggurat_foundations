@@ -7,7 +7,7 @@ import webhelpers
 
 from cryptacular.bcrypt import BCRYPTPasswordManager
 from cryptacular.core import DelegatingPasswordManager
-from pyramid_reactor.utils import PlaceholderPasswordChecker
+from ziggurat_foundations.utils import PlaceholderPasswordChecker
 from sqlalchemy.ext.declarative import declared_attr
 from pyramid.security import Allow, ALL_PERMISSIONS
 
