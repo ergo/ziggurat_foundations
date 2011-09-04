@@ -221,13 +221,7 @@ class UserMixin(BaseModel):
             q = q.filter(self.Resource.resource_id.in_(resource_ids))
         q = q.union(q2)
         q = q.order_by(self.Resource.resource_name)
-        if cache == 'default':
-            #cache = FromCache("default_term", "by_id")
-            pass #q = q.options(cache)
-        elif cache:
-            pass #q = q.options(cache)
         if invalidate:
-            pass #q.invalidate()
             return True
         return q
     
@@ -276,14 +270,8 @@ class UserMixin(BaseModel):
         db_session = get_db_session(db_session)
         q = db_session.query(cls)
         q = q.filter(sa.func.lower(cls.user_name) == user_name.lower())
-        if cache == 'default':
-            q = q.options(sa.orm.eagerload('groups'))
-            #cache = FromCache("default_term", "by_user_name")
-            pass #q = q.options(cache)
-        elif cache:
-            pass #q = q.options(cache)
+        q = q.options(sa.orm.eagerload('groups'))
         if invalidate:
-            pass #q.invalidate()
             return True
         return q.first()
     
@@ -306,14 +294,8 @@ class UserMixin(BaseModel):
         db_session = get_db_session(db_session)
         q = db_session.query(cls)
         q = q.filter(sa.func.lower(cls.user_name).in_(user_names))
-        if cache == 'default':
-            q = q.options(sa.orm.eagerload(cls.groups))
-            #cache = FromCache("default_term", "by_user_names")
-            pass #q = q.options(cache)
-        elif cache:
-            pass #q = q.options(cache)
+        #q = q.options(sa.orm.eagerload(cls.groups))
         if invalidate:
-            pass #q.invalidate()
             return True
         return q
     
@@ -330,14 +312,8 @@ class UserMixin(BaseModel):
         q = db_session.query(cls)
         q = q.filter(sa.func.lower(cls.user_name).like(user_name.lower()))
         q = q.order_by(cls.user_name)
-        if cache == 'default':
-            q = q.options(sa.orm.eagerload('groups'))
-            #cache = FromCache("default_term", "by_user_names_like")
-            pass #q = q.options(cache)
-        elif cache:
-            pass #q = q.options(cache)
+        #q = q.options(sa.orm.eagerload('groups'))
         if invalidate:
-            pass #q.invalidate()
             return True
         return q
 
@@ -347,14 +323,8 @@ class UserMixin(BaseModel):
         """ fetch user objects by email """
         db_session = get_db_session(db_session)
         q = db_session.query(cls).filter(cls.email == email)
-        if cache == 'default':
-            q = q.options(sa.orm.eagerload('groups'))
-            #cache = FromCache("default_term", "by_id")
-            pass #q = q.options(cache)
-        elif cache:
-            pass #q = q.options(cache)
+        q = q.options(sa.orm.eagerload('groups'))
         if invalidate:
-            pass #q.invalidate()
             return True
         return q.first()
     
@@ -365,14 +335,8 @@ class UserMixin(BaseModel):
         db_session = get_db_session(db_session)
         q = db_session.query(cls).filter(cls.email == email)
         q = q.filter(sa.func.lower(cls.user_name) == user_name.lower())
-        if cache == 'default':
-            q = q.options(sa.orm.eagerload('groups'))
-            # cache = FromCache("default_term", "by_id")
-            pass #q = q.options(cache)
-        elif cache:
-            pass #q = q.options(cache)
+        q = q.options(sa.orm.eagerload('groups'))
         if invalidate:
-            pass #q.invalidate()
             return True
         return q.first()
 
@@ -786,13 +750,7 @@ class ResourceMixin(BaseModel):
         q2 = q2.filter(self.UserResourcePermission.user_name == user.user_name)
         q2 = q2.filter(self.UserResourcePermission.resource_id == self.resource_id)
         q = q.union(q2)
-        if cache == 'default':
-            # cache = FromCache("default_term", "by_id")
-            pass #q = q.options(cache)
-        elif cache:
-            pass #q = q.options(cache)
         if invalidate:
-            pass #q.invalidate()
             return True
         perms = [(row[0], row.perm_name,) for row in q]
         #include all perms if user is the owner of this resource
@@ -810,13 +768,7 @@ class ResourceMixin(BaseModel):
                              self.UserResourcePermission.perm_name)
         q = q.filter(self.UserResourcePermission.user_name == user.user_name)
         q = q.filter(self.UserResourcePermission.resource_id == self.resource_id)
-        if cache == 'default':
-            # cache = FromCache("default_term", "by_id")
-            pass #q = q.options(cache)
-        elif cache:
-            pass #q = q.options(cache)
         if invalidate:
-            pass #q.invalidate()
             return True
         perms = [(row[0], row.perm_name,) for row in q]
         #include all perms if user is the owner of this resource
@@ -836,13 +788,7 @@ class ResourceMixin(BaseModel):
                                     )
                      )
         q = q.filter(self.GroupResourcePermission.resource_id == self.resource_id)
-        if cache:
-            # cache = FromCache("default_term", "by_id")
-            pass #q = q.options(cache)
-        elif cache:
-            pass #q = q.options(cache)
         if invalidate:
-            pass #q.invalidate()
             return True
         perms = [(row[0], row.perm_name,) for row in q]
 #        if self.owner_group_name:
@@ -866,13 +812,7 @@ class ResourceMixin(BaseModel):
             q2 = q2.filter(self.UserResourcePermission.perm_name == perm_name)
         q2 = q2.filter(self.UserResourcePermission.resource_id == self.resource_id)
         q = q.union(q2)
-        if cache == 'default':
-            # cache = FromCache("default_term", "by_perm")
-            pass #q = q.options(cache)
-        elif cache:
-            pass #q = q.options(cache)
         if invalidate:
-            pass #q.invalidate()
             return True
         users = [(row.User, row.perm_name,) for row in q]
         if self.owner_user_name:
@@ -885,13 +825,7 @@ class ResourceMixin(BaseModel):
         """ fetch the resouce by id """
         db_session = get_db_session(db_session)
         q = db_session.query(cls).filter(cls.resource_id == int(resource_id))
-        if cache:
-            # cache = FromCache("default_term", "by_id")
-            pass #q = q.options(cache)
-        elif cache:
-            pass #q = q.options(cache)
         if invalidate:
-            pass #q.invalidate()
             return True
         return q.first()
     
