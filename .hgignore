@@ -1,0 +1,9 @@
+
+syntax: regexp
+^\.project$
+syntax: regexp
+^\.pydevproject$
+syntax: regexp
+^ziggurat_foundations\.egg-info$
+syntax: regexp
+^.*\.pyc$
