@@ -1,4 +1,5 @@
+moved to hg
+
 2011-08-14
 resource.users_for_perm(),  resource.direct_perms_for_user() 
 and resource.group_perms_for_user() return tuple (user/group_name,perm_name) now
-
