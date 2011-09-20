@@ -155,6 +155,14 @@ class UserTestCase(BaseTestCase):
         user = self._addUser()
         self.assertEqual(repr(user), '<User: username>')
 
+    def test_check_password_correct(self):
+        user = self._addUser()
+        self.assertTrue(user.check_password(u'password'))
+
+    def test_check_password_wrong(self):
+        user = self._addUser()
+        self.assertFalse(user.check_password(u'wrong_password'))
+
     def test_by_user_name_existing(self):
         created_user = self._addUser()
         queried_user = User.by_user_name(u'username', db_session=self.session)
