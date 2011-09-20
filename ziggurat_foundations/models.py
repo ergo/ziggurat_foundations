@@ -165,7 +165,7 @@ class UserMixin(BaseModel):
         """ returns all non-resource permissions based on what groups user
             belongs and directly set ones for this user"""
         db_session = get_db_session(None, self)
-        q = db_session.query(('group:' + self.GroupPermission.group_name).label('owner_name'),
+        q = db_session.query((u'group:' + self.GroupPermission.group_name).label('owner_name'),
                              self.GroupPermission.perm_name.label('perm_name'))
         q = q.filter(self.GroupPermission.group_name == self.UserGroup.group_name)
         q = q.filter(self.User.user_name == self.UserGroup.user_name)
@@ -737,7 +737,7 @@ class ResourceMixin(BaseModel):
         """ returns all permissions that given user has for this resource
             from groups and directly set ones too"""
         db_session = get_db_session(db_session, self)
-        q = db_session.query('group:' + self.GroupResourcePermission.group_name,
+        q = db_session.query(u'group:' + self.GroupResourcePermission.group_name,
                              self.GroupResourcePermission.perm_name)
         q = q.filter(self.GroupResourcePermission.group_name.in_(
                                         [gr.group_name for gr in user.groups]
@@ -781,7 +781,7 @@ class ResourceMixin(BaseModel):
         """ returns permissions that given user has for this resource
             that are inherited from groups """        
         db_session = get_db_session(db_session, self)
-        q = db_session.query('group:' + self.GroupResourcePermission.group_name,
+        q = db_session.query(u'group:' + self.GroupResourcePermission.group_name,
                              self.GroupResourcePermission.perm_name)
         q = q.filter(self.GroupResourcePermission.group_name.in_(
                                     [gr.group_name for gr in user.groups]

@@ -36,7 +36,7 @@ class Resource(ResourceMixin, Base):
     pass
 
 class TestResource(Resource):
-    __mapper_args__ = {'polymorphic_identity': 'test_resource'}
+    __mapper_args__ = {'polymorphic_identity': u'test_resource'}
 
 class UserPermission(UserPermissionMixin, Base):
     pass
@@ -363,12 +363,12 @@ class UserTestCase(BaseTestCase):
     
     def __set_up_user_group_and_perms(self):
         created_user = self._addUser()
-        created_user2 = self._addUser(user_name='foouser',email='new_email')
-        created_user3 = self._addUser(user_name='foouser2',email='new_email2')
-        created_user4 = self._addUser(user_name='foouser3',email='new_email3')
+        created_user2 = self._addUser(user_name=u'foouser',email=u'new_email')
+        created_user3 = self._addUser(user_name=u'foouser2',email=u'new_email2')
+        created_user4 = self._addUser(user_name=u'foouser3',email=u'new_email3')
         resource = self._addResource(1, u'test_resource')
         group = self._addGroup()
-        group2 = self._addGroup(group_name='group2')
+        group2 = self._addGroup(group_name=u'group2')
         group.users.append(created_user)
         group2.users.append(created_user4)
         group_permission = GroupResourcePermission(
@@ -443,7 +443,7 @@ class UserTestCase(BaseTestCase):
     def test_users_for_perm(self):
         self.__set_up_user_group_and_perms()
         self.assertEqual(
-                sorted(self.resource.users_for_perm('foo_perm',
+                sorted(self.resource.users_for_perm(u'foo_perm',
                                                     db_session=self.session)),
                 sorted([(self.user, u'foo_perm',),(self.user2, u'foo_perm',)])
                         )
