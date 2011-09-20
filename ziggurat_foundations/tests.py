@@ -303,7 +303,6 @@ class UserTestCase(BaseTestCase):
                                         resource_id = resource.resource_id
                                                     )
             resource.user_permissions.append(permission)
-            self.session.flush()
 
     def test_multiple_resources_with_perm(self):
         created_user = self._addUser()
@@ -529,4 +528,4 @@ class GroupTestCase(BaseTestCase):
         self.assertEqual(all_groups[1], group2)
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main()  # pragma: nocover
