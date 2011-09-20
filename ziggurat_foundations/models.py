@@ -3,7 +3,7 @@ import hashlib
 import urllib
 import random
 import string
-import webhelpers
+import webhelpers.paginate
 
 from cryptacular.bcrypt import BCRYPTPasswordManager
 from cryptacular.core import DelegatingPasswordManager

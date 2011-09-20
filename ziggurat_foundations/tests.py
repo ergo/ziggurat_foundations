@@ -522,6 +522,10 @@ class GroupTestCase(BaseTestCase):
         self.assertEqual(group.description, u'example description')
         self.assertEqual(group.member_count, 0)
 
+    def test_group_repr(self):
+        group = self._addGroup()
+        self.assertEqual(repr(group), '<Group: group>')
+
     def test_by_group_name(self):
         added_group = self._addGroup()
         queried_group = Group.by_group_name(u'group',
@@ -547,7 +551,6 @@ class GroupTestCase(BaseTestCase):
         self.assertEqual(group.users[0], user1)
         self.assertEqual(group.users[1], user2)
 
-
     def test_users_dynamic(self):
         user1 = self._addUser(u'user1', u'email1')
         user2 = self._addUser(u'user2', u'email2')
@@ -569,6 +572,48 @@ class GroupTestCase(BaseTestCase):
         self.assertEqual(len(all_groups), 2)
         self.assertEqual(all_groups[0], group1)
         self.assertEqual(all_groups[1], group2)
+
+    def test_user_paginator(self):
+        user1 = self._addUser(u'user1', u'email1')
+        user2 = self._addUser(u'user2', u'email2')
+
+        group = self._addGroup()
+        group.users.append(user1)
+        group.users.append(user2)
+        users_count = len(group.users)
+        get_params = {'foo': 'bar', 'baz': 'xxx'}
+
+        paginator = group.get_user_paginator(1, users_count,
+                                             GET_params=get_params)
+
+        self.assertEqual(paginator.page, 1)
+        self.assertEqual(paginator.first_item, 1)
+        self.assertEqual(paginator.last_item, 2)
+        self.assertEqual(paginator.items, [user1, user2])
+        self.assertEqual(paginator.item_count, 2)
+        self.assertEqual(paginator.page_count, 1)
+        self.assertEqual(paginator.kwargs, get_params)
+
+    def test_user_paginator_usernames(self):
+        user1 = self._addUser(u'user1', u'email1')
+        user2 = self._addUser(u'user2', u'email2')
+        user3 = self._addUser(u'user3', u'email3')
+
+        group = self._addGroup()
+        group.users.append(user1)
+        group.users.append(user2)
+        group.users.append(user3)
+
+        # TODO: users count when filtering on names?
+        paginator = group.get_user_paginator(1,
+                                             user_names=[u'user1', u'user3'])
+
+        self.assertEqual(paginator.page, 1)
+        self.assertEqual(paginator.first_item, 1)
+        self.assertEqual(paginator.last_item, 2)
+        self.assertEqual(paginator.items, [user1, user3])
+        self.assertEqual(paginator.item_count, 2)
+        self.assertEqual(paginator.page_count, 1)
 
 if __name__ == '__main__':
     unittest.main()  # pragma: nocover
