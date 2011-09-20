@@ -144,10 +144,20 @@ class UserTestCase(BaseTestCase):
         self.assertEqual(user.user_name, u'username')
         self.assertEqual(user.email, u'email')
         self.assertEqual(user.status, 0)
+    
+    def test_delete_user(self):
+        self._addUser()
+        to_delete = User.by_user_name(u'username', db_session=self.session)
+        self.session.delete(to_delete)
+        self.session.commit()
+
+    def test_user_repr(self):
+        user = self._addUser()
+        self.assertEqual(repr(user), '<User: username>')
 
     def test_by_user_name_existing(self):
         created_user = self._addUser()
-        queried_user = User.by_user_name(u'username',db_session=self.session)
+        queried_user = User.by_user_name(u'username', db_session=self.session)
 
         self.assertEqual(created_user, queried_user)
 
@@ -286,8 +296,7 @@ class UserTestCase(BaseTestCase):
         resource = self._addResource(1, u'test_resource')
         permission = UserResourcePermission(perm_name=u'test_perm',
                                             user_name=created_user.user_name,
-                                            resource_id = resource.resource_id
-                                                )
+                                            resource_id=resource.resource_id)
         resource.user_permissions.append(permission)
         self.session.flush()
         resources = created_user.resources_with_perms([u'test_perm'],
@@ -321,7 +330,33 @@ class UserTestCase(BaseTestCase):
         resources = created_user.resources_with_perms([u'test_perm'],
                                         db_session=self.session).all()
         self.assertEqual(resources, [resource,resource2])
-        
+    
+    def test_resources_ids_with_perm(self):
+        created_user = self._addUser()
+        resource1 = self._addResource(1, u'test_resource1')
+        resource2 = self._addResource(2, u'test_resource2')
+        resource3 = self._addResource(3, u'test_resource3')
+
+        permission1 = UserResourcePermission(perm_name=u'test_perm',
+                                            user_name=created_user.user_name,
+                                            resource_id=resource1.resource_id)
+        permission2 = UserResourcePermission(perm_name=u'test_perm',
+                                            user_name=created_user.user_name,
+                                            resource_id=resource2.resource_id)
+        permission3 = UserResourcePermission(perm_name=u'test_perm',
+                                            user_name=created_user.user_name,
+                                            resource_id=resource3.resource_id)
+
+        resource1.user_permissions.append(permission1)
+        resource2.user_permissions.append(permission2)
+        resource3.user_permissions.append(permission3)
+
+        self.session.flush()
+        resources = created_user.resources_with_perms([u'test_perm'],
+                                                resource_ids=[1, 3],
+                                                db_session=self.session).all()
+        self.assertEqual(resources, [resource1, resource3])
+
     def test_resources_with_wrong_group_permission(self):
         with self.assertRaises(AssertionError):
             created_user = self._addUser()
