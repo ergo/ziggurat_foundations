@@ -7,3 +7,5 @@ syntax: regexp
 ^ziggurat_foundations\.egg-info$
 syntax: regexp
 ^.*\.pyc$
+syntax: regexp
+^\.settings$
