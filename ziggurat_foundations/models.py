@@ -182,7 +182,7 @@ class UserMixin(BaseModel):
                              invalidate=False, db_session=None):
         """ returns all resources that user has perms for,
             note that at least one perm needs to be met,
-            resource_ids restricts the search tospecific resources"""
+            resource_ids restricts the search to specific resources"""
         # owned entities have ALL permissions so we return those resources too
         # even without explict perms set
         # TODO: implement admin superrule perm - maybe return all apps
@@ -215,9 +215,10 @@ class UserMixin(BaseModel):
         q2 = q2.filter(self.UserResourcePermission.user_name == self.user_name)
         q2 = q2.filter(self.Resource.resource_id == self.UserResourcePermission.resource_id)
         q2 = q2.filter(self.UserResourcePermission.perm_name.in_(perms))
-        q = q.union(q2)
         if resource_ids:
             q = q.filter(self.Resource.resource_id.in_(resource_ids))
+            q2 = q2.filter(self.Resource.resource_id.in_(resource_ids))
+        q = q.union(q2)
         q = q.order_by(self.Resource.resource_name)
         if invalidate:
             return True
