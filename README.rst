@@ -64,10 +64,11 @@ because they are reused in various queries - unless you reimplement ziggurat_mod
     from ziggurat_foundations.models import GroupResourcePermissionMixin, ResourceMixin 
     from ziggurat_foundations.models import UserPermissionMixin, UserResourcePermissionMixin
     from ziggurat_foundations import ziggurat_model_init
-    #this is needed for pylons 1.0 / akhet approach to db session
+    # this is needed for pylons 1.0 / akhet approach to db session
     ziggurat_foundations.models.DBSession = DBSession 
-    #optional for folks who pass request.db to model methods
-    
+    # optional for folks who pass request.db to model methods
+
+    # Base is sqlalchemy's Base = declarative_base() from your project     
     class Group(GroupMixin, Base):
     pass
     
