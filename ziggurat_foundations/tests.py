@@ -86,7 +86,7 @@ class BaseTestCase(unittest.TestCase):
         self.session.flush()
         return user
     
-    def _addResource(self, resource_id, resource_name=u'test_resource',):
+    def _addResource(self, resource_id, resource_name=u'test_resource'):
         Resource.__possible_permissions__ = [u'test_perm', u'test_perm1',
                                              u'test_perm2',u'foo_perm',
                                              u'group_perm']
@@ -96,14 +96,17 @@ class BaseTestCase(unittest.TestCase):
         self.session.flush()
         return resource
 
-    def _addGroup(self, group_name=u'group', description=u'desc',):
+    def _addGroup(self, group_name=u'group', description=u'desc'):
         group = Group(
             group_name=group_name,
             description=description
         )
+        test_perm = GroupPermission(perm_name=u'manage_apps')
+        group.permissions.append(test_perm)
         self.session.add(group)
         self.session.flush()
         return group
+
 
 class ModelTestCase(BaseTestCase):
     
@@ -614,6 +617,76 @@ class GroupTestCase(BaseTestCase):
         self.assertEqual(paginator.items, [user1, user3])
         self.assertEqual(paginator.item_count, 2)
         self.assertEqual(paginator.page_count, 1)
+
+
+class GroupPermissionTestCase(BaseTestCase):
+    def test_repr(self):
+        group_permission = GroupPermission(group_name=u'group',
+                                           perm_name=u'perm')
+        self.assertEqual(repr(group_permission), '<GroupPermission: perm>')
+        
+    def test_by_group_and_perm(self):
+        self._addGroup()
+        queried = GroupPermission.by_group_and_perm(u'group', u'manage_apps',
+                                                    db_session=self.session)
+        self.assertEqual(queried.group_name, u'group')
+        self.assertEqual(queried.perm_name, u'manage_apps')
+        
+    def test_by_group_and_perm_wrong_group(self):
+        self._addGroup()
+        queried = GroupPermission.by_group_and_perm(u'wrong_group',
+            u'manage_apps', db_session=self.session)
+        self.assertEqual(queried, None)
+    
+    def test_by_group_and_perm_wrong_perm(self):
+        self._addGroup()
+        queried = GroupPermission.by_group_and_perm(u'group', u'wrong_perm',
+                                                    db_session=self.session)
+        self.assertEqual(queried, None)
+        
+
+class UserPermissionTestCase(BaseTestCase):
+    def test_repr(self):
+        user_permission = UserPermission(user_name=u'user', perm_name=u'perm')
+        self.assertEqual(repr(user_permission), '<UserPermission: perm>')      
+
+    def test_by_user_and_perm(self):
+        self._addUser()
+        user_permission = UserPermission.by_user_and_perm(u'username', u'root',
+            db_session=self.session)
+        
+        self.assertEqual(user_permission.user_name, u'username')
+        self.assertEqual(user_permission.perm_name, u'root')
+        
+    def test_by_user_and_perm_wrong_username(self):
+        self._addUser()
+        user_permission = UserPermission.by_user_and_perm(u'wrong', u'root',
+            db_session=self.session)
+        
+        self.assertEqual(user_permission, None)
+        
+    def test_by_user_and_perm_wrong_permname(self):
+        self._addUser()
+        user_permission = UserPermission.by_user_and_perm(u'username', u'wrong',
+            db_session=self.session)
+        
+        self.assertEqual(user_permission, None)
+
+
+class UserGroupTestCase(BaseTestCase):
+    def test_repr(self):
+        user_group = UserGroup(user_name=u'username', group_name=u'group')
+        self.assertEqual(repr(user_group), '<UserGroup: group, username>')
+        
+
+class GroupResourcePermissionTestCase(BaseTestCase):
+    def test_repr(self):
+        group_resource_perm = GroupResourcePermission(group_name='group',
+                                                      resource_id=1,
+                                                      perm_name='perm')
+        self.assertEqual(repr(group_resource_perm), 
+                         '<GroupResourcePermission: group, perm, 1>')
+
 
 if __name__ == '__main__':
     unittest.main()  # pragma: nocover
