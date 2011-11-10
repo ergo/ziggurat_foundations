@@ -1,8 +1,8 @@
-"""empty message
+"""initial table layout
 
-Revision ID: 3f138e045609
+Revision ID: 2bb1ba973f0b
 Revises: None
-Create Date: 2011-11-02 22:59:21.147228
+Create Date: 2011-11-10 22:32:14.464939
 
 """
 
@@ -11,9 +11,6 @@ down_revision = None
 
 from alembic.op import *
 import sqlalchemy as sa
-
-
-
 
 def upgrade():
     create_table('groups',
@@ -44,7 +41,7 @@ def upgrade():
                                 server_default=sa.func.now()
                                 )
                  )
-    # TODO
+    # TODO for postgresql
 #CREATE UNIQUE INDEX users_email_key
 #  ON users
 #  USING btree
@@ -100,7 +97,7 @@ def upgrade():
                                                      autoincrement=False),
                  sa.Column('perm_name', sa.Unicode(50), primary_key=True)
                  )
-    # TODO
+    # TODO for postgresql
     # CONSTRAINT groups_resources_permissions_perm_name_check CHECK (perm_name::text = lower(perm_name::text))
     
     
@@ -117,7 +114,7 @@ def upgrade():
                  sa.Column('perm_name', sa.Unicode(50), primary_key=True)
                  )
     
-    # TODO
+    # TODO for postgresql
     #CONSTRAINT users_resources_permissions_perm_name_check CHECK (perm_name::text = lower(perm_name::text))
 
 def downgrade():

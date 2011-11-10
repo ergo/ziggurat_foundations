@@ -1,8 +1,0 @@
-#alembic init
-~/python/bin/alembic init alembic
-
-#create revision
-~/python/bin/alembic revision
-
-#upgrade
-~/python/bin/alembic upgrade 3f138e045609

@@ -31,98 +31,98 @@ def get_db_session(session=None, obj=None):
 
 class BaseModel(object):
     """ base class for  all other models to inherit """
-    
+
     @classmethod
     def _get_keys(cls):
-        """ return column names for this model """ 
+        """ return column names for this model """
         return sa.orm.class_mapper(cls).c.keys()
-    
+
     def get_dict(self):
         """ return dict with keys and values corresponding to this model data """
         d = {}
         for k in self._get_keys():
             d[k] = getattr(self, k)
         return d
-    
+
     def get_appstruct(self):
         """ return dict with keys and values corresponding to this model data """
         l = []
         for k in self._get_keys():
             l.append((k, getattr(self, k),))
         return l
-    
+
     def populate_obj(self, appstruct):
         """ populate model with data from dict """
         for k in self._get_keys():
             if k in appstruct:
                 setattr(self, k, appstruct[k])
-                
+
     def get_db_session(self, session=None):
         return get_db_session(session, self)
-            
-                
+
+
 class UserMapperExtension(sa.orm.interfaces.MapperExtension):
-    
+
     def after_update(self, mapper, connection, instance):
         instance.by_user_name(instance.user_name, invalidate=True,
                         db_session=get_db_session(None, instance))
-        
+
     def after_delete(self, mapper, connection, instance):
         instance.by_user_name(instance.user_name, invalidate=True,
                         db_session=get_db_session(None, instance))
-                
+
 class UserMixin(BaseModel):
     """base mixin for user object"""
-    
+
     __mapper_args__ = {'extension': UserMapperExtension()}
     __table_args__ = {
                       'mysql_engine':'InnoDB',
                       'mysql_charset':'utf8'
                       }
-    
+
     @declared_attr
     def __tablename__(cls):
         return 'users'
-    
+
     @declared_attr
     def id(cls):
         return sa.Column(sa.Integer, primary_key=True)
-    
+
     @declared_attr
     def user_name(cls):
         return sa.Column(sa.Unicode(30), unique=True)
-    
+
     @declared_attr
     def user_password(cls):
         return sa.Column(sa.String(40))
-    
+
     @declared_attr
     def email(cls):
         return sa.Column(sa.Unicode(100), nullable=False, unique=True)
-    
+
     @declared_attr
     def status(cls):
         return sa.Column(sa.SmallInteger(), nullable=False)
-    
+
     @declared_attr
     def security_code(cls):
         return sa.Column(sa.String(40), default='default')
-    
+
     @declared_attr
     def last_login_date(cls):
         return sa.Column(sa.TIMESTAMP(timezone=True),
                                 default=sa.sql.func.now(),
                                 server_default=sa.func.now()
                                 )
-    
+
     passwordmanager = DelegatingPasswordManager(
             preferred=BCRYPTPasswordManager(),
             fallbacks=(PlaceholderPasswordChecker(),)
             )
-    
+
     def __repr__(self):
         return '<User: %s>' % self.user_name
-    
+
     @declared_attr
     def groups_dynamic(cls):
         """ returns dynamic relationship for groups - filter can be used """
@@ -131,7 +131,7 @@ class UserMixin(BaseModel):
                         passive_deletes=True,
                         passive_updates=True
                         )
-    
+
     @declared_attr
     def user_permissions(cls):
         """ returns all direct non-resource permissions for this user"""
@@ -149,7 +149,7 @@ class UserMixin(BaseModel):
                         passive_deletes=True,
                         passive_updates=True
                         )
-    
+
     @declared_attr
     def resources(cls):
         return sa.orm.relationship('Resource',
@@ -158,7 +158,7 @@ class UserMixin(BaseModel):
                         passive_updates=True,
                         backref='owner'
                         )
-    
+
     @property
     def permissions(self):
         """ returns all non-resource permissions based on what groups user
@@ -169,15 +169,15 @@ class UserMixin(BaseModel):
         q = q.filter(self.GroupPermission.group_name == self.UserGroup.group_name)
         q = q.filter(self.User.user_name == self.UserGroup.user_name)
         q = q.filter(self.User.user_name == self.user_name)
-        
+
         q2 = db_session.query(self.UserPermission.user_name.label('owner_name'),
                               self.UserPermission.perm_name.label('perm_name'))
         q2 = q2.filter(self.UserPermission.user_name == self.user_name)
         q = q.union(q2)
         return [(row.owner_name, row.perm_name) for row in q]
-        
-        
-    
+
+
+
     def resources_with_perms(self, perms, resource_ids=None, cache='default',
                              invalidate=False, db_session=None):
         """ returns all resources that user has perms for,
@@ -205,7 +205,7 @@ class UserMixin(BaseModel):
             q = q.filter(sa.or_(
                                 self.Resource.owner_user_name == self.user_name,
                                 self.Resource.owner_group_name.in_(group_names),
-                                self.GroupResourcePermission.perm_name != None                                
+                                self.GroupResourcePermission.perm_name != None
                                 ,))
         else:
             #filter just by username
@@ -223,7 +223,7 @@ class UserMixin(BaseModel):
         if invalidate:
             return True
         return q
-    
+
     def gravatar_url(self, default='mm'):
         """ returns user gravatar url """
         # construct the url
@@ -233,8 +233,8 @@ class UserMixin(BaseModel):
                                                 urllib.urlencode({'d':default})
                                                                       )
         return gravatar_url
-    
-    
+
+
     def set_password(self, raw_password):
         """ sets new password """
         self.user_password = self.passwordmanager.encode(raw_password)
@@ -255,13 +255,13 @@ class UserMixin(BaseModel):
     def regenerate_security_code(self):
         """ generates new security code"""
         self.security_code = self.generate_random_string(32)
-        
+
 
     @staticmethod
     def generate_random_string(chars=7):
         return u''.join(random.sample(string.ascii_letters + string.digits, chars))
 
-    
+
     @classmethod
     def by_user_name(cls, user_name, cache='default',
                     invalidate=False, db_session=None):
@@ -273,7 +273,7 @@ class UserMixin(BaseModel):
         if invalidate:
             return True
         return q.first()
-    
+
     @classmethod
     def by_user_name_and_security_code(cls, user_name, security_code,
                                        db_session=None):
@@ -283,8 +283,8 @@ class UserMixin(BaseModel):
         q = q.filter(sa.func.lower(cls.user_name) == user_name.lower())
         q = q.filter(cls.security_code == security_code)
         return q.first()
-    
-    
+
+
     @classmethod
     def by_user_names(cls, user_names, cache='default',
                     invalidate=False, db_session=None):
@@ -297,7 +297,7 @@ class UserMixin(BaseModel):
         if invalidate:
             return True
         return q
-    
+
     @classmethod
     def user_names_like(cls, user_name, cache='default',
                     invalidate=False, db_session=None):
@@ -326,7 +326,7 @@ class UserMixin(BaseModel):
         if invalidate:
             return True
         return q.first()
-    
+
     @classmethod
     def by_email_and_username(cls, email, user_name, cache='default',
                     invalidate=False, db_session=None):
@@ -339,40 +339,79 @@ class UserMixin(BaseModel):
             return True
         return q.first()
 
+class ExternalIdentityMixin(BaseModel):
+
+    @declared_attr
+    def __tablename__(cls):
+        return 'external_identities'
+
+    @declared_attr
+    def external_id(cls):
+        return sa.Column(sa.Unicode(255), default=u'')
+
+    @declared_attr
+    def external_user_name(cls):
+        return sa.Column(sa.Unicode(50), default=u'')
+
+    @declared_attr
+    def local_user_name(cls):
+        return sa.Column(sa.Unicode(50), default=u'')
+
+    @declared_attr
+    def provider_name(cls):
+        return sa.Column(sa.Unicode(50), default=u'')
+
+    @declared_attr
+    def access_token(cls):
+        return sa.Column(sa.String(255), default=u'')
+
+    @declared_attr
+    def access_token(cls):
+        return sa.Column(sa.String(255), default=u'')
+
+    @declared_attr
+    def alt_token(cls):
+        return sa.Column(sa.String(255), default=u'')
+
+    @declared_attr
+    def token_secret(cls):
+        return sa.Column(sa.String(255), default=u'')
+
+
 class GroupMixin(BaseModel):
     """ base mixin for group object"""
-    
+
     __table_args__ = {
                       'mysql_engine':'InnoDB',
                       'mysql_charset':'utf8'
                       }
-    
+
     @declared_attr
     def __tablename__(cls):
         return 'groups'
-    
+
     # lists app wide permissions we might want to assign to groups
     __possible_permissions__ = ('root_administration',
                                 'administration',
                                 'backend_admin_panel',
                                 'manage_apps',)
-    
+
     @declared_attr
     def id(cls):
         return sa.Column(sa.Integer, primary_key=True)
-    
+
     @declared_attr
     def group_name(cls):
         return sa.Column(sa.Unicode(50), unique=True)
-    
+
     @declared_attr
     def description(cls):
         return sa.Column(sa.Text())
-    
+
     @declared_attr
     def member_count(cls):
         return sa.Column(sa.Integer, nullable=False, default=0)
-    
+
     @declared_attr
     def users(cls):
         """ relationship for users belonging to this group"""
@@ -383,7 +422,7 @@ class GroupMixin(BaseModel):
                         passive_updates=True,
                         backref='groups'
                         )
-    
+
     # dynamic property - useful
     @declared_attr
     def users_dynamic(cls):
@@ -394,7 +433,7 @@ class GroupMixin(BaseModel):
                         order_by='User.user_name',
                         lazy="dynamic"
                         )
-    
+
     @declared_attr
     def permissions(cls):
         """ non-resource permissions assigned to this group"""
@@ -414,16 +453,16 @@ class GroupMixin(BaseModel):
                         passive_deletes=True,
                         passive_updates=True
                         )
-    
+
     def __repr__(self):
         return '<Group: %s>' % self.group_name
-    
+
     @classmethod
     def all(cls, db_session=None):
         """ return all groups"""
         q = get_db_session(db_session).query(cls)
         return q
-    
+
     @classmethod
     def by_group_name(cls, group_name, db_session=None):
         """ fetch group by name"""
@@ -450,34 +489,34 @@ class GroupMixin(BaseModel):
                                      items_per_page=items_per_page,
                                      **GET_params
                                      )
-        
-    
-    
+
+
+
 class GroupPermissionMixin(BaseModel):
     """ group permission mixin """
-    
+
     __table_args__ = {
                       'mysql_engine':'InnoDB',
                       'mysql_charset':'utf8'
                       }
-    
+
     @declared_attr
     def __tablename__(cls):
         return 'groups_permissions'
-    
+
     @declared_attr
     def group_name(cls):
         return sa.Column(sa.Unicode(50),
                         sa.ForeignKey('groups.group_name', onupdate='CASCADE',
                                       ondelete='CASCADE'), primary_key=True)
-    
+
     @declared_attr
     def perm_name(cls):
         return sa.Column(sa.Unicode(30), primary_key=True)
-    
+
     def __repr__(self):
         return '<GroupPermission: %s>' % self.perm_name
-    
+
     @classmethod
     def by_group_and_perm(cls, group_name, perm_name, db_session=None):
         """" return all instances by group and permission names """
@@ -485,18 +524,18 @@ class GroupPermissionMixin(BaseModel):
         q = db_session.query(cls).filter(cls.group_name == group_name)
         q = q.filter(cls.perm_name == perm_name)
         return q.first()
-        
+
 class UserPermissionMixin(BaseModel):
-    
+
     __table_args__ = {
                       'mysql_engine':'InnoDB',
                       'mysql_charset':'utf8'
                       }
-    
+
     @declared_attr
     def __tablename__(cls):
         return 'users_permissions'
-    
+
     @declared_attr
     def user_name(cls):
         return sa.Column(sa.Unicode(50),
@@ -505,10 +544,10 @@ class UserPermissionMixin(BaseModel):
     @declared_attr
     def perm_name(cls):
         return sa.Column(sa.Unicode(30), primary_key=True)
-    
+
     def __repr__(self):
         return '<UserPermission: %s>' % self.perm_name
-    
+
     @classmethod
     def by_user_and_perm(cls, user_name, perm_name, db_session=None):
         """ return all instances by user and permission name"""
@@ -518,16 +557,16 @@ class UserPermissionMixin(BaseModel):
         return q.first()
 
 class UserGroupMixin(BaseModel):
-    
+
     __table_args__ = {
                       'mysql_engine':'InnoDB',
                       'mysql_charset':'utf8'
                       }
-    
+
     @declared_attr
     def __tablename__(cls):
         return 'users_groups'
-    
+
     @declared_attr
     def group_name(cls):
         return sa.Column(sa.Unicode(50),
@@ -544,23 +583,23 @@ class UserGroupMixin(BaseModel):
         return '<UserGroup: %s, %s>' % (self.group_name, self.user_name,)
 
 class GroupResourcePermissionMixin(BaseModel):
-    
+
     __table_args__ = {
                       'mysql_engine':'InnoDB',
                       'mysql_charset':'utf8'
                       }
-    
+
     @declared_attr
     def __tablename__(cls):
         return 'groups_resources_permissions'
-    
+
     @declared_attr
     def group_name(cls):
         return sa.Column(sa.Unicode(50), sa.ForeignKey('groups.group_name',
                                                      onupdate='CASCADE',
                                                      ondelete='CASCADE'),
                                                      primary_key=True)
-        
+
     @declared_attr
     def resource_id(cls):
         return sa.Column(sa.BigInteger(), sa.ForeignKey('resources.resource_id',
@@ -578,16 +617,16 @@ class GroupResourcePermissionMixin(BaseModel):
                                                       self.resource_id,)
 
 class UserResourcePermissionMixin(BaseModel):
-    
+
     __table_args__ = {
                       'mysql_engine':'InnoDB',
                       'mysql_charset':'utf8'
                       }
-    
+
     @declared_attr
     def __tablename__(cls):
         return 'users_resources_permissions'
-    
+
     @declared_attr
     def user_name(cls):
         return sa.Column(sa.Unicode(50), sa.ForeignKey('users.user_name',
@@ -609,7 +648,7 @@ class UserResourcePermissionMixin(BaseModel):
         return '<userResourcePermission: %s, %s, %s>' % (self.user_name,
                                                       self.perm_name,
                                                       self.resource_id,)
-            
+
     @classmethod
     def by_resource_user_and_perm(cls, user_name, perm_name, resource_id,
                                   db_session=None):
@@ -619,7 +658,7 @@ class UserResourcePermissionMixin(BaseModel):
         q = q.filter(cls.resource_id == resource_id)
         q = q.filter(cls.perm_name == perm_name)
         return q.first()
-    
+
 #    @classmethod
 #    def allowed_permissions(cls, key):
 #        """ ensures we can only use permission that can be assigned 
@@ -629,47 +668,53 @@ class UserResourcePermissionMixin(BaseModel):
 #        raise KeyError
 
 class ResourceMapperExtension(sa.orm.interfaces.MapperExtension):
-    
+
     def after_update(self, mapper, connection, instance):
         instance.by_resource_id(instance.resource_id, invalidate=True,
                                 db_session=get_db_session(None, instance))
-        
+
     def after_delete(self, mapper, connection, instance):
         instance.by_resource_id(instance.resource_id, invalidate=True,
                                 db_session=get_db_session(None, instance))
 
-class ResourceMixin(BaseModel):    
-    
+class ResourceMixin(BaseModel):
+
     __possible_permissions__ = ()
-    
+
     @declared_attr
     def __tablename__(cls):
         return 'resources'
-    
+
     @declared_attr
     def resource_id(cls):
         return sa.Column(sa.BigInteger(), primary_key=True, nullable=False)
-    
+
+    @declared_attr
+    def parent_id(cls):
+        return sa.Column(sa.BigInteger(),
+                         sa.ForeignKey('resources.resource_id',
+                                onupdate='CASCADE', ondelete='SET NULL'))
+
     @declared_attr
     def resource_name(cls):
         return sa.Column(sa.Unicode(100), nullable=False)
-    
+
     @declared_attr
     def resource_type(cls):
         return sa.Column(sa.Unicode(30), nullable=False)
-    
+
     @declared_attr
     def owner_group_name(cls):
         return sa.Column(sa.Unicode(50),
                        sa.ForeignKey('groups.group_name', onupdate='CASCADE',
                                      ondelete='SET NULL'))
-    
+
     @declared_attr
     def owner_user_name(cls):
         return sa.Column(sa.Unicode(30),
                        sa.ForeignKey('users.user_name', onupdate='CASCADE',
                                      ondelete='SET NULL'))
-    
+
     @declared_attr
     def group_permissions(cls):
         """ returns all group permissions for this resource"""
@@ -687,7 +732,7 @@ class ResourceMixin(BaseModel):
                                   passive_deletes=True,
                                   passive_updates=True
                                   )
-    
+
     @declared_attr
     def groups(cls):
         """ returns all groups that have permissions for this resource"""
@@ -696,7 +741,7 @@ class ResourceMixin(BaseModel):
                                  passive_deletes=True,
                                  passive_updates=True
                                   )
-    
+
     @declared_attr
     def users(cls):
         """ returns all users that have permissions for this resource"""
@@ -705,7 +750,7 @@ class ResourceMixin(BaseModel):
                                  passive_deletes=True,
                                  passive_updates=True
                                   )
-    
+
     __mapper_args__ = {'polymorphic_on': resource_type,
                        'extension': ResourceMapperExtension()
                        }
@@ -713,24 +758,24 @@ class ResourceMixin(BaseModel):
                       'mysql_engine':'InnoDB',
                       'mysql_charset':'utf8'
                       }
-    
+
     def __repr__(self):
         return '<Resource: %s, %s, id: %s>' % (self.resource_type,
                                                self.resource_name,
                                                self.resource_id,
                                                )
-        
+
     @property
     def __acl__(self):
         acls = [(Allow, 'group:Administrators', ALL_PERMISSIONS,), ]
-        
+
         if self.owner_user_name:
             acls.extend([(Allow, self.owner_user_name, ALL_PERMISSIONS,), ])
-            
+
         if self.owner_group_name:
             acls.extend([(Allow, "group:%s" % self.owner_group_name, ALL_PERMISSIONS,), ])
         return acls
-    
+
     def perms_for_user(self, user, cache='default',
                        invalidate=False, db_session=None):
         """ returns all permissions that given user has for this resource
@@ -743,7 +788,7 @@ class ResourceMixin(BaseModel):
                                         )
                      )
         q = q.filter(self.GroupResourcePermission.resource_id == self.resource_id)
-        
+
         q2 = db_session.query(self.UserResourcePermission.user_name,
                               self.UserResourcePermission.perm_name)
         q2 = q2.filter(self.UserResourcePermission.user_name == user.user_name)
@@ -756,8 +801,8 @@ class ResourceMixin(BaseModel):
         if self.owner_user_name == user.user_name:
             perms.append((self.owner_user_name, ALL_PERMISSIONS,))
         return perms
-    
-    
+
+
     def direct_perms_for_user(self, user, cache='default',
                        invalidate=False, db_session=None):
         """ returns permissions that given user has for this resource
@@ -778,7 +823,7 @@ class ResourceMixin(BaseModel):
     def group_perms_for_user(self, user, cache='default',
                        invalidate=False, db_session=None):
         """ returns permissions that given user has for this resource
-            that are inherited from groups """        
+            that are inherited from groups """
         db_session = get_db_session(db_session, self)
         q = db_session.query(u'group:' + self.GroupResourcePermission.group_name,
                              self.GroupResourcePermission.perm_name)
@@ -793,8 +838,8 @@ class ResourceMixin(BaseModel):
 #        if self.owner_group_name:
 #            perms.append(('group:' + self.owner_group_name, ALL_PERMISSIONS,))
         return perms
-    
-    
+
+
     def users_for_perm(self, perm_name, cache='default',
                        invalidate=False, db_session=None):
         """ return tuple (user,perm_name) that have given permission for the resource """
@@ -804,7 +849,7 @@ class ResourceMixin(BaseModel):
         q = q.filter(self.UserGroup.group_name == self.GroupResourcePermission.group_name)
         if perm_name != '__any_permission__':
             q = q.filter(self.GroupResourcePermission.perm_name == perm_name)
-        q = q.filter(self.GroupResourcePermission.resource_id == self.resource_id)        
+        q = q.filter(self.GroupResourcePermission.resource_id == self.resource_id)
         q2 = db_session.query(self.User, self.UserResourcePermission.perm_name)
         q2 = q2.filter(self.User.user_name == self.UserResourcePermission.user_name)
         if perm_name != '__any_permission__':
@@ -817,7 +862,7 @@ class ResourceMixin(BaseModel):
         if self.owner_user_name:
             users.append((self.User.by_user_name(self.owner_user_name), ALL_PERMISSIONS,))
         return users
-        
+
     @classmethod
     def by_resource_id(cls, resource_id, cache='default',
                        invalidate=False, db_session=None):
@@ -827,13 +872,13 @@ class ResourceMixin(BaseModel):
         if invalidate:
             return True
         return q.first()
-    
+
     @classmethod
     def all(cls, db_session=None):
         """ fetch all permissions"""
         q = get_db_session(db_session).query(cls)
         return q
-    
+
     @classmethod
     def perm_by_group_and_perm_name(cls, res_id, group_name, perm_name,
                                     db_session=None):
@@ -844,7 +889,7 @@ class ResourceMixin(BaseModel):
         q = q.filter(cls.GroupResourcePermission.perm_name == perm_name)
         q = q.filter(cls.GroupResourcePermission.resource_id == res_id)
         return q.first()
-    
+
     @sa.orm.validates('user_permissions', 'group_permissions')
     def validate_permission(self, key, permission):
         """ validate if resouce can have specific permission """
