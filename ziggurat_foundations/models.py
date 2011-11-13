@@ -366,10 +366,6 @@ class ExternalIdentityMixin(BaseModel):
         return sa.Column(sa.String(255), default=u'')
 
     @declared_attr
-    def access_token(self):
-        return sa.Column(sa.String(255), default=u'')
-
-    @declared_attr
     def alt_token(self):
         return sa.Column(sa.String(255), default=u'')
 
