@@ -81,35 +81,35 @@ class UserMixin(BaseModel):
                       }
 
     @declared_attr
-    def __tablename__(cls):
+    def __tablename__(self):
         return 'users'
 
     @declared_attr
-    def id(cls):
+    def id(self):
         return sa.Column(sa.Integer, primary_key=True)
 
     @declared_attr
-    def user_name(cls):
+    def user_name(self):
         return sa.Column(sa.Unicode(30), unique=True)
 
     @declared_attr
-    def user_password(cls):
+    def user_password(self):
         return sa.Column(sa.String(40))
 
     @declared_attr
-    def email(cls):
+    def email(self):
         return sa.Column(sa.Unicode(100), nullable=False, unique=True)
 
     @declared_attr
-    def status(cls):
+    def status(self):
         return sa.Column(sa.SmallInteger(), nullable=False)
 
     @declared_attr
-    def security_code(cls):
+    def security_code(self):
         return sa.Column(sa.String(40), default='default')
 
     @declared_attr
-    def last_login_date(cls):
+    def last_login_date(self):
         return sa.Column(sa.TIMESTAMP(timezone=True),
                                 default=sa.sql.func.now(),
                                 server_default=sa.func.now()
@@ -124,7 +124,7 @@ class UserMixin(BaseModel):
         return '<User: %s>' % self.user_name
 
     @declared_attr
-    def groups_dynamic(cls):
+    def groups_dynamic(self):
         """ returns dynamic relationship for groups - filter can be used """
         return sa.orm.relationship('Group', secondary='users_groups',
                         lazy='dynamic',
@@ -133,7 +133,7 @@ class UserMixin(BaseModel):
                         )
 
     @declared_attr
-    def user_permissions(cls):
+    def user_permissions(self):
         """ returns all direct non-resource permissions for this user"""
         return sa.orm.relationship('UserPermission',
                         cascade="all, delete-orphan",
@@ -142,7 +142,7 @@ class UserMixin(BaseModel):
                         )
 
     @declared_attr
-    def resource_permissions(cls):
+    def resource_permissions(self):
         """returns all direct resource permissions for this user"""
         return sa.orm.relationship('UserResourcePermission',
                         cascade="all, delete-orphan",
@@ -151,7 +151,7 @@ class UserMixin(BaseModel):
                         )
 
     @declared_attr
-    def resources(cls):
+    def resources(self):
         return sa.orm.relationship('Resource',
                         cascade="all",
                         passive_deletes=True,
@@ -342,39 +342,39 @@ class UserMixin(BaseModel):
 class ExternalIdentityMixin(BaseModel):
 
     @declared_attr
-    def __tablename__(cls):
+    def __tablename__(self):
         return 'external_identities'
 
     @declared_attr
-    def external_id(cls):
+    def external_id(self):
         return sa.Column(sa.Unicode(255), default=u'')
 
     @declared_attr
-    def external_user_name(cls):
+    def external_user_name(self):
         return sa.Column(sa.Unicode(50), default=u'')
 
     @declared_attr
-    def local_user_name(cls):
+    def local_user_name(self):
         return sa.Column(sa.Unicode(50), default=u'')
 
     @declared_attr
-    def provider_name(cls):
+    def provider_name(self):
         return sa.Column(sa.Unicode(50), default=u'')
 
     @declared_attr
-    def access_token(cls):
+    def access_token(self):
         return sa.Column(sa.String(255), default=u'')
 
     @declared_attr
-    def access_token(cls):
+    def access_token(self):
         return sa.Column(sa.String(255), default=u'')
 
     @declared_attr
-    def alt_token(cls):
+    def alt_token(self):
         return sa.Column(sa.String(255), default=u'')
 
     @declared_attr
-    def token_secret(cls):
+    def token_secret(self):
         return sa.Column(sa.String(255), default=u'')
 
 
@@ -387,7 +387,7 @@ class GroupMixin(BaseModel):
                       }
 
     @declared_attr
-    def __tablename__(cls):
+    def __tablename__(self):
         return 'groups'
 
     # lists app wide permissions we might want to assign to groups
@@ -397,23 +397,23 @@ class GroupMixin(BaseModel):
                                 'manage_apps',)
 
     @declared_attr
-    def id(cls):
+    def id(self):
         return sa.Column(sa.Integer, primary_key=True)
 
     @declared_attr
-    def group_name(cls):
+    def group_name(self):
         return sa.Column(sa.Unicode(50), unique=True)
 
     @declared_attr
-    def description(cls):
+    def description(self):
         return sa.Column(sa.Text())
 
     @declared_attr
-    def member_count(cls):
+    def member_count(self):
         return sa.Column(sa.Integer, nullable=False, default=0)
 
     @declared_attr
-    def users(cls):
+    def users(self):
         """ relationship for users belonging to this group"""
         return sa.orm.relationship('User',
                         secondary='users_groups',
@@ -425,7 +425,7 @@ class GroupMixin(BaseModel):
 
     # dynamic property - useful
     @declared_attr
-    def users_dynamic(cls):
+    def users_dynamic(self):
         """ dynamiec relationship for users belonging to this group
             one can use filter """
         return sa.orm.relationship('User',
@@ -435,7 +435,7 @@ class GroupMixin(BaseModel):
                         )
 
     @declared_attr
-    def permissions(cls):
+    def permissions(self):
         """ non-resource permissions assigned to this group"""
         return sa.orm.relationship('GroupPermission',
                         backref='groups',
@@ -445,7 +445,7 @@ class GroupMixin(BaseModel):
                         )
 
     @declared_attr
-    def resource_permissions(cls):
+    def resource_permissions(self):
         """ permissions to specific resources this group has"""
         return sa.orm.relationship('GroupResourcePermission',
                         backref='groups',
@@ -501,17 +501,17 @@ class GroupPermissionMixin(BaseModel):
                       }
 
     @declared_attr
-    def __tablename__(cls):
+    def __tablename__(self):
         return 'groups_permissions'
 
     @declared_attr
-    def group_name(cls):
+    def group_name(self):
         return sa.Column(sa.Unicode(50),
                         sa.ForeignKey('groups.group_name', onupdate='CASCADE',
                                       ondelete='CASCADE'), primary_key=True)
 
     @declared_attr
-    def perm_name(cls):
+    def perm_name(self):
         return sa.Column(sa.Unicode(30), primary_key=True)
 
     def __repr__(self):
@@ -533,16 +533,16 @@ class UserPermissionMixin(BaseModel):
                       }
 
     @declared_attr
-    def __tablename__(cls):
+    def __tablename__(self):
         return 'users_permissions'
 
     @declared_attr
-    def user_name(cls):
+    def user_name(self):
         return sa.Column(sa.Unicode(50),
                          sa.ForeignKey('users.user_name', onupdate='CASCADE',
                                        ondelete='CASCADE'), primary_key=True)
     @declared_attr
-    def perm_name(cls):
+    def perm_name(self):
         return sa.Column(sa.Unicode(30), primary_key=True)
 
     def __repr__(self):
@@ -564,17 +564,17 @@ class UserGroupMixin(BaseModel):
                       }
 
     @declared_attr
-    def __tablename__(cls):
+    def __tablename__(self):
         return 'users_groups'
 
     @declared_attr
-    def group_name(cls):
+    def group_name(self):
         return sa.Column(sa.Unicode(50),
                          sa.ForeignKey('groups.group_name', onupdate='CASCADE',
                                        ondelete='CASCADE'), primary_key=True)
 
     @declared_attr
-    def user_name(cls):
+    def user_name(self):
         return sa.Column(sa.Unicode(30),
                         sa.ForeignKey('users.user_name', onupdate='CASCADE',
                                       ondelete='CASCADE'), primary_key=True)
@@ -590,25 +590,25 @@ class GroupResourcePermissionMixin(BaseModel):
                       }
 
     @declared_attr
-    def __tablename__(cls):
+    def __tablename__(self):
         return 'groups_resources_permissions'
 
     @declared_attr
-    def group_name(cls):
+    def group_name(self):
         return sa.Column(sa.Unicode(50), sa.ForeignKey('groups.group_name',
                                                      onupdate='CASCADE',
                                                      ondelete='CASCADE'),
                                                      primary_key=True)
 
     @declared_attr
-    def resource_id(cls):
+    def resource_id(self):
         return sa.Column(sa.BigInteger(), sa.ForeignKey('resources.resource_id',
                                                      onupdate='CASCADE',
                                                      ondelete='CASCADE'),
                                                      primary_key=True,
                                                      autoincrement=False)
     @declared_attr
-    def perm_name(cls):
+    def perm_name(self):
         return sa.Column(sa.Unicode(50), primary_key=True)
 
     def __repr__(self):
@@ -624,24 +624,24 @@ class UserResourcePermissionMixin(BaseModel):
                       }
 
     @declared_attr
-    def __tablename__(cls):
+    def __tablename__(self):
         return 'users_resources_permissions'
 
     @declared_attr
-    def user_name(cls):
+    def user_name(self):
         return sa.Column(sa.Unicode(50), sa.ForeignKey('users.user_name',
                                                      onupdate='CASCADE',
                                                      ondelete='CASCADE'),
                                                      primary_key=True)
     @declared_attr
-    def resource_id(cls):
+    def resource_id(self):
         return sa.Column(sa.BigInteger(), sa.ForeignKey('resources.resource_id',
                                                      onupdate='CASCADE',
                                                      ondelete='CASCADE'),
                                                      primary_key=True,
                                                      autoincrement=False)
     @declared_attr
-    def perm_name(cls):
+    def perm_name(self):
         return sa.Column(sa.Unicode(50), primary_key=True)
 
     def __repr__(self):
@@ -682,41 +682,41 @@ class ResourceMixin(BaseModel):
     __possible_permissions__ = ()
 
     @declared_attr
-    def __tablename__(cls):
+    def __tablename__(self):
         return 'resources'
 
     @declared_attr
-    def resource_id(cls):
+    def resource_id(self):
         return sa.Column(sa.BigInteger(), primary_key=True, nullable=False)
 
     @declared_attr
-    def parent_id(cls):
+    def parent_id(self):
         return sa.Column(sa.BigInteger(),
                          sa.ForeignKey('resources.resource_id',
                                 onupdate='CASCADE', ondelete='SET NULL'))
 
     @declared_attr
-    def resource_name(cls):
+    def resource_name(self):
         return sa.Column(sa.Unicode(100), nullable=False)
 
     @declared_attr
-    def resource_type(cls):
+    def resource_type(self):
         return sa.Column(sa.Unicode(30), nullable=False)
 
     @declared_attr
-    def owner_group_name(cls):
+    def owner_group_name(self):
         return sa.Column(sa.Unicode(50),
                        sa.ForeignKey('groups.group_name', onupdate='CASCADE',
                                      ondelete='SET NULL'))
 
     @declared_attr
-    def owner_user_name(cls):
+    def owner_user_name(self):
         return sa.Column(sa.Unicode(30),
                        sa.ForeignKey('users.user_name', onupdate='CASCADE',
                                      ondelete='SET NULL'))
 
     @declared_attr
-    def group_permissions(cls):
+    def group_permissions(self):
         """ returns all group permissions for this resource"""
         return sa.orm.relationship('GroupResourcePermission',
                                   cascade="all, delete-orphan",
@@ -725,7 +725,7 @@ class ResourceMixin(BaseModel):
                                   )
 
     @declared_attr
-    def user_permissions(cls):
+    def user_permissions(self):
         """ returns all user permissions for this resource"""
         return sa.orm.relationship('UserResourcePermission',
                                   cascade="all, delete-orphan",
@@ -734,7 +734,7 @@ class ResourceMixin(BaseModel):
                                   )
 
     @declared_attr
-    def groups(cls):
+    def groups(self):
         """ returns all groups that have permissions for this resource"""
         return sa.orm.relationship('Group',
                                  secondary='groups_resources_permissions',
@@ -743,7 +743,7 @@ class ResourceMixin(BaseModel):
                                   )
 
     @declared_attr
-    def users(cls):
+    def users(self):
         """ returns all users that have permissions for this resource"""
         return sa.orm.relationship('User',
                                  secondary='users_resources_permissions',
