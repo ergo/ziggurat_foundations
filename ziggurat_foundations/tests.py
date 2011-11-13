@@ -179,6 +179,11 @@ class UserTestCase(BaseTestCase):
 
         self.assertEqual(queried_user, None)
 
+    def test_by_user_name_none(self):
+        queried_user = User.by_user_name(None, db_session=self.session)
+
+        self.assertEqual(None, queried_user)
+
     def test_by_username_andsecurity_code_existing(self):
         created_user = self._addUser()
         security_code = created_user.security_code
@@ -211,12 +216,35 @@ class UserTestCase(BaseTestCase):
 
         self.assertEqual(queried_user, None)
 
+    def test_by_username_andsecurity_code_none(self):
+        created_user = self._addUser()
+        security_code = created_user.security_code
+        queried_user = User.by_user_name_and_security_code(
+            user_name=None,
+            security_code=security_code,
+            db_session=self.session
+        )
+
+        self.assertEqual(None, None)
+
     def test_by_user_names(self):
         user1 = self._addUser(u'user1', u'email1')
         self._addUser(u'user2', u'email2')
         user3 = self._addUser(u'user3', u'email3')
 
         queried_users = User.by_user_names([u'user1', u'user3'],
+                                           db_session=self.session).all()
+
+        self.assertEqual(len(queried_users), 2)
+        self.assertEqual(user1, queried_users[0])
+        self.assertEqual(user3, queried_users[1])
+
+    def test_by_user_names_one_none(self):
+        user1 = self._addUser(u'user1', u'email1')
+        self._addUser(u'user2', u'email2')
+        user3 = self._addUser(u'user3', u'email3')
+
+        queried_users = User.by_user_names([u'user1', None, u'user3'],
                                            db_session=self.session).all()
 
         self.assertEqual(len(queried_users), 2)
@@ -233,11 +261,23 @@ class UserTestCase(BaseTestCase):
         self.assertEqual(len(queried_users), 1)
         self.assertEqual(user1, queried_users[0])
 
+    def test_by_user_names_like_none(self):
+
+        queried_users = User.user_names_like(None,
+                                             db_session=self.session).all()
+        self.assertEqual([], queried_users)
+
     def test_by_email(self):
         created_user = self._addUser()
         queried_user = User.by_email(u'email',db_session=self.session)
 
         self.assertEqual(created_user, queried_user)
+
+    def test_by_email_none(self):
+        created_user = self._addUser()
+        queried_user = User.by_email(None, db_session=self.session)
+
+        self.assertEqual(None, queried_user)
 
     def test_by_email_wrong_email(self):
         self._addUser()
@@ -265,6 +305,12 @@ class UserTestCase(BaseTestCase):
                                                   db_session=self.session)
 
         self.assertEqual(queried_user, None)
+
+    def test_by_mail_and_username_none(self):
+        queried_user = User.by_email_and_username(u'email', None,
+                                                  db_session=self.session)
+
+        self.assertEqual(None, None)
 
     def test_gravatar_url(self):
         user = self._addUser()

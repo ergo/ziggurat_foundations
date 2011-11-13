@@ -268,7 +268,7 @@ class UserMixin(BaseModel):
         """ fetch user by user name """
         db_session = get_db_session(db_session)
         q = db_session.query(cls)
-        q = q.filter(sa.func.lower(cls.user_name) == user_name.lower())
+        q = q.filter(sa.func.lower(cls.user_name) == (user_name or '').lower())
         q = q.options(sa.orm.eagerload('groups'))
         if invalidate:
             return True
@@ -280,7 +280,7 @@ class UserMixin(BaseModel):
         """ fetch user objects by user name and security code"""
         db_session = get_db_session(db_session)
         q = db_session.query(cls)
-        q = q.filter(sa.func.lower(cls.user_name) == user_name.lower())
+        q = q.filter(sa.func.lower(cls.user_name) == (user_name or '').lower())
         q = q.filter(cls.security_code == security_code)
         return q.first()
 
@@ -289,7 +289,7 @@ class UserMixin(BaseModel):
     def by_user_names(cls, user_names, cache='default',
                     invalidate=False, db_session=None):
         """ fetch user objects by user names """
-        user_names = [name.lower() for name in user_names]
+        user_names = [(name or '').lower() for name in user_names]
         db_session = get_db_session(db_session)
         q = db_session.query(cls)
         q = q.filter(sa.func.lower(cls.user_name).in_(user_names))
@@ -309,7 +309,7 @@ class UserMixin(BaseModel):
         """
         db_session = get_db_session(db_session)
         q = db_session.query(cls)
-        q = q.filter(sa.func.lower(cls.user_name).like(user_name.lower()))
+        q = q.filter(sa.func.lower(cls.user_name).like((user_name or '').lower()))
         q = q.order_by(cls.user_name)
         #q = q.options(sa.orm.eagerload('groups'))
         if invalidate:
@@ -333,7 +333,7 @@ class UserMixin(BaseModel):
         """ fetch user objects by email and username """
         db_session = get_db_session(db_session)
         q = db_session.query(cls).filter(cls.email == email)
-        q = q.filter(sa.func.lower(cls.user_name) == user_name.lower())
+        q = q.filter(sa.func.lower(cls.user_name) == (user_name or '').lower())
         q = q.options(sa.orm.eagerload('groups'))
         if invalidate:
             return True
