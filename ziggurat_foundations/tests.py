@@ -43,10 +43,10 @@ class UserPermission(UserPermissionMixin, Base):
 
 class UserResourcePermission(UserResourcePermissionMixin, Base):
     pass
-        
+
 class ExternalIdentity(ExternalIdentityMixin, Base):
     pass
-        
+
 class User(UserMixin, Base):
     pass
 
@@ -88,10 +88,10 @@ class BaseTestCase(unittest.TestCase):
         self.session.add(user)
         self.session.flush()
         return user
-    
+
     def _addResource(self, resource_id, resource_name=u'test_resource'):
         Resource.__possible_permissions__ = [u'test_perm', u'test_perm1',
-                                             u'test_perm2',u'foo_perm',
+                                             u'test_perm2', u'foo_perm',
                                              u'group_perm']
         resource = TestResource(resource_id=resource_id,
                             resource_name=resource_name)
@@ -110,18 +110,35 @@ class BaseTestCase(unittest.TestCase):
         self.session.flush()
         return group
 
+    def assertIsInstance(self, obj, cls, msg=None):
+        """
+        For python 2.6 compat.
+        """
+        _MAX_LENGTH = 80
+        def safe_repr(obj, short=False):
+            try:
+                result = repr(obj)
+            except Exception:
+                result = object.__repr__(obj)
+            if not short or len(result) < _MAX_LENGTH:
+                return result
+            return result[:_MAX_LENGTH] + ' [truncated]...'
+        if not isinstance(obj, cls):
+            standardMsg = '%s is not an instance of %r' % (safe_repr(obj), cls)
+            self.fail(self._formatMessage(msg, standardMsg))
+
 
 class ModelTestCase(BaseTestCase):
-    
+
     def test_get_keys(self):
         keys = User._get_keys()
         self.assertEqual(len(keys), 7)
-        
+
     def test_get_dict(self):
         created_user = self._addUser()
         dict_ = created_user.get_dict()
         self.assertEqual(len(dict_), 7)
-        
+
     def test_appstruct(self):
         created_user = self._addUser()
         appstruct = created_user.get_appstruct()
@@ -150,7 +167,7 @@ class UserTestCase(BaseTestCase):
         self.assertEqual(user.user_name, u'username')
         self.assertEqual(user.email, u'email')
         self.assertEqual(user.status, 0)
-    
+
     def test_delete_user(self):
         self._addUser()
         to_delete = User.by_user_name(u'username', db_session=self.session)
@@ -272,7 +289,7 @@ class UserTestCase(BaseTestCase):
 
     def test_by_email(self):
         created_user = self._addUser()
-        queried_user = User.by_email(u'email',db_session=self.session)
+        queried_user = User.by_email(u'email', db_session=self.session)
 
         self.assertEqual(created_user, queried_user)
 
@@ -284,7 +301,7 @@ class UserTestCase(BaseTestCase):
 
     def test_by_email_wrong_email(self):
         self._addUser()
-        queried_user = User.by_email(u'wrong_email',db_session=self.session)
+        queried_user = User.by_email(u'wrong_email', db_session=self.session)
 
         self.assertEqual(queried_user, None)
 
@@ -320,37 +337,37 @@ class UserTestCase(BaseTestCase):
         self.assertEqual(user.gravatar_url(),
                          'https://secure.gravatar.com/avatar/'
                          '0c83f57c786a0b4a39efab23731c7ebc?d=mm')
-        
+
     def test_generate_random_string(self):
         rand_str = User.generate_random_string()
-        
+
         self.assertEqual(len(rand_str), 7)
         self.assertIsInstance(rand_str, unicode)
-        
+
     def test_generate_random_pass(self):
         rand_str = User.generate_random_pass()
-        
+
         self.assertEqual(len(rand_str), 7)
         self.assertIsInstance(rand_str, unicode)
-        
+
         rand_str = User.generate_random_pass(20)
         self.assertEqual(len(rand_str), 20)
-        
+
     def test_regenerate_security_code(self):
         created_user = self._addUser()
         old_code = created_user.security_code
         created_user.regenerate_security_code()
         new_code = created_user.security_code
-        
+
         self.assertNotEqual(old_code, new_code)
         self.assertEqual(len(new_code), 32)
-        
+
     def test_user_permissions(self):
         created_user = self._addUser()
         permissions = created_user.permissions
         self.assertEqual(permissions, [(u'username', u'alter_users'),
                                        (u'username', u'root')])
-        
+
     def test_resources_with_perm(self):
         created_user = self._addUser()
         resource = self._addResource(1, u'test_resource')
@@ -362,14 +379,14 @@ class UserTestCase(BaseTestCase):
         resources = created_user.resources_with_perms([u'test_perm'],
                                         db_session=self.session).all()
         self.assertEqual(resources[0], resource)
-        
+
     def test_resources_with_wrong_perm(self):
         with self.assertRaises(AssertionError):
             created_user = self._addUser()
             resource = self._addResource(1, u'test_resource')
             permission = UserResourcePermission(perm_name=u'test_perm_BAD',
                                         user_name=created_user.user_name,
-                                        resource_id = resource.resource_id
+                                        resource_id=resource.resource_id
                                                     )
             resource.user_permissions.append(permission)
 
@@ -378,19 +395,19 @@ class UserTestCase(BaseTestCase):
         resource = self._addResource(1, u'test_resource')
         permission = UserResourcePermission(perm_name=u'test_perm',
                                             user_name=created_user.user_name,
-                                            resource_id = resource.resource_id
+                                            resource_id=resource.resource_id
                                                 )
         resource.user_permissions.append(permission)
         resource2 = self._addResource(2, u'test_resource2')
         permission2 = UserResourcePermission(perm_name=u'test_perm',
                                             user_name=created_user.user_name,
-                                            resource_id = resource2.resource_id
+                                            resource_id=resource2.resource_id
                                                 )
         resource2.user_permissions.append(permission2)
         resources = created_user.resources_with_perms([u'test_perm'],
                                         db_session=self.session).all()
-        self.assertEqual(resources, [resource,resource2])
-    
+        self.assertEqual(resources, [resource, resource2])
+
     def test_resources_ids_with_perm(self):
         created_user = self._addUser()
         resource1 = self._addResource(1, u'test_resource1')
@@ -426,10 +443,10 @@ class UserTestCase(BaseTestCase):
             group_permission = GroupResourcePermission(
                                         perm_name=u'test_perm_BAD',
                                         group_name=u'group',
-                                        resource_id = resource.resource_id
+                                        resource_id=resource.resource_id
                                                        )
             resource.group_permissions.append(group_permission)
-        
+
     def test_resources_with_group_permission(self):
         created_user = self._addUser()
         resource = self._addResource(1, u'test_resource')
@@ -440,26 +457,26 @@ class UserTestCase(BaseTestCase):
         group_permission = GroupResourcePermission(
                                     perm_name=u'test_perm',
                                     group_name=u'group',
-                                    resource_id = resource.resource_id
+                                    resource_id=resource.resource_id
                                                    )
         group_permission2 = GroupResourcePermission(
                                     perm_name=u'foo_perm',
                                     group_name=u'group',
-                                    resource_id = resource2.resource_id
+                                    resource_id=resource2.resource_id
                                                    )
         resource.group_permissions.append(group_permission)
         resource2.group_permissions.append(group_permission2)
         self.session.flush()
         resources = created_user.resources_with_perms([u'foo_perm'],
                                         db_session=self.session).all()
-        self.assertEqual(resources[0],resource2)
-        
-    
+        self.assertEqual(resources[0], resource2)
+
+
     def __set_up_user_group_and_perms(self):
         created_user = self._addUser()
-        created_user2 = self._addUser(user_name=u'foouser',email=u'new_email')
-        created_user3 = self._addUser(user_name=u'foouser2',email=u'new_email2')
-        created_user4 = self._addUser(user_name=u'foouser3',email=u'new_email3')
+        created_user2 = self._addUser(user_name=u'foouser', email=u'new_email')
+        created_user3 = self._addUser(user_name=u'foouser2', email=u'new_email2')
+        created_user4 = self._addUser(user_name=u'foouser3', email=u'new_email3')
         resource = self._addResource(1, u'test_resource')
         group = self._addGroup()
         group2 = self._addGroup(group_name=u'group2')
@@ -468,32 +485,32 @@ class UserTestCase(BaseTestCase):
         group_permission = GroupResourcePermission(
                                     perm_name=u'group_perm',
                                     group_name=u'group',
-                                    resource_id = resource.resource_id
+                                    resource_id=resource.resource_id
                                                    )
         group_permission2 = GroupResourcePermission(
                                     perm_name=u'group_perm',
                                     group_name=u'group2',
-                                    resource_id = resource.resource_id
+                                    resource_id=resource.resource_id
                                                    )
         user_permission = UserResourcePermission(
                                     perm_name=u'test_perm2',
                                     user_name=u'username',
-                                    resource_id = resource.resource_id
+                                    resource_id=resource.resource_id
                                                    )
         user_permission2 = UserResourcePermission(
                                     perm_name=u'foo_perm',
                                     user_name=u'username',
-                                    resource_id = resource.resource_id
+                                    resource_id=resource.resource_id
                                                    )
         user_permission3 = UserResourcePermission(
                                     perm_name=u'foo_perm',
                                     user_name=u'foouser',
-                                    resource_id = resource.resource_id
+                                    resource_id=resource.resource_id
                                                    )
         user_permission4 = UserResourcePermission(
                                     perm_name=u'test_perm',
                                     user_name=u'foouser2',
-                                    resource_id = resource.resource_id
+                                    resource_id=resource.resource_id
                                                    )
         resource.group_permissions.append(group_permission)
         resource.group_permissions.append(group_permission2)
@@ -507,7 +524,7 @@ class UserTestCase(BaseTestCase):
         self.user2 = created_user2
         self.user3 = created_user3
         self.user4 = created_user4
-    
+
     def test_resources_with_direct_user_perms(self):
         self.__set_up_user_group_and_perms()
         # test_perm1 from group perms should be ignored
@@ -523,23 +540,23 @@ class UserTestCase(BaseTestCase):
                                                 db_session=self.session),
                 [(u'group:group', u'group_perm')]
                 )
-        
+
     def test_resources_with_user_perms(self):
         self.__set_up_user_group_and_perms()
         self.assertEqual(
                 sorted(self.resource.perms_for_user(self.user,
                                                     db_session=self.session)),
                 sorted([(u'username', u'foo_perm'),
-                        (u'group:group', u'group_perm'), 
+                        (u'group:group', u'group_perm'),
                         (u'username', u'test_perm2')])
                         )
-    
+
     def test_users_for_perm(self):
         self.__set_up_user_group_and_perms()
         self.assertEqual(
                 sorted(self.resource.users_for_perm(u'foo_perm',
                                                     db_session=self.session)),
-                sorted([(self.user, u'foo_perm',),(self.user2, u'foo_perm',)])
+                sorted([(self.user, u'foo_perm',), (self.user2, u'foo_perm',)])
                         )
 
     def test_users_for_any_perm(self):
@@ -556,7 +573,7 @@ class UserTestCase(BaseTestCase):
                         (self.user4, u'group_perm',),
                         ])
                 )
-        
+
 
 class GroupTestCase(BaseTestCase):
     def test_add_group(self):
@@ -569,7 +586,7 @@ class GroupTestCase(BaseTestCase):
 
         group = self.session.query(Group)
         group = group.filter(Group.group_name == u'example group').first()
-        
+
         self.assertEqual(group.group_name, u'example group')
         self.assertEqual(group.description, u'example description')
         self.assertEqual(group.member_count, 0)
@@ -673,52 +690,52 @@ class GroupPermissionTestCase(BaseTestCase):
         group_permission = GroupPermission(group_name=u'group',
                                            perm_name=u'perm')
         self.assertEqual(repr(group_permission), '<GroupPermission: perm>')
-        
+
     def test_by_group_and_perm(self):
         self._addGroup()
         queried = GroupPermission.by_group_and_perm(u'group', u'manage_apps',
                                                     db_session=self.session)
         self.assertEqual(queried.group_name, u'group')
         self.assertEqual(queried.perm_name, u'manage_apps')
-        
+
     def test_by_group_and_perm_wrong_group(self):
         self._addGroup()
         queried = GroupPermission.by_group_and_perm(u'wrong_group',
             u'manage_apps', db_session=self.session)
         self.assertEqual(queried, None)
-    
+
     def test_by_group_and_perm_wrong_perm(self):
         self._addGroup()
         queried = GroupPermission.by_group_and_perm(u'group', u'wrong_perm',
                                                     db_session=self.session)
         self.assertEqual(queried, None)
-        
+
 
 class UserPermissionTestCase(BaseTestCase):
     def test_repr(self):
         user_permission = UserPermission(user_name=u'user', perm_name=u'perm')
-        self.assertEqual(repr(user_permission), '<UserPermission: perm>')      
+        self.assertEqual(repr(user_permission), '<UserPermission: perm>')
 
     def test_by_user_and_perm(self):
         self._addUser()
         user_permission = UserPermission.by_user_and_perm(u'username', u'root',
             db_session=self.session)
-        
+
         self.assertEqual(user_permission.user_name, u'username')
         self.assertEqual(user_permission.perm_name, u'root')
-        
+
     def test_by_user_and_perm_wrong_username(self):
         self._addUser()
         user_permission = UserPermission.by_user_and_perm(u'wrong', u'root',
             db_session=self.session)
-        
+
         self.assertEqual(user_permission, None)
-        
+
     def test_by_user_and_perm_wrong_permname(self):
         self._addUser()
         user_permission = UserPermission.by_user_and_perm(u'username', u'wrong',
             db_session=self.session)
-        
+
         self.assertEqual(user_permission, None)
 
 
@@ -726,14 +743,14 @@ class UserGroupTestCase(BaseTestCase):
     def test_repr(self):
         user_group = UserGroup(user_name=u'username', group_name=u'group')
         self.assertEqual(repr(user_group), '<UserGroup: group, username>')
-        
+
 
 class GroupResourcePermissionTestCase(BaseTestCase):
     def test_repr(self):
         group_resource_perm = GroupResourcePermission(group_name='group',
                                                       resource_id=1,
                                                       perm_name='perm')
-        self.assertEqual(repr(group_resource_perm), 
+        self.assertEqual(repr(group_resource_perm),
                          '<GroupResourcePermission: group, perm, 1>')
 
 
