@@ -350,10 +350,6 @@ class UserMixin(BaseModel):
             return True
         return q.first()
 
-    @classmethod
-    def by_external_identity(cls, provider, username):
-        pass
-
 
 class ExternalIdentityMixin(BaseModel):
 
@@ -389,6 +385,17 @@ class ExternalIdentityMixin(BaseModel):
     @declared_attr
     def token_secret(cls):
         return sa.Column(sa.String(255), default=u'')
+
+    @classmethod
+    def by_username_and_provider(cls, external_user_name, provider_name=None,
+                                 db_session=None):
+        db_session = get_db_session(db_session)
+        q = db_session.query(cls.User)
+        q = q.filter(cls.external_user_name == external_user_name)
+        q = q.filter(cls.User.user_name == cls.local_user_name)
+        if provider:
+            q = q.filter(cls.provider_name == provider_name)
+        return q
 
 
 class GroupMixin(BaseModel):

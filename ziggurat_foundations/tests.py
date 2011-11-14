@@ -51,7 +51,8 @@ class User(UserMixin, Base):
     pass
 
 ziggurat_model_init(User, Group, UserGroup, GroupPermission, UserPermission,
-                   UserResourcePermission, GroupResourcePermission, Resource)
+                   UserResourcePermission, GroupResourcePermission, Resource,
+                   ExternalIdentity)
 
 def _initTestingDB():
     engine = create_engine('sqlite://')
