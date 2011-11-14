@@ -159,6 +159,17 @@ class UserMixin(BaseModel):
                         backref='owner'
                         )
 
+    @declared_attr
+    def external_identities(cls):
+        """ returns all external identities for this user"""
+        return sa.orm.relationship('ExternalIdentity',
+                        lazy='dynamic',
+                        cascade="all, delete-orphan",
+                        passive_deletes=True,
+                        passive_updates=True,
+                        backref='owner'
+                        )
+
     @property
     def permissions(self):
         """ returns all non-resource permissions based on what groups user
@@ -339,6 +350,11 @@ class UserMixin(BaseModel):
             return True
         return q.first()
 
+    @classmethod
+    def by_external_identity(cls, provider, username):
+        pass
+
+
 class ExternalIdentityMixin(BaseModel):
 
     @declared_attr
@@ -347,7 +363,7 @@ class ExternalIdentityMixin(BaseModel):
 
     @declared_attr
     def external_id(cls):
-        return sa.Column(sa.Unicode(255), default=u'')
+        return sa.Column(sa.Unicode(255), default=u'', primary_key=True)
 
     @declared_attr
     def external_user_name(cls):
@@ -355,11 +371,12 @@ class ExternalIdentityMixin(BaseModel):
 
     @declared_attr
     def local_user_name(cls):
-        return sa.Column(sa.Unicode(50), default=u'')
+        return sa.Column(sa.Unicode(50), sa.ForeignKey('users.user_name',
+                        onupdate='CASCADE', ondelete='CASCADE'), primary_key=True)
 
     @declared_attr
     def provider_name(cls):
-        return sa.Column(sa.Unicode(50), default=u'')
+        return sa.Column(sa.Unicode(50), default=u'', primary_key=True)
 
     @declared_attr
     def access_token(cls):

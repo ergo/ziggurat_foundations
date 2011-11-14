@@ -24,7 +24,6 @@ def upgrade():
                  sa.Column('access_token', sa.String(255), default=u''),
                  sa.Column('alt_token', sa.String(255), default=u''),
                  sa.Column('token_secret', sa.String(255), default=u'')
-
                  )
 
 
