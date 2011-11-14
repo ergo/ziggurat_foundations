@@ -11,7 +11,7 @@ from ziggurat_foundations.models import UserPermissionMixin
 from ziggurat_foundations.models import UserGroupMixin
 from ziggurat_foundations.models import UserResourcePermissionMixin
 from ziggurat_foundations.models import GroupResourcePermissionMixin
-from ziggurat_foundations.models import ResourceMixin
+from ziggurat_foundations.models import ResourceMixin, ExternalIdentityMixin
 from ziggurat_foundations.models import get_db_session
 from ziggurat_foundations import ziggurat_model_init
 
@@ -42,6 +42,9 @@ class UserPermission(UserPermissionMixin, Base):
     pass
 
 class UserResourcePermission(UserResourcePermissionMixin, Base):
+    pass
+        
+class ExternalIdentity(ExternalIdentityMixin, Base):
     pass
         
 class User(UserMixin, Base):
