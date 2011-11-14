@@ -239,7 +239,7 @@ class UserTestCase(BaseTestCase):
     def test_by_username_andsecurity_code_none(self):
         created_user = self._addUser()
         security_code = created_user.security_code
-        queried_user = User.by_user_name_and_security_code(
+        User.by_user_name_and_security_code(
             user_name=None,
             security_code=security_code,
             db_session=self.session
@@ -294,7 +294,7 @@ class UserTestCase(BaseTestCase):
         self.assertEqual(created_user, queried_user)
 
     def test_by_email_none(self):
-        created_user = self._addUser()
+        self._addUser()
         queried_user = User.by_email(None, db_session=self.session)
 
         self.assertEqual(None, queried_user)
@@ -327,9 +327,7 @@ class UserTestCase(BaseTestCase):
         self.assertEqual(queried_user, None)
 
     def test_by_mail_and_username_none(self):
-        queried_user = User.by_email_and_username(u'email', None,
-                                                  db_session=self.session)
-
+        User.by_email_and_username(u'email', None, db_session=self.session)
         self.assertEqual(None, None)
 
     def test_gravatar_url(self):
@@ -381,14 +379,17 @@ class UserTestCase(BaseTestCase):
         self.assertEqual(resources[0], resource)
 
     def test_resources_with_wrong_perm(self):
-        with self.assertRaises(AssertionError):
-            created_user = self._addUser()
-            resource = self._addResource(1, u'test_resource')
-            permission = UserResourcePermission(perm_name=u'test_perm_BAD',
-                                        user_name=created_user.user_name,
-                                        resource_id=resource.resource_id
-                                                    )
-            resource.user_permissions.append(permission)
+        created_user = self._addUser()
+        resource = self._addResource(1, u'test_resource')
+        permission = UserResourcePermission(
+                         perm_name=u'test_perm_BAD',
+                         user_name=created_user.user_name,
+                         resource_id=resource.resource_id
+                     )
+        self.assertRaises(AssertionError,
+                          lambda: resource.user_permissions.append(permission))
+
+
 
     def test_multiple_resources_with_perm(self):
         created_user = self._addUser()
@@ -435,17 +436,18 @@ class UserTestCase(BaseTestCase):
         self.assertEqual(resources, [resource1, resource3])
 
     def test_resources_with_wrong_group_permission(self):
-        with self.assertRaises(AssertionError):
-            created_user = self._addUser()
-            resource = self._addResource(1, u'test_resource')
-            group = self._addGroup()
-            group.users.append(created_user)
-            group_permission = GroupResourcePermission(
-                                        perm_name=u'test_perm_BAD',
-                                        group_name=u'group',
-                                        resource_id=resource.resource_id
-                                                       )
-            resource.group_permissions.append(group_permission)
+
+        created_user = self._addUser()
+        resource = self._addResource(1, u'test_resource')
+        group = self._addGroup()
+        group.users.append(created_user)
+        group_permission = GroupResourcePermission(
+                                    perm_name=u'test_perm_BAD',
+                                    group_name=u'group',
+                                    resource_id=resource.resource_id
+                            )
+        self.assertRaises(AssertionError,
+                    lambda:resource.group_permissions.append(group_permission))
 
     def test_resources_with_group_permission(self):
         created_user = self._addUser()
