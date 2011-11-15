@@ -1,5 +1,15 @@
 moved to hg
 
+2011-11-15
+Added ExternalIdentityMixin - for storing information about user profiles connected
+to 3rd party identites like facebook/twitter/google/github etc.
+
+2011-11-03
+added alembic migration support
+if you installed ziggurat_foundations before this date your database is at
+Revision ID: 2bb1ba973f0b
+
+
 2011-08-14
 resource.users_for_perm(),  resource.direct_perms_for_user() 
 and resource.group_perms_for_user() return tuple (user/group_name,perm_name) now
