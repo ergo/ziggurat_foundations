@@ -94,7 +94,7 @@ class UserMixin(BaseModel):
 
     @declared_attr
     def user_password(cls):
-        return sa.Column(sa.String(40))
+        return sa.Column(sa.String(256))
 
     @declared_attr
     def email(cls):
@@ -106,7 +106,7 @@ class UserMixin(BaseModel):
 
     @declared_attr
     def security_code(cls):
-        return sa.Column(sa.String(40), default='default')
+        return sa.Column(sa.String(256), default='default')
 
     @declared_attr
     def last_login_date(cls):
