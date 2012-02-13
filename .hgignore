@@ -11,3 +11,5 @@ syntax: regexp
 ^\.settings$
 syntax: regexp
 ^alembic\.ini$
+syntax: regexp
+^test\.py$
