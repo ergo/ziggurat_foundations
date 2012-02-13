@@ -1,13 +1,27 @@
-moved to hg
+What "previous revision ID" means? 
+If you are updating the package that never was updated before or stamped with 
+alembic you may need to stamp the database manually with following revision id, 
+from this point onwards you will be able to update schemas automaticly
+
+
+2012-02-13
+Bumped alembic machinery to 0.2
+Enabled developers to set their own custom password managers
+added ordering column for resources in tree
+previous revision ID:  46a9c4fb9560
+
+2011-12-20
+Made hash fields bigger
+previous revision ID: 5c84d7260c5
 
 2011-11-15
 Added ExternalIdentityMixin - for storing information about user profiles connected
 to 3rd party identites like facebook/twitter/google/github etc.
+previous revision ID: 24ab8d11f014
 
 2011-11-03
 added alembic migration support
-if you installed ziggurat_foundations before this date your database is at
-Revision ID: 2bb1ba973f0b
+previous revision ID: 2bb1ba973f0b
 
 
 2011-08-14

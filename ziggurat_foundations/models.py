@@ -716,6 +716,10 @@ class ResourceMixin(BaseModel):
                                 onupdate='CASCADE', ondelete='SET NULL'))
 
     @declared_attr
+    def ordering(cls):
+        return sa.Column(sa.Integer())
+
+    @declared_attr
     def resource_name(cls):
         return sa.Column(sa.Unicode(100), nullable=False)
 
