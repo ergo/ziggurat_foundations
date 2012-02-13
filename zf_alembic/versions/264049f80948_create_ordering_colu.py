@@ -14,7 +14,7 @@ from alembic import op
 import sqlalchemy as sa
 
 def upgrade():
-    op.add_column('resources', sa.Column('ordering', sa.Integer))
+    op.add_column('resources', sa.Column('ordering', sa.Integer, nullable=False, default=0))
 
 def downgrade():
     op.drop_column('resources', 'ordering')

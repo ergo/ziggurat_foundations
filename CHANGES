@@ -8,6 +8,7 @@ from this point onwards you will be able to update schemas automaticly
 Bumped alembic machinery to 0.2
 Enabled developers to set their own custom password managers
 added ordering column for resources in tree
+Stubs for tree traversal
 previous revision ID:  46a9c4fb9560
 
 2011-12-20

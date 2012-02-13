@@ -717,7 +717,7 @@ class ResourceMixin(BaseModel):
 
     @declared_attr
     def ordering(cls):
-        return sa.Column(sa.Integer())
+        return sa.Column(sa.Integer(), default=0, nullable=False)
 
     @declared_attr
     def resource_name(cls):
@@ -919,3 +919,41 @@ class ResourceMixin(BaseModel):
         """ validate if resouce can have specific permission """
         assert permission.perm_name in self.__possible_permissions__
         return permission
+
+    @classmethod
+    def subtree_deeper(cls, object_id, limit_depth=1000000, flat=True, db_session=None):
+        """ This returns you subree of ordered objects relative to the start object id
+            currently only postgresql
+        """
+        raw_q = """
+            WITH RECURSIVE subtree AS (
+                    SELECT res.*, 1 as depth, array[ordering] as sorting FROM resources res WHERE res.resource_id = :id
+                  UNION ALL
+                    SELECT res_u.*, depth+1 as depth, (st.sorting || ARRAY[res_u.ordering] ) as sort  FROM resources res_u, subtree st WHERE res_u.parent_id = st.resource_id  
+            )
+            SELECT * FROM subtree WHERE depth<=:depth ORDER BY sorting;
+        """
+        db_session = get_db_session(db_session)
+        q = db_session.query(cls).from_statement(raw_q).params(id=object_id,
+                                                               depth=limit_depth
+                                                               )
+        return q
+
+    @classmethod
+    def path_upper(cls, object_id, limit_depth=1000000, flat=True, db_session=None):
+        """ This returns you path to root node starting from object_id 
+            currently only for postgresql
+        """
+        raw_q = """
+            WITH RECURSIVE subtree AS (
+                    SELECT res.*, 1 as depth FROM resources res WHERE res.resource_id = :id
+                  UNION ALL
+                    SELECT res_u.*, depth+1 as depth FROM resources res_u, subtree st WHERE res_u.resource_id = st.parent_id  
+            )
+            SELECT * FROM subtree WHERE depth<=:depth;
+        """
+        db_session = get_db_session(db_session)
+        q = db_session.query(cls).from_statement(raw_q).params(id=object_id,
+                                                               depth=limit_depth
+                                                               )
+        return q
