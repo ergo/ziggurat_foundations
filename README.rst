@@ -63,6 +63,7 @@ because they are reused in various queries - unless you reimplement ziggurat_mod
     from ziggurat_foundations.models import GroupPermissionMixin, UserGroupMixin 
     from ziggurat_foundations.models import GroupResourcePermissionMixin, ResourceMixin 
     from ziggurat_foundations.models import UserPermissionMixin, UserResourcePermissionMixin
+    from ziggurat_foundations.models import ExternalIdentityMixin
     from ziggurat_foundations import ziggurat_model_init
     # this is needed for pylons 1.0 / akhet approach to db session
     ziggurat_foundations.models.DBSession = DBSession 
@@ -92,6 +93,14 @@ because they are reused in various queries - unless you reimplement ziggurat_mod
     
     class User(UserMixin, Base):
         pass
+
+    class ExternalIdentity(ExternalIdentityMixin, Base):
+        pass
     
     ziggurat_model_init(User, Group, UserGroup, GroupPermission, UserPermission,
-                   UserResourcePermission, GroupResourcePermission, Resource)
+                   UserResourcePermission, GroupResourcePermission, Resource,
+                   ExternalIdentity, passwordmanager=None)
+                   
+Because some systems can't utilize bcypt password manager you can pass your own
+cryptacular compatible password manager to ziggurat_model_init, it will be used  
+instead of creating default one.

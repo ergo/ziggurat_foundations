@@ -5,9 +5,6 @@ import random
 import string
 import webhelpers.paginate
 
-from cryptacular.bcrypt import BCRYPTPasswordManager
-from cryptacular.core import DelegatingPasswordManager
-from ziggurat_foundations.utils import PlaceholderPasswordChecker
 from sqlalchemy.ext.declarative import declared_attr
 from pyramid.security import Allow, ALL_PERMISSIONS
 
@@ -114,11 +111,6 @@ class UserMixin(BaseModel):
                                 default=sa.sql.func.now(),
                                 server_default=sa.func.now()
                                 )
-
-    passwordmanager = DelegatingPasswordManager(
-            preferred=BCRYPTPasswordManager(),
-            fallbacks=(PlaceholderPasswordChecker(),)
-            )
 
     def __repr__(self):
         return '<User: %s>' % self.user_name
