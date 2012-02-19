@@ -355,7 +355,7 @@ class ExternalIdentityMixin(BaseModel):
 
     @declared_attr
     def external_user_name(cls):
-        return sa.Column(sa.Unicode(50), default=u'')
+        return sa.Column(sa.Unicode(255), default=u'')
 
     @declared_attr
     def local_user_name(cls):
