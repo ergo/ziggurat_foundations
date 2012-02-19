@@ -26,6 +26,11 @@ Currently following information and data manipulation is supported:
 The sqlalchemy mixins make all the interactions easy to use in your application 
 and save development time.
 
+!!!!! IMPORTANT !!!!!
+Be cautious about creating your database models directly with sqlalchemy - be sure
+to at least stamp the database with latest alembic timestamp. Generally it is a better
+idea to use alembic for table creation.
+
 Example usage:
 --------------
 
