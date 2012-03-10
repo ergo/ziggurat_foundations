@@ -36,7 +36,7 @@ def upgrade():
                  sa.Column('email',sa.Unicode(100), nullable=False, unique=True),
                  sa.Column('status',sa.SmallInteger(), nullable=False),
                  sa.Column('security_code',sa.String(40), default='default'),
-                 sa.Column('last_login_date',sa.TIMESTAMP(timezone=True),
+                 sa.Column('last_login_date',sa.TIMESTAMP(timezone=False),
                                 default=sa.sql.func.now(),
                                 server_default=sa.func.now()
                                 )

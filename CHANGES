@@ -3,6 +3,10 @@ If you are updating the package that never was stamped with
 alembic you may need to stamp the database manually with following revision id, 
 from this point onwards you will be able to update schemas automaticly
 
+2012-03.10
+Add registration date to user model, changed last_login_date to no-timezone type (this
+seem trivial enough to not faciliate schema change) 
+previous revision ID: 2d472fe79b95
 
 2012-02.19
 Made external identity fields bigger

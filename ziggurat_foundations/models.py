@@ -107,7 +107,13 @@ class UserMixin(BaseModel):
 
     @declared_attr
     def last_login_date(cls):
-        return sa.Column(sa.TIMESTAMP(timezone=True),
+        return sa.Column(sa.TIMESTAMP(timezone=False),
+                                default=sa.sql.func.now(),
+                                server_default=sa.func.now()
+                                )
+    @declared_attr
+    def registered_date(cls):
+        return sa.Column(sa.TIMESTAMP(timezone=False),
                                 default=sa.sql.func.now(),
                                 server_default=sa.func.now()
                                 )
