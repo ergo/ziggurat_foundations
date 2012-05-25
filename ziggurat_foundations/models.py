@@ -4,17 +4,40 @@ import urllib
 import random
 import string
 import webhelpers.paginate
+import logging
 
 from sqlalchemy.ext.declarative import declared_attr
-from pyramid.security import Allow, ALL_PERMISSIONS
+try:
+    from pyramid.security import Allow, ALL_PERMISSIONS
+except ImportError as e:
+    Allow = 'Allow'
+    # borrowed directly from pyramid - to avoid dependancy on pyramid itself
+    # source https://github.com/Pylons/pyramid/blob/master/pyramid/security.py 
+    class AllPermissionsList(object):
+        """ Stand in 'permission list' to represent all permissions """
+        def __iter__(self):
+            return ()
+        def __contains__(self, other):
+            return True
+        def __eq__(self, other):
+            return isinstance(other, self.__class__)
+    ALL_PERMISSIONS = AllPermissionsList()
 
-
+__version__ = '0.2'
 DBSession = None
 
 
 def get_db_session(session=None, obj=None):
-    """ attempts to return sqlalchemy session that could have been
-        created/passed in one of few ways"""
+    """ utility function that attempts to return sqlalchemy session that could 
+    have been created/passed in one of few ways:
+    
+    * It first tries to read session attached to instance if object argument was passed
+    
+    * then it tries to return  session passed as argument
+    
+    * finally tries to read pylons-like object called DBSession
+    
+    * if this fails exception is thrown """
     # try to read the session from instance
     if obj:
         return sa.orm.session.object_session(obj)
@@ -27,34 +50,41 @@ def get_db_session(session=None, obj=None):
     raise Exception('No Session found')
 
 class BaseModel(object):
-    """ base class for  all other models to inherit """
+    """ Basic class that all other classes inherit from that supplies some 
+    basic methods useful for interaction with packages like:
+    deform, colander or wtforms """
 
     @classmethod
     def _get_keys(cls):
-        """ return column names for this model """
+        """ returns column names for this model """
         return sa.orm.class_mapper(cls).c.keys()
 
     def get_dict(self):
-        """ return dict with keys and values corresponding to this model data """
+        """ return dictionary of keys and values corresponding to this model's
+        data """
         d = {}
         for k in self._get_keys():
             d[k] = getattr(self, k)
         return d
 
     def get_appstruct(self):
-        """ return dict with keys and values corresponding to this model data """
+        """ return list of tuples keys and values corresponding to this model's
+        data """
         l = []
         for k in self._get_keys():
             l.append((k, getattr(self, k),))
         return l
 
     def populate_obj(self, appstruct):
-        """ populate model with data from dict """
+        """ populate model with data from dictionary that are mapped aqlalchemy 
+        columns at same time """
         for k in self._get_keys():
             if k in appstruct:
                 setattr(self, k, appstruct[k])
 
     def get_db_session(self, session=None):
+        """ Attempts to return session via get_db_session utility function 
+        :meth:`~ziggurat_foundations.models.get_db_session`"""
         return get_db_session(session, self)
 
 
@@ -63,8 +93,8 @@ class UserMixin(BaseModel):
 
     __mapper_args__ = {}
     __table_args__ = {
-                      'mysql_engine':'InnoDB',
-                      'mysql_charset':'utf8'
+                      'mysql_engine': 'InnoDB',
+                      'mysql_charset': 'utf8'
                       }
 
     @declared_attr
@@ -227,7 +257,7 @@ class UserMixin(BaseModel):
         hash = hashlib.md5(self.email.encode('utf8').lower()).hexdigest()
         gravatar_url = "https://secure.gravatar.com/avatar/%s?%s" % (
                                                 hash,
-                                                urllib.urlencode({'d':default})
+                                                urllib.urlencode({'d': default})
                                                                       )
         return gravatar_url
 

@@ -1,7 +1,7 @@
 ziggurat_foundations
 =====================
 
-Framework agnostic (with slight bias towards pyramid) set of sqlalchemy 
+Framework agnostic (with bias towards pyramid) set of sqlalchemy 
 classes that make building applications that require permissions an easy task.
 
 ziggurat_foundations supplies a set of *sqlalchemy mixins* that can be used to extend
@@ -28,8 +28,8 @@ and save development time.
 
 !!!!! IMPORTANT !!!!!
 Be cautious about creating your database models directly with sqlalchemy - be sure
-to at least stamp the database with latest alembic timestamp. Generally it is a better
-idea to use alembic for table creation.
+to at least stamp the database with latest alembic timestamp. It is recommended 
+to use alembic for table creation.
 
 Example usage:
 --------------
