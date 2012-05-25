@@ -58,20 +58,10 @@ class BaseModel(object):
         return get_db_session(session, self)
 
 
-class UserMapperExtension(sa.orm.interfaces.MapperExtension):
-
-    def after_update(self, mapper, connection, instance):
-        instance.by_user_name(instance.user_name, invalidate=True,
-                        db_session=get_db_session(None, instance))
-
-    def after_delete(self, mapper, connection, instance):
-        instance.by_user_name(instance.user_name, invalidate=True,
-                        db_session=get_db_session(None, instance))
-
 class UserMixin(BaseModel):
     """base mixin for user object"""
 
-    __mapper_args__ = {'extension': UserMapperExtension()}
+    __mapper_args__ = {}
     __table_args__ = {
                       'mysql_engine':'InnoDB',
                       'mysql_charset':'utf8'
@@ -188,7 +178,7 @@ class UserMixin(BaseModel):
 
 
     def resources_with_perms(self, perms, resource_ids=None, cache='default',
-                             invalidate=False, db_session=None):
+                             db_session=None):
         """ returns all resources that user has perms for,
             note that at least one perm needs to be met,
             resource_ids restricts the search to specific resources"""
@@ -229,8 +219,6 @@ class UserMixin(BaseModel):
             query2 = query2.filter(self.Resource.resource_id.in_(resource_ids))
         query = query.union(query2)
         query = query.order_by(self.Resource.resource_name)
-        if invalidate:
-            return True
         return query
 
     def gravatar_url(self, default='mm'):
@@ -272,15 +260,12 @@ class UserMixin(BaseModel):
 
 
     @classmethod
-    def by_user_name(cls, user_name, cache='default',
-                    invalidate=False, db_session=None):
+    def by_user_name(cls, user_name, cache='default', db_session=None):
         """ fetch user by user name """
         db_session = get_db_session(db_session)
         query = db_session.query(cls)
         query = query.filter(sa.func.lower(cls.user_name) == (user_name or '').lower())
         query = query.options(sa.orm.eagerload('groups'))
-        if invalidate:
-            return True
         return query.first()
 
     @classmethod
@@ -295,21 +280,17 @@ class UserMixin(BaseModel):
 
 
     @classmethod
-    def by_user_names(cls, user_names, cache='default',
-                    invalidate=False, db_session=None):
+    def by_user_names(cls, user_names, cache='default', db_session=None):
         """ fetch user objects by user names """
         user_names = [(name or '').lower() for name in user_names]
         db_session = get_db_session(db_session)
         query = db_session.query(cls)
         query = query.filter(sa.func.lower(cls.user_name).in_(user_names))
         #q = q.options(sa.orm.eagerload(cls.groups))
-        if invalidate:
-            return True
         return query
 
     @classmethod
-    def user_names_like(cls, user_name, cache='default',
-                    invalidate=False, db_session=None):
+    def user_names_like(cls, user_name, cache='default', db_session=None):
         """
         fetch users with similar names
         
@@ -321,31 +302,24 @@ class UserMixin(BaseModel):
         query = query.filter(sa.func.lower(cls.user_name).like((user_name or '').lower()))
         query = query.order_by(cls.user_name)
         #q = q.options(sa.orm.eagerload('groups'))
-        if invalidate:
-            return True
         return query
 
     @classmethod
-    def by_email(cls, email, cache='default',
-                    invalidate=False, db_session=None):
+    def by_email(cls, email, cache='default', db_session=None):
         """ fetch user objects by email """
         db_session = get_db_session(db_session)
         query = db_session.query(cls).filter(cls.email == email)
         query = query.options(sa.orm.eagerload('groups'))
-        if invalidate:
-            return True
         return query.first()
 
     @classmethod
     def by_email_and_username(cls, email, user_name, cache='default',
-                    invalidate=False, db_session=None):
+                              db_session=None):
         """ fetch user objects by email and username """
         db_session = get_db_session(db_session)
         query = db_session.query(cls).filter(cls.email == email)
         query = query.filter(sa.func.lower(cls.user_name) == (user_name or '').lower())
         query = query.options(sa.orm.eagerload('groups'))
-        if invalidate:
-            return True
         return query.first()
 
 
@@ -693,15 +667,6 @@ class UserResourcePermissionMixin(BaseModel):
 #            return key
 #        raise KeyError
 
-class ResourceMapperExtension(sa.orm.interfaces.MapperExtension):
-
-    def after_update(self, mapper, connection, instance):
-        instance.by_resource_id(instance.resource_id, invalidate=True,
-                                db_session=get_db_session(None, instance))
-
-    def after_delete(self, mapper, connection, instance):
-        instance.by_resource_id(instance.resource_id, invalidate=True,
-                                db_session=get_db_session(None, instance))
 
 class ResourceMixin(BaseModel):
 
@@ -781,9 +746,7 @@ class ResourceMixin(BaseModel):
                                  passive_updates=True
                                   )
 
-    __mapper_args__ = {'polymorphic_on': resource_type,
-                       'extension': ResourceMapperExtension()
-                       }
+    __mapper_args__ = {'polymorphic_on': resource_type}
     __table_args__ = {
                       'mysql_engine':'InnoDB',
                       'mysql_charset':'utf8'
@@ -806,8 +769,7 @@ class ResourceMixin(BaseModel):
             acls.extend([(Allow, "group:%s" % self.owner_group_name, ALL_PERMISSIONS,), ])
         return acls
 
-    def perms_for_user(self, user, cache='default',
-                       invalidate=False, db_session=None):
+    def perms_for_user(self, user, cache='default', db_session=None):
         """ returns all permissions that given user has for this resource
             from groups and directly set ones too"""
         db_session = get_db_session(db_session, self)
@@ -824,8 +786,6 @@ class ResourceMixin(BaseModel):
         query2 = query2.filter(self.UserResourcePermission.user_name == user.user_name)
         query2 = query2.filter(self.UserResourcePermission.resource_id == self.resource_id)
         query = query.union(query2)
-        if invalidate:
-            return True
         perms = [(row[0], row.perm_name,) for row in query]
         #include all perms if user is the owner of this resource
         if self.owner_user_name == user.user_name:
@@ -833,8 +793,7 @@ class ResourceMixin(BaseModel):
         return perms
 
 
-    def direct_perms_for_user(self, user, cache='default',
-                       invalidate=False, db_session=None):
+    def direct_perms_for_user(self, user, cache='default', db_session=None):
         """ returns permissions that given user has for this resource
             without ones inherited from groups that user belongs to"""
         db_session = get_db_session(db_session, self)
@@ -842,16 +801,13 @@ class ResourceMixin(BaseModel):
                              self.UserResourcePermission.perm_name)
         query = query.filter(self.UserResourcePermission.user_name == user.user_name)
         query = query.filter(self.UserResourcePermission.resource_id == self.resource_id)
-        if invalidate:
-            return True
         perms = [(row[0], row.perm_name,) for row in query]
         #include all perms if user is the owner of this resource
         if self.owner_user_name == user.user_name:
             perms.append((self.owner_user_name, ALL_PERMISSIONS,))
         return perms
 
-    def group_perms_for_user(self, user, cache='default',
-                       invalidate=False, db_session=None):
+    def group_perms_for_user(self, user, cache='default', db_session=None):
         """ returns permissions that given user has for this resource
             that are inherited from groups """
         db_session = get_db_session(db_session, self)
@@ -862,16 +818,13 @@ class ResourceMixin(BaseModel):
                                     )
                      )
         query = query.filter(self.GroupResourcePermission.resource_id == self.resource_id)
-        if invalidate:
-            return True
         perms = [(row[0], row.perm_name,) for row in query]
 #        if self.owner_group_name:
 #            perms.append(('group:' + self.owner_group_name, ALL_PERMISSIONS,))
         return perms
 
 
-    def users_for_perm(self, perm_name, cache='default',
-                       invalidate=False, db_session=None):
+    def users_for_perm(self, perm_name, cache='default', db_session=None):
         """ return tuple (user,perm_name) that have given permission for the resource """
         db_session = get_db_session(db_session, self)
         query = db_session.query(self.User, self.GroupResourcePermission.perm_name)
@@ -886,21 +839,16 @@ class ResourceMixin(BaseModel):
             query2 = query2.filter(self.UserResourcePermission.perm_name == perm_name)
         query2 = query2.filter(self.UserResourcePermission.resource_id == self.resource_id)
         query = query.union(query2)
-        if invalidate:
-            return True
         users = [(row.User, row.perm_name,) for row in query]
         if self.owner_user_name:
             users.append((self.User.by_user_name(self.owner_user_name), ALL_PERMISSIONS,))
         return users
 
     @classmethod
-    def by_resource_id(cls, resource_id, cache='default',
-                       invalidate=False, db_session=None):
+    def by_resource_id(cls, resource_id, cache='default', db_session=None):
         """ fetch the resouce by id """
         db_session = get_db_session(db_session)
         query = db_session.query(cls).filter(cls.resource_id == int(resource_id))
-        if invalidate:
-            return True
         return query.first()
 
     @classmethod

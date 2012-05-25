@@ -13,3 +13,5 @@ syntax: regexp
 ^alembic\.ini$
 syntax: regexp
 ^test\.py$
+syntax: regexp
+^docs/_build$

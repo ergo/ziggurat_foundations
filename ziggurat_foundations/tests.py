@@ -133,17 +133,17 @@ class ModelTestCase(BaseTestCase):
 
     def test_get_keys(self):
         keys = User._get_keys()
-        self.assertEqual(len(keys), 7)
+        self.assertEqual(len(keys), 8)
 
     def test_get_dict(self):
         created_user = self._addUser()
         dict_ = created_user.get_dict()
-        self.assertEqual(len(dict_), 7)
+        self.assertEqual(len(dict_), 8)
 
     def test_appstruct(self):
         created_user = self._addUser()
         appstruct = created_user.get_appstruct()
-        self.assertEqual(len(appstruct), 7)
+        self.assertEqual(len(appstruct), 8)
 
     def test_populate_obj_appstruct(self):
         created_user = self._addUser()
