@@ -15,7 +15,7 @@ In time of writing this tutorial proper separate versioning of alembic schemes i
 planned for version 0.3.3+ , so you will first need to install trunk version of 
 alembic itself for this to work properly::
 
-    pip install hg+ssh://hg@bitbucket.org/zzzeek/alembic
+    pip install hg+http://bitbucket.org/zzzeek/alembic
 
 After you obtain recent alembic you can now run your migrations agains databae of your choice.
 

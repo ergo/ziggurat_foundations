@@ -15,3 +15,7 @@ syntax: regexp
 ^test\.py$
 syntax: regexp
 ^docs/_build$
+syntax: regexp
+^dist$
+syntax: regexp
+^dist$
