@@ -9,6 +9,16 @@ Welcome to ziggurat_foundations's documentation!
 Framework agnostic (with bias towards pyramid) set of sqlalchemy 
 classes that make building applications that require permissions (ACL's) an easy task.
 
+.. tip::
+
+    By default ziggurat aims at **postgresql 8.4+** (CTE support) as main RDBMS system,
+    but currently *everything* except recursive queries(for optional resource tree structures) 
+    is tested using sqlite, and will run on other popular database systems including mysql.     
+
+**DOCUMENTATION**: http://ziggurat_foundations.readthedocs.org/en/latest/
+
+**BUG TRACKER**: https://bitbucket.org/ergo/ziggurat_foundations
+
 Contents:
 
 .. toctree::

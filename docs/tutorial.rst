@@ -182,7 +182,7 @@ Fetch all resources that user can "edit" or "vote"::
     user.resources_with_perms(["edit","vote"])
 
 Connecting external identity like twitter login
-----------------------------------------------
+-----------------------------------------------
 ::
 
     ex_identity = ExternalIdentity()

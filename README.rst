@@ -9,6 +9,11 @@ models in your application. The aim of this project is to supply set of generic
 models that cover the most common needs in application development when it comes 
 to authorization - using flat and tree like data structures.
 
+
+**DOCUMENTATION**: http://ziggurat_foundations.readthedocs.org/en/latest/
+
+**BUG TRACKER**: https://bitbucket.org/ergo/ziggurat_foundations
+
 So far following basics are supplied:
 
 - User - base for user accounts
