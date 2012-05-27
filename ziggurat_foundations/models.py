@@ -207,7 +207,7 @@ class UserMixin(BaseModel):
 
 
 
-    def resources_with_perms(self, perms, resource_ids=None, cache='default',
+    def resources_with_perms(self, perms, resource_ids=None,
                              db_session=None):
         """ returns all resources that user has perms for,
             note that at least one perm needs to be met,
@@ -290,7 +290,7 @@ class UserMixin(BaseModel):
 
 
     @classmethod
-    def by_user_name(cls, user_name, cache='default', db_session=None):
+    def by_user_name(cls, user_name, db_session=None):
         """ fetch user by user name """
         db_session = get_db_session(db_session)
         query = db_session.query(cls)
@@ -310,7 +310,7 @@ class UserMixin(BaseModel):
 
 
     @classmethod
-    def by_user_names(cls, user_names, cache='default', db_session=None):
+    def by_user_names(cls, user_names, db_session=None):
         """ fetch user objects by user names """
         user_names = [(name or '').lower() for name in user_names]
         db_session = get_db_session(db_session)
@@ -320,7 +320,7 @@ class UserMixin(BaseModel):
         return query
 
     @classmethod
-    def user_names_like(cls, user_name, cache='default', db_session=None):
+    def user_names_like(cls, user_name, db_session=None):
         """
         fetch users with similar names
         
@@ -335,7 +335,7 @@ class UserMixin(BaseModel):
         return query
 
     @classmethod
-    def by_email(cls, email, cache='default', db_session=None):
+    def by_email(cls, email, db_session=None):
         """ fetch user objects by email """
         db_session = get_db_session(db_session)
         query = db_session.query(cls).filter(cls.email == email)
@@ -343,8 +343,7 @@ class UserMixin(BaseModel):
         return query.first()
 
     @classmethod
-    def by_email_and_username(cls, email, user_name, cache='default',
-                              db_session=None):
+    def by_email_and_username(cls, email, user_name, db_session=None):
         """ fetch user objects by email and username """
         db_session = get_db_session(db_session)
         query = db_session.query(cls).filter(cls.email == email)
@@ -799,7 +798,7 @@ class ResourceMixin(BaseModel):
             acls.extend([(Allow, "group:%s" % self.owner_group_name, ALL_PERMISSIONS,), ])
         return acls
 
-    def perms_for_user(self, user, cache='default', db_session=None):
+    def perms_for_user(self, user, db_session=None):
         """ returns all permissions that given user has for this resource
             from groups and directly set ones too"""
         db_session = get_db_session(db_session, self)
@@ -823,7 +822,7 @@ class ResourceMixin(BaseModel):
         return perms
 
 
-    def direct_perms_for_user(self, user, cache='default', db_session=None):
+    def direct_perms_for_user(self, user, db_session=None):
         """ returns permissions that given user has for this resource
             without ones inherited from groups that user belongs to"""
         db_session = get_db_session(db_session, self)
@@ -837,7 +836,7 @@ class ResourceMixin(BaseModel):
             perms.append((self.owner_user_name, ALL_PERMISSIONS,))
         return perms
 
-    def group_perms_for_user(self, user, cache='default', db_session=None):
+    def group_perms_for_user(self, user, db_session=None):
         """ returns permissions that given user has for this resource
             that are inherited from groups """
         db_session = get_db_session(db_session, self)
@@ -854,7 +853,7 @@ class ResourceMixin(BaseModel):
         return perms
 
 
-    def users_for_perm(self, perm_name, cache='default', db_session=None):
+    def users_for_perm(self, perm_name, db_session=None):
         """ return tuple (user,perm_name) that have given permission for the resource """
         db_session = get_db_session(db_session, self)
         query = db_session.query(self.User, self.GroupResourcePermission.perm_name)
@@ -875,7 +874,7 @@ class ResourceMixin(BaseModel):
         return users
 
     @classmethod
-    def by_resource_id(cls, resource_id, cache='default', db_session=None):
+    def by_resource_id(cls, resource_id, db_session=None):
         """ fetch the resouce by id """
         db_session = get_db_session(db_session)
         query = db_session.query(cls).filter(cls.resource_id == int(resource_id))

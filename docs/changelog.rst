@@ -14,11 +14,12 @@ added proper alembic(pre 0.3.3 trunk) support for multiple alembic migrations
 via separate versioning table
 please do manual stamp for CURRENT revision ID: 54d08f9adc8c
 changes for first public pypi release
+Possible backwards incompatibility: Remove cache keyword cruft
 
 
 2012-05-25
 ----------
-Remove invalidate keyword cruft
+Possible backwards incompatibility: Remove invalidate keyword cruft
 
 2012-03-10
 ----------
