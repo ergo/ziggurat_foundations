@@ -76,8 +76,8 @@ class BaseModel(object):
         return l
 
     def populate_obj(self, appstruct):
-        """ populate model with data from dictionary that are mapped aqlalchemy 
-        columns at same time """
+        """ updates instance properties with dictionary values *for keys that 
+        exist* for this model """
         for k in self._get_keys():
             if k in appstruct:
                 setattr(self, k, appstruct[k])
@@ -89,7 +89,11 @@ class BaseModel(object):
 
 
 class UserMixin(BaseModel):
-    """base mixin for user object"""
+    """ Base mixin for user object representation.
+        It supplies all the basic functionality from password hash generation and 
+        matching to utility methods used for querying database for users and 
+        their permissions or resources they have access to. It is meant to be 
+        extended with other application specific properties"""
 
     __mapper_args__ = {}
     __table_args__ = {
@@ -101,38 +105,47 @@ class UserMixin(BaseModel):
     def __tablename__(cls):
         return 'users'
 
+    
     @declared_attr
     def id(cls):
+        """ Unique identifier of user object"""
         return sa.Column(sa.Integer, primary_key=True)
 
     @declared_attr
     def user_name(cls):
+        """ Unique user name user object"""
         return sa.Column(sa.Unicode(30), unique=True)
 
     @declared_attr
     def user_password(cls):
+        """ Password hash for user object """
         return sa.Column(sa.String(256))
 
     @declared_attr
     def email(cls):
+        """ Email for user object """
         return sa.Column(sa.Unicode(100), nullable=False, unique=True)
 
     @declared_attr
     def status(cls):
+        """ Status of user object """
         return sa.Column(sa.SmallInteger(), nullable=False)
 
     @declared_attr
     def security_code(cls):
+        """ Security code user object (can be used for password reset etc. """
         return sa.Column(sa.String(256), default='default')
 
     @declared_attr
     def last_login_date(cls):
+        """ Date of user's last login """
         return sa.Column(sa.TIMESTAMP(timezone=False),
                                 default=sa.sql.func.now(),
                                 server_default=sa.func.now()
                                 )
     @declared_attr
     def registered_date(cls):
+        """ Date of user's registration """
         return sa.Column(sa.TIMESTAMP(timezone=False),
                                 default=sa.sql.func.now(),
                                 server_default=sa.func.now()
@@ -143,7 +156,7 @@ class UserMixin(BaseModel):
 
     @declared_attr
     def groups_dynamic(cls):
-        """ returns dynamic relationship for groups - filter can be used """
+        """ returns dynamic relationship for groups - allowing for filtering of data """
         return sa.orm.relationship('Group', secondary='users_groups',
                         lazy='dynamic',
                         passive_deletes=True,
@@ -152,7 +165,12 @@ class UserMixin(BaseModel):
 
     @declared_attr
     def user_permissions(cls):
-        """ returns all direct non-resource permissions for this user"""
+        """
+        returns all direct non-resource permissions for this user, allows to assign 
+        new permissions to user::
+
+            user.user_permissions.append(resource)
+        """
         return sa.orm.relationship('UserPermission',
                         cascade="all, delete-orphan",
                         passive_deletes=True,
@@ -161,7 +179,7 @@ class UserMixin(BaseModel):
 
     @declared_attr
     def resource_permissions(cls):
-        """returns all direct resource permissions for this user"""
+        """ returns all direct resource permissions for this user """
         return sa.orm.relationship('UserResourcePermission',
                         cascade="all, delete-orphan",
                         passive_deletes=True,
@@ -170,6 +188,10 @@ class UserMixin(BaseModel):
 
     @declared_attr
     def resources(cls):
+        """ Returns all resources directly owned by user, can be used to assign 
+        ownership of new resources::
+        
+            user.resources.append(resource) """
         return sa.orm.relationship('Resource',
                         cascade="all",
                         passive_deletes=True,
@@ -179,7 +201,7 @@ class UserMixin(BaseModel):
 
     @declared_attr
     def external_identities(cls):
-        """ returns all external identities for this user"""
+        """ dynamic relation for external identities for this user - allowing for filtering of data """
         return sa.orm.relationship('ExternalIdentity',
                         lazy='dynamic',
                         cascade="all, delete-orphan",

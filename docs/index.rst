@@ -26,8 +26,8 @@ Contents:
    
    overview
    tutorial
-   changelog
    api
+   changelog
 
 
 Indices and tables
