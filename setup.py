@@ -10,5 +10,5 @@ setup(name='ziggurat_foundations',
       license='BSD',
       packages=['ziggurat_foundations'],
       test_suite='ziggurat_foundations.tests',
-      install_requires=["sqlalchemy", "cryptacular", 'pyramid','webhelpers']
+      install_requires=["sqlalchemy", "cryptacular", 'webhelpers']
       )
