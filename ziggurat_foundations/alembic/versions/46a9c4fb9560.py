@@ -13,9 +13,13 @@ from alembic.op import *
 import sqlalchemy as sa
 
 def upgrade():
-    alter_column('users','user_password',type_=sa.String(256),existing_type=sa.String(40))
-    alter_column('users','security_code',type_=sa.String(256),existing_type=sa.String(40))
+    alter_column('users', 'user_password',
+                 type_=sa.String(256), existing_type=sa.String(40))
+    alter_column('users', 'security_code',
+                 type_=sa.String(256), existing_type=sa.String(40))
 
 def downgrade():
-    alter_column('users','user_password',type_=sa.String(40),existing_type=sa.String(256))
-    alter_column('users','security_code',type_=sa.String(40),existing_type=sa.String(256))
+    alter_column('users', 'user_password',
+                 type_=sa.String(40), existing_type=sa.String(256))
+    alter_column('users', 'security_code',
+                 type_=sa.String(40), existing_type=sa.String(256))

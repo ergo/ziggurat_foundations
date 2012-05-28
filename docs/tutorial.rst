@@ -130,8 +130,8 @@ How to use the mixins inside your application::
     cryptacular compatible password manager to ziggurat_model_init, it will be used  
     instead of creating default one.
     
-Examples of usage
-=================
+Usage examples
+==============
 
 Adding new user
 ---------------

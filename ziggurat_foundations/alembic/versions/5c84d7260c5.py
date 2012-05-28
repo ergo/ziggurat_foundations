@@ -13,9 +13,9 @@ from alembic.op import *
 import sqlalchemy as sa
 
 def upgrade():
-    add_column('resources', sa.Column('parent_id',sa.BigInteger(),
+    add_column('resources', sa.Column('parent_id', sa.BigInteger(),
         sa.ForeignKey('resources.resource_id',
                       onupdate='CASCADE', ondelete='SET NULL')))
 
 def downgrade():
-    drop_column('resources','parent_id')
+    drop_column('resources', 'parent_id')

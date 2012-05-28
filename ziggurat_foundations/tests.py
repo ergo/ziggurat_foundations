@@ -2,8 +2,6 @@
 import unittest
 
 from sqlalchemy.ext.declarative import declarative_base
-
-import ziggurat_foundations
 from ziggurat_foundations.models import UserMixin
 from ziggurat_foundations.models import GroupMixin
 from ziggurat_foundations.models import GroupPermissionMixin
@@ -12,10 +10,8 @@ from ziggurat_foundations.models import UserGroupMixin
 from ziggurat_foundations.models import UserResourcePermissionMixin
 from ziggurat_foundations.models import GroupResourcePermissionMixin
 from ziggurat_foundations.models import ResourceMixin, ExternalIdentityMixin
-from ziggurat_foundations.models import get_db_session
 from ziggurat_foundations import ziggurat_model_init
-
-from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 
 Base = declarative_base()
@@ -64,6 +60,7 @@ def _initTestingDB():
     return maker()
 
     # pylons/akhet monkeypatching way
+#    import ziggurat_foundations    
 #    DBSession = scoped_session(sessionmaker())
 #    dbsession = DBSession()
 #    dbsession.configure(bind=engine)
@@ -152,7 +149,7 @@ class ModelTestCase(BaseTestCase):
         self.assertEqual(created_user.user_name, u'new_name')
 
 #    def test_session(self):
-#        session = get_db_session(self._addUser())
+#        session = get_db_session(None, self._addUser())
 #        from sqlalchemy.orm import ScopedSession
 #        self.assertIsInstance(session, ScopedSession)
 

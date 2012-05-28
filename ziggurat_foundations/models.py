@@ -4,23 +4,28 @@ import urllib
 import random
 import string
 import webhelpers.paginate
-import logging
 
 from sqlalchemy.ext.declarative import declared_attr
+
 try:
     from pyramid.security import Allow, ALL_PERMISSIONS
 except ImportError as e:
     Allow = 'Allow'
     # borrowed directly from pyramid - to avoid dependancy on pyramid itself
-    # source https://github.com/Pylons/pyramid/blob/master/pyramid/security.py 
+    # source https://github.com/Pylons/pyramid/blob/master/pyramid/security.py
+
     class AllPermissionsList(object):
         """ Stand in 'permission list' to represent all permissions """
+
         def __iter__(self):
             return ()
+
         def __contains__(self, other):
             return True
+
         def __eq__(self, other):
             return isinstance(other, self.__class__)
+
     ALL_PERMISSIONS = AllPermissionsList()
 
 __version__ = '0.2'
@@ -30,13 +35,14 @@ DBSession = None
 def get_db_session(session=None, obj=None):
     """ utility function that attempts to return sqlalchemy session that could 
     have been created/passed in one of few ways:
-    
-    * It first tries to read session attached to instance if object argument was passed
-    
+
+    * It first tries to read session attached to instance 
+      if object argument was passed
+
     * then it tries to return  session passed as argument
-    
+
     * finally tries to read pylons-like object called DBSession
-    
+
     * if this fails exception is thrown """
     # try to read the session from instance
     if obj:
@@ -48,6 +54,7 @@ def get_db_session(session=None, obj=None):
     elif DBSession:
         return DBSession
     raise Exception('No Session found')
+
 
 class BaseModel(object):
     """ Basic class that all other classes inherit from that supplies some 
@@ -90,10 +97,10 @@ class BaseModel(object):
 
 class UserMixin(BaseModel):
     """ Base mixin for user object representation.
-        It supplies all the basic functionality from password hash generation and 
-        matching to utility methods used for querying database for users and 
-        their permissions or resources they have access to. It is meant to be 
-        extended with other application specific properties"""
+        It supplies all the basic functionality from password hash generation 
+        and matching to utility methods used for querying database for users 
+        and their permissions or resources they have access to. It is meant 
+        to be extended with other application specific properties"""
 
     __mapper_args__ = {}
     __table_args__ = {
@@ -102,49 +109,49 @@ class UserMixin(BaseModel):
                       }
 
     @declared_attr
-    def __tablename__(cls):
+    def __tablename__(self):
         return 'users'
 
-    
     @declared_attr
-    def id(cls):
+    def id(self):
         """ Unique identifier of user object"""
         return sa.Column(sa.Integer, primary_key=True)
 
     @declared_attr
-    def user_name(cls):
+    def user_name(self):
         """ Unique user name user object"""
         return sa.Column(sa.Unicode(30), unique=True)
 
     @declared_attr
-    def user_password(cls):
+    def user_password(self):
         """ Password hash for user object """
         return sa.Column(sa.String(256))
 
     @declared_attr
-    def email(cls):
+    def email(self):
         """ Email for user object """
         return sa.Column(sa.Unicode(100), nullable=False, unique=True)
 
     @declared_attr
-    def status(cls):
+    def status(self):
         """ Status of user object """
         return sa.Column(sa.SmallInteger(), nullable=False)
 
     @declared_attr
-    def security_code(cls):
+    def security_code(self):
         """ Security code user object (can be used for password reset etc. """
         return sa.Column(sa.String(256), default='default')
 
     @declared_attr
-    def last_login_date(cls):
+    def last_login_date(self):
         """ Date of user's last login """
         return sa.Column(sa.TIMESTAMP(timezone=False),
                                 default=sa.sql.func.now(),
                                 server_default=sa.func.now()
                                 )
+
     @declared_attr
-    def registered_date(cls):
+    def registered_date(self):
         """ Date of user's registration """
         return sa.Column(sa.TIMESTAMP(timezone=False),
                                 default=sa.sql.func.now(),
@@ -155,8 +162,9 @@ class UserMixin(BaseModel):
         return '<User: %s>' % self.user_name
 
     @declared_attr
-    def groups_dynamic(cls):
-        """ returns dynamic relationship for groups - allowing for filtering of data """
+    def groups_dynamic(self):
+        """ returns dynamic relationship for groups - allowing for 
+        filtering of data """
         return sa.orm.relationship('Group', secondary='users_groups',
                         lazy='dynamic',
                         passive_deletes=True,
@@ -164,10 +172,10 @@ class UserMixin(BaseModel):
                         )
 
     @declared_attr
-    def user_permissions(cls):
+    def user_permissions(self):
         """
-        returns all direct non-resource permissions for this user, allows to assign 
-        new permissions to user::
+        returns all direct non-resource permissions for this user,
+        allows to assign new permissions to user::
 
             user.user_permissions.append(resource)
         """
@@ -178,7 +186,7 @@ class UserMixin(BaseModel):
                         )
 
     @declared_attr
-    def resource_permissions(cls):
+    def resource_permissions(self):
         """ returns all direct resource permissions for this user """
         return sa.orm.relationship('UserResourcePermission',
                         cascade="all, delete-orphan",
@@ -200,8 +208,9 @@ class UserMixin(BaseModel):
                         )
 
     @declared_attr
-    def external_identities(cls):
-        """ dynamic relation for external identities for this user - allowing for filtering of data """
+    def external_identities(self):
+        """ dynamic relation for external identities for this user - 
+        allowing for filtering of data """
         return sa.orm.relationship('ExternalIdentity',
                         lazy='dynamic',
                         cascade="all, delete-orphan",
@@ -215,19 +224,20 @@ class UserMixin(BaseModel):
         """ returns all non-resource permissions based on what groups user
             belongs and directly set ones for this user"""
         db_session = get_db_session(None, self)
-        query = db_session.query((u'group:' + self.GroupPermission.group_name).label('owner_name'),
+        query = db_session.query((u'group:' + \
+                        self.GroupPermission.group_name).label('owner_name'),
                              self.GroupPermission.perm_name.label('perm_name'))
-        query = query.filter(self.GroupPermission.group_name == self.UserGroup.group_name)
+        query = query.filter(self.GroupPermission.group_name == \
+                             self.UserGroup.group_name)
         query = query.filter(self.User.user_name == self.UserGroup.user_name)
         query = query.filter(self.User.user_name == self.user_name)
 
-        query2 = db_session.query(self.UserPermission.user_name.label('owner_name'),
-                              self.UserPermission.perm_name.label('perm_name'))
+        query2 = db_session.query(
+                            self.UserPermission.user_name.label('owner_name'),
+                            self.UserPermission.perm_name.label('perm_name'))
         query2 = query2.filter(self.UserPermission.user_name == self.user_name)
         query = query.union(query2)
         return [(row.owner_name, row.perm_name) for row in query]
-
-
 
     def resources_with_perms(self, perms, resource_ids=None,
                              db_session=None):
@@ -243,29 +253,33 @@ class UserMixin(BaseModel):
         #if user has some groups lets try to join based on their permissions
         if group_names:
             join_conditions = (
-                self.GroupResourcePermission.group_name.in_(group_names),
-                self.Resource.resource_id == self.GroupResourcePermission.resource_id,
-                self.GroupResourcePermission.perm_name.in_(perms),
-                          )
+        self.GroupResourcePermission.group_name.in_(group_names),
+        self.Resource.resource_id == self.GroupResourcePermission.resource_id,
+        self.GroupResourcePermission.perm_name.in_(perms),)
             query = query.outerjoin(
                             (self.GroupResourcePermission,
                              sa.and_(*join_conditions),)
                             )
-            #ensure outerjoin permissions are correct - dont add empty rows from join
-            #conditions are - join ON possible group permissions OR owning group/user
+            # ensure outerjoin permissions are correct - 
+            # dont add empty rows from join
+            # conditions are - join ON possible group permissions 
+            # OR owning group/user
             query = query.filter(sa.or_(
-                                self.Resource.owner_user_name == self.user_name,
-                                self.Resource.owner_group_name.in_(group_names),
-                                self.GroupResourcePermission.perm_name != None
-                                ,))
+                            self.Resource.owner_user_name == self.user_name,
+                            self.Resource.owner_group_name.in_(group_names),
+                            self.GroupResourcePermission.perm_name != None,))
         else:
             #filter just by username
-            query = query.filter(self.Resource.owner_user_name == self.user_name)
+            query = query.filter(self.Resource.owner_user_name == \
+                                 self.user_name)
         # lets try by custom user permissions for resource
         query2 = db_session.query(self.Resource).distinct()
-        query2 = query2.filter(self.UserResourcePermission.user_name == self.user_name)
-        query2 = query2.filter(self.Resource.resource_id == self.UserResourcePermission.resource_id)
-        query2 = query2.filter(self.UserResourcePermission.perm_name.in_(perms))
+        query2 = query2.filter(self.UserResourcePermission.user_name == \
+                               self.user_name)
+        query2 = query2.filter(self.Resource.resource_id == \
+                               self.UserResourcePermission.resource_id)
+        query2 = query2.filter(
+                            self.UserResourcePermission.perm_name.in_(perms))
         if resource_ids:
             query = query.filter(self.Resource.resource_id.in_(resource_ids))
             query2 = query2.filter(self.Resource.resource_id.in_(resource_ids))
@@ -278,11 +292,8 @@ class UserMixin(BaseModel):
         # construct the url
         hash = hashlib.md5(self.email.encode('utf8').lower()).hexdigest()
         gravatar_url = "https://secure.gravatar.com/avatar/%s?%s" % (
-                                                hash,
-                                                urllib.urlencode({'d': default})
-                                                                      )
+                                    hash, urllib.urlencode({'d': default}))
         return gravatar_url
-
 
     def set_password(self, raw_password):
         """ sets new password """
@@ -294,8 +305,6 @@ class UserMixin(BaseModel):
         return self.passwordmanager.check(self.user_password, raw_password,
                                           setter=self.set_password)
 
-
-
     @classmethod
     def generate_random_pass(cls, chars=7):
         """ generates random string of fixed length"""
@@ -305,18 +314,18 @@ class UserMixin(BaseModel):
         """ generates new security code"""
         self.security_code = self.generate_random_string(32)
 
-
     @staticmethod
     def generate_random_string(chars=7):
-        return u''.join(random.sample(string.ascii_letters + string.digits, chars))
-
+        return u''.join(random.sample(string.ascii_letters + string.digits,
+                                      chars))
 
     @classmethod
     def by_user_name(cls, user_name, db_session=None):
         """ fetch user by user name """
         db_session = get_db_session(db_session)
         query = db_session.query(cls)
-        query = query.filter(sa.func.lower(cls.user_name) == (user_name or '').lower())
+        query = query.filter(sa.func.lower(cls.user_name) == \
+                             (user_name or '').lower())
         query = query.options(sa.orm.eagerload('groups'))
         return query.first()
 
@@ -326,10 +335,10 @@ class UserMixin(BaseModel):
         """ fetch user objects by user name and security code"""
         db_session = get_db_session(db_session)
         query = db_session.query(cls)
-        query = query.filter(sa.func.lower(cls.user_name) == (user_name or '').lower())
+        query = query.filter(sa.func.lower(cls.user_name) == \
+                             (user_name or '').lower())
         query = query.filter(cls.security_code == security_code)
         return query.first()
-
 
     @classmethod
     def by_user_names(cls, user_names, db_session=None):
@@ -351,7 +360,8 @@ class UserMixin(BaseModel):
         """
         db_session = get_db_session(db_session)
         query = db_session.query(cls)
-        query = query.filter(sa.func.lower(cls.user_name).like((user_name or '').lower()))
+        query = query.filter(sa.func.lower(cls.user_name).\
+                             like((user_name or '').lower()))
         query = query.order_by(cls.user_name)
         #q = q.options(sa.orm.eagerload('groups'))
         return query
@@ -369,7 +379,8 @@ class UserMixin(BaseModel):
         """ fetch user objects by email and username """
         db_session = get_db_session(db_session)
         query = db_session.query(cls).filter(cls.email == email)
-        query = query.filter(sa.func.lower(cls.user_name) == (user_name or '').lower())
+        query = query.filter(sa.func.lower(cls.user_name) == \
+                             (user_name or '').lower())
         query = query.options(sa.orm.eagerload('groups'))
         return query.first()
 
@@ -377,36 +388,37 @@ class UserMixin(BaseModel):
 class ExternalIdentityMixin(BaseModel):
 
     @declared_attr
-    def __tablename__(cls):
+    def __tablename__(self):
         return 'external_identities'
 
     @declared_attr
-    def external_id(cls):
+    def external_id(self):
         return sa.Column(sa.Unicode(255), default=u'', primary_key=True)
 
     @declared_attr
-    def external_user_name(cls):
+    def external_user_name(self):
         return sa.Column(sa.Unicode(255), default=u'')
 
     @declared_attr
-    def local_user_name(cls):
+    def local_user_name(self):
         return sa.Column(sa.Unicode(50), sa.ForeignKey('users.user_name',
-                        onupdate='CASCADE', ondelete='CASCADE'), primary_key=True)
+                         onupdate='CASCADE', ondelete='CASCADE'),
+                         primary_key=True)
 
     @declared_attr
-    def provider_name(cls):
+    def provider_name(self):
         return sa.Column(sa.Unicode(50), default=u'', primary_key=True)
 
     @declared_attr
-    def access_token(cls):
+    def access_token(self):
         return sa.Column(sa.String(255), default=u'')
 
     @declared_attr
-    def alt_token(cls):
+    def alt_token(self):
         return sa.Column(sa.String(255), default=u'')
 
     @declared_attr
-    def token_secret(cls):
+    def token_secret(self):
         return sa.Column(sa.String(255), default=u'')
 
     @classmethod
@@ -432,13 +444,10 @@ class ExternalIdentityMixin(BaseModel):
 class GroupMixin(BaseModel):
     """ base mixin for group object"""
 
-    __table_args__ = {
-                      'mysql_engine':'InnoDB',
-                      'mysql_charset':'utf8'
-                      }
+    __table_args__ = {'mysql_engine':'InnoDB', 'mysql_charset':'utf8'}
 
     @declared_attr
-    def __tablename__(cls):
+    def __tablename__(self):
         return 'groups'
 
     # lists app wide permissions we might want to assign to groups
@@ -448,23 +457,23 @@ class GroupMixin(BaseModel):
                                 'manage_apps',)
 
     @declared_attr
-    def id(cls):
+    def id(self):
         return sa.Column(sa.Integer, primary_key=True)
 
     @declared_attr
-    def group_name(cls):
+    def group_name(self):
         return sa.Column(sa.Unicode(50), unique=True)
 
     @declared_attr
-    def description(cls):
+    def description(self):
         return sa.Column(sa.Text())
 
     @declared_attr
-    def member_count(cls):
+    def member_count(self):
         return sa.Column(sa.Integer, nullable=False, default=0)
 
     @declared_attr
-    def users(cls):
+    def users(self):
         """ relationship for users belonging to this group"""
         return sa.orm.relationship('User',
                         secondary='users_groups',
@@ -476,7 +485,7 @@ class GroupMixin(BaseModel):
 
     # dynamic property - useful
     @declared_attr
-    def users_dynamic(cls):
+    def users_dynamic(self):
         """ dynamiec relationship for users belonging to this group
             one can use filter """
         return sa.orm.relationship('User',
@@ -486,7 +495,7 @@ class GroupMixin(BaseModel):
                         )
 
     @declared_attr
-    def permissions(cls):
+    def permissions(self):
         """ non-resource permissions assigned to this group"""
         return sa.orm.relationship('GroupPermission',
                         backref='groups',
@@ -496,7 +505,7 @@ class GroupMixin(BaseModel):
                         )
 
     @declared_attr
-    def resource_permissions(cls):
+    def resource_permissions(self):
         """ permissions to specific resources this group has"""
         return sa.orm.relationship('GroupResourcePermission',
                         backref='groups',
@@ -527,7 +536,6 @@ class GroupMixin(BaseModel):
         assert permission.perm_name in self.__possible_permissions__
         return permission
 
-
     def get_user_paginator(self, page=1, item_count=None, items_per_page=50,
                            user_names=None, GET_params={}):
         """ returns paginator over users belonging to the group"""
@@ -542,27 +550,23 @@ class GroupMixin(BaseModel):
                                      )
 
 
-
 class GroupPermissionMixin(BaseModel):
     """ group permission mixin """
 
-    __table_args__ = {
-                      'mysql_engine':'InnoDB',
-                      'mysql_charset':'utf8'
-                      }
+    __table_args__ = {'mysql_engine':'InnoDB', 'mysql_charset':'utf8'}
 
     @declared_attr
-    def __tablename__(cls):
+    def __tablename__(self):
         return 'groups_permissions'
 
     @declared_attr
-    def group_name(cls):
+    def group_name(self):
         return sa.Column(sa.Unicode(50),
                         sa.ForeignKey('groups.group_name', onupdate='CASCADE',
                                       ondelete='CASCADE'), primary_key=True)
 
     @declared_attr
-    def perm_name(cls):
+    def perm_name(self):
         return sa.Column(sa.Unicode(30), primary_key=True)
 
     def __repr__(self):
@@ -576,24 +580,23 @@ class GroupPermissionMixin(BaseModel):
         query = query.filter(cls.perm_name == perm_name)
         return query.first()
 
+
 class UserPermissionMixin(BaseModel):
 
-    __table_args__ = {
-                      'mysql_engine':'InnoDB',
-                      'mysql_charset':'utf8'
-                      }
+    __table_args__ = {'mysql_engine':'InnoDB', 'mysql_charset':'utf8'}
 
     @declared_attr
-    def __tablename__(cls):
+    def __tablename__(self):
         return 'users_permissions'
 
     @declared_attr
-    def user_name(cls):
+    def user_name(self):
         return sa.Column(sa.Unicode(50),
                          sa.ForeignKey('users.user_name', onupdate='CASCADE',
                                        ondelete='CASCADE'), primary_key=True)
+
     @declared_attr
-    def perm_name(cls):
+    def perm_name(self):
         return sa.Column(sa.Unicode(30), primary_key=True)
 
     def __repr__(self):
@@ -607,25 +610,23 @@ class UserPermissionMixin(BaseModel):
         query = query.filter(cls.perm_name == perm_name)
         return query.first()
 
+
 class UserGroupMixin(BaseModel):
 
-    __table_args__ = {
-                      'mysql_engine':'InnoDB',
-                      'mysql_charset':'utf8'
-                      }
+    __table_args__ = {'mysql_engine':'InnoDB', 'mysql_charset':'utf8'}
 
     @declared_attr
-    def __tablename__(cls):
+    def __tablename__(self):
         return 'users_groups'
 
     @declared_attr
-    def group_name(cls):
+    def group_name(self):
         return sa.Column(sa.Unicode(50),
                          sa.ForeignKey('groups.group_name', onupdate='CASCADE',
                                        ondelete='CASCADE'), primary_key=True)
 
     @declared_attr
-    def user_name(cls):
+    def user_name(self):
         return sa.Column(sa.Unicode(30),
                         sa.ForeignKey('users.user_name', onupdate='CASCADE',
                                       ondelete='CASCADE'), primary_key=True)
@@ -633,33 +634,33 @@ class UserGroupMixin(BaseModel):
     def __repr__(self):
         return '<UserGroup: %s, %s>' % (self.group_name, self.user_name,)
 
+
 class GroupResourcePermissionMixin(BaseModel):
 
-    __table_args__ = {
-                      'mysql_engine':'InnoDB',
-                      'mysql_charset':'utf8'
-                      }
+    __table_args__ = {'mysql_engine':'InnoDB', 'mysql_charset':'utf8'}
 
     @declared_attr
-    def __tablename__(cls):
+    def __tablename__(self):
         return 'groups_resources_permissions'
 
     @declared_attr
-    def group_name(cls):
+    def group_name(self):
         return sa.Column(sa.Unicode(50), sa.ForeignKey('groups.group_name',
                                                      onupdate='CASCADE',
                                                      ondelete='CASCADE'),
                                                      primary_key=True)
 
     @declared_attr
-    def resource_id(cls):
-        return sa.Column(sa.BigInteger(), sa.ForeignKey('resources.resource_id',
-                                                     onupdate='CASCADE',
-                                                     ondelete='CASCADE'),
-                                                     primary_key=True,
-                                                     autoincrement=False)
+    def resource_id(self):
+        return sa.Column(sa.BigInteger(),
+                         sa.ForeignKey('resources.resource_id',
+                                       onupdate='CASCADE',
+                                       ondelete='CASCADE'),
+                         primary_key=True,
+                         autoincrement=False)
+
     @declared_attr
-    def perm_name(cls):
+    def perm_name(self):
         return sa.Column(sa.Unicode(50), primary_key=True)
 
     def __repr__(self):
@@ -667,32 +668,33 @@ class GroupResourcePermissionMixin(BaseModel):
                                                       self.perm_name,
                                                       self.resource_id,)
 
+
 class UserResourcePermissionMixin(BaseModel):
 
-    __table_args__ = {
-                      'mysql_engine':'InnoDB',
-                      'mysql_charset':'utf8'
-                      }
+    __table_args__ = {'mysql_engine':'InnoDB', 'mysql_charset':'utf8'}
 
     @declared_attr
-    def __tablename__(cls):
+    def __tablename__(self):
         return 'users_resources_permissions'
 
     @declared_attr
-    def user_name(cls):
+    def user_name(self):
         return sa.Column(sa.Unicode(50), sa.ForeignKey('users.user_name',
                                                      onupdate='CASCADE',
                                                      ondelete='CASCADE'),
                                                      primary_key=True)
+
     @declared_attr
-    def resource_id(cls):
-        return sa.Column(sa.BigInteger(), sa.ForeignKey('resources.resource_id',
-                                                     onupdate='CASCADE',
-                                                     ondelete='CASCADE'),
-                                                     primary_key=True,
-                                                     autoincrement=False)
+    def resource_id(self):
+        return sa.Column(sa.BigInteger(),
+                         sa.ForeignKey('resources.resource_id',
+                                       onupdate='CASCADE',
+                                       ondelete='CASCADE'),
+                         primary_key=True,
+                         autoincrement=False)
+
     @declared_attr
-    def perm_name(cls):
+    def perm_name(self):
         return sa.Column(sa.Unicode(50), primary_key=True)
 
     def __repr__(self):
@@ -724,45 +726,45 @@ class ResourceMixin(BaseModel):
     __possible_permissions__ = ()
 
     @declared_attr
-    def __tablename__(cls):
+    def __tablename__(self):
         return 'resources'
 
     @declared_attr
-    def resource_id(cls):
+    def resource_id(self):
         return sa.Column(sa.BigInteger(), primary_key=True, nullable=False)
 
     @declared_attr
-    def parent_id(cls):
+    def parent_id(self):
         return sa.Column(sa.BigInteger(),
                          sa.ForeignKey('resources.resource_id',
                                 onupdate='CASCADE', ondelete='SET NULL'))
 
     @declared_attr
-    def ordering(cls):
+    def ordering(self):
         return sa.Column(sa.Integer(), default=0, nullable=False)
 
     @declared_attr
-    def resource_name(cls):
+    def resource_name(self):
         return sa.Column(sa.Unicode(100), nullable=False)
 
     @declared_attr
-    def resource_type(cls):
+    def resource_type(self):
         return sa.Column(sa.Unicode(30), nullable=False)
 
     @declared_attr
-    def owner_group_name(cls):
+    def owner_group_name(self):
         return sa.Column(sa.Unicode(50),
                        sa.ForeignKey('groups.group_name', onupdate='CASCADE',
                                      ondelete='SET NULL'))
 
     @declared_attr
-    def owner_user_name(cls):
+    def owner_user_name(self):
         return sa.Column(sa.Unicode(30),
                        sa.ForeignKey('users.user_name', onupdate='CASCADE',
                                      ondelete='SET NULL'))
 
     @declared_attr
-    def group_permissions(cls):
+    def group_permissions(self):
         """ returns all group permissions for this resource"""
         return sa.orm.relationship('GroupResourcePermission',
                                   cascade="all, delete-orphan",
@@ -771,7 +773,7 @@ class ResourceMixin(BaseModel):
                                   )
 
     @declared_attr
-    def user_permissions(cls):
+    def user_permissions(self):
         """ returns all user permissions for this resource"""
         return sa.orm.relationship('UserResourcePermission',
                                   cascade="all, delete-orphan",
@@ -780,7 +782,7 @@ class ResourceMixin(BaseModel):
                                   )
 
     @declared_attr
-    def groups(cls):
+    def groups(self):
         """ returns all groups that have permissions for this resource"""
         return sa.orm.relationship('Group',
                                  secondary='groups_resources_permissions',
@@ -789,7 +791,7 @@ class ResourceMixin(BaseModel):
                                   )
 
     @declared_attr
-    def users(cls):
+    def users(self):
         """ returns all users that have permissions for this resource"""
         return sa.orm.relationship('User',
                                  secondary='users_resources_permissions',
@@ -798,10 +800,7 @@ class ResourceMixin(BaseModel):
                                   )
 
     __mapper_args__ = {'polymorphic_on': resource_type}
-    __table_args__ = {
-                      'mysql_engine':'InnoDB',
-                      'mysql_charset':'utf8'
-                      }
+    __table_args__ = {'mysql_engine':'InnoDB', 'mysql_charset':'utf8'}
 
     def __repr__(self):
         return '<Resource: %s, %s, id: %s>' % (self.resource_type,
@@ -817,25 +816,30 @@ class ResourceMixin(BaseModel):
             acls.extend([(Allow, self.owner_user_name, ALL_PERMISSIONS,), ])
 
         if self.owner_group_name:
-            acls.extend([(Allow, "group:%s" % self.owner_group_name, ALL_PERMISSIONS,), ])
+            acls.extend([(Allow, "group:%s" % self.owner_group_name,
+                          ALL_PERMISSIONS,), ])
         return acls
 
     def perms_for_user(self, user, db_session=None):
         """ returns all permissions that given user has for this resource
             from groups and directly set ones too"""
         db_session = get_db_session(db_session, self)
-        query = db_session.query(u'group:' + self.GroupResourcePermission.group_name,
-                             self.GroupResourcePermission.perm_name)
+        query = db_session.query(
+                        u'group:' + self.GroupResourcePermission.group_name,
+                        self.GroupResourcePermission.perm_name)
         query = query.filter(self.GroupResourcePermission.group_name.in_(
                                         [gr.group_name for gr in user.groups]
                                         )
                      )
-        query = query.filter(self.GroupResourcePermission.resource_id == self.resource_id)
+        query = query.filter(self.GroupResourcePermission.resource_id == \
+                             self.resource_id)
 
         query2 = db_session.query(self.UserResourcePermission.user_name,
                               self.UserResourcePermission.perm_name)
-        query2 = query2.filter(self.UserResourcePermission.user_name == user.user_name)
-        query2 = query2.filter(self.UserResourcePermission.resource_id == self.resource_id)
+        query2 = query2.filter(self.UserResourcePermission.user_name == \
+                               user.user_name)
+        query2 = query2.filter(self.UserResourcePermission.resource_id == \
+                               self.resource_id)
         query = query.union(query2)
         perms = [(row[0], row.perm_name,) for row in query]
         #include all perms if user is the owner of this resource
@@ -843,15 +847,16 @@ class ResourceMixin(BaseModel):
             perms.append((self.owner_user_name, ALL_PERMISSIONS,))
         return perms
 
-
     def direct_perms_for_user(self, user, db_session=None):
         """ returns permissions that given user has for this resource
             without ones inherited from groups that user belongs to"""
         db_session = get_db_session(db_session, self)
         query = db_session.query(self.UserResourcePermission.user_name,
                              self.UserResourcePermission.perm_name)
-        query = query.filter(self.UserResourcePermission.user_name == user.user_name)
-        query = query.filter(self.UserResourcePermission.resource_id == self.resource_id)
+        query = query.filter(self.UserResourcePermission.user_name == \
+                             user.user_name)
+        query = query.filter(self.UserResourcePermission.resource_id == \
+                             self.resource_id)
         perms = [(row[0], row.perm_name,) for row in query]
         #include all perms if user is the owner of this resource
         if self.owner_user_name == user.user_name:
@@ -862,44 +867,56 @@ class ResourceMixin(BaseModel):
         """ returns permissions that given user has for this resource
             that are inherited from groups """
         db_session = get_db_session(db_session, self)
-        query = db_session.query(u'group:' + self.GroupResourcePermission.group_name,
-                             self.GroupResourcePermission.perm_name)
+        query = db_session.query(
+                        u'group:' + self.GroupResourcePermission.group_name,
+                        self.GroupResourcePermission.perm_name)
         query = query.filter(self.GroupResourcePermission.group_name.in_(
                                     [gr.group_name for gr in user.groups]
                                     )
                      )
-        query = query.filter(self.GroupResourcePermission.resource_id == self.resource_id)
+        query = query.filter(self.GroupResourcePermission.resource_id == \
+                             self.resource_id)
         perms = [(row[0], row.perm_name,) for row in query]
 #        if self.owner_group_name:
 #            perms.append(('group:' + self.owner_group_name, ALL_PERMISSIONS,))
         return perms
 
-
     def users_for_perm(self, perm_name, db_session=None):
-        """ return tuple (user,perm_name) that have given permission for the resource """
+        """ return tuple (user,perm_name) that have given 
+        permission for the resource """
         db_session = get_db_session(db_session, self)
-        query = db_session.query(self.User, self.GroupResourcePermission.perm_name)
+        query = db_session.query(self.User,
+                                 self.GroupResourcePermission.perm_name)
         query = query.filter(self.User.user_name == self.UserGroup.user_name)
-        query = query.filter(self.UserGroup.group_name == self.GroupResourcePermission.group_name)
+        query = query.filter(self.UserGroup.group_name == \
+                             self.GroupResourcePermission.group_name)
         if perm_name != '__any_permission__':
-            query = query.filter(self.GroupResourcePermission.perm_name == perm_name)
-        query = query.filter(self.GroupResourcePermission.resource_id == self.resource_id)
-        query2 = db_session.query(self.User, self.UserResourcePermission.perm_name)
-        query2 = query2.filter(self.User.user_name == self.UserResourcePermission.user_name)
+            query = query.filter(self.GroupResourcePermission.perm_name == \
+                                 perm_name)
+        query = query.filter(self.GroupResourcePermission.resource_id == \
+                             self.resource_id)
+        query2 = db_session.query(self.User,
+                                  self.UserResourcePermission.perm_name)
+        query2 = query2.filter(self.User.user_name == \
+                               self.UserResourcePermission.user_name)
         if perm_name != '__any_permission__':
-            query2 = query2.filter(self.UserResourcePermission.perm_name == perm_name)
-        query2 = query2.filter(self.UserResourcePermission.resource_id == self.resource_id)
+            query2 = query2.filter(self.UserResourcePermission.perm_name == \
+                                   perm_name)
+        query2 = query2.filter(self.UserResourcePermission.resource_id == \
+                               self.resource_id)
         query = query.union(query2)
         users = [(row.User, row.perm_name,) for row in query]
         if self.owner_user_name:
-            users.append((self.User.by_user_name(self.owner_user_name), ALL_PERMISSIONS,))
+            users.append((self.User.by_user_name(self.owner_user_name),
+                          ALL_PERMISSIONS,))
         return users
 
     @classmethod
     def by_resource_id(cls, resource_id, db_session=None):
         """ fetch the resouce by id """
         db_session = get_db_session(db_session)
-        query = db_session.query(cls).filter(cls.resource_id == int(resource_id))
+        query = db_session.query(cls).filter(cls.resource_id == \
+                                             int(resource_id))
         return query.first()
 
     @classmethod
@@ -914,8 +931,10 @@ class ResourceMixin(BaseModel):
         """ fetch permissions by group and permission name"""
         db_session = get_db_session(db_session)
         query = db_session.query(cls.GroupResourcePermission)
-        query = query.filter(cls.GroupResourcePermission.group_name == group_name)
-        query = query.filter(cls.GroupResourcePermission.perm_name == perm_name)
+        query = query.filter(
+                        cls.GroupResourcePermission.group_name == group_name)
+        query = query.filter(
+                        cls.GroupResourcePermission.perm_name == perm_name)
         query = query.filter(cls.GroupResourcePermission.resource_id == res_id)
         return query.first()
 
@@ -926,39 +945,46 @@ class ResourceMixin(BaseModel):
         return permission
 
     @classmethod
-    def subtree_deeper(cls, object_id, limit_depth=1000000, flat=True, db_session=None):
-        """ This returns you subree of ordered objects relative to the start object id
-            currently only postgresql
+    def subtree_deeper(cls, object_id, limit_depth=1000000, flat=True,
+                       db_session=None):
+        """ This returns you subree of ordered objects relative 
+        to the start object id currently only postgresql
         """
         raw_q = """
             WITH RECURSIVE subtree AS (
-                    SELECT res.*, 1 as depth, array[ordering] as sorting FROM resources res WHERE res.resource_id = :id
+                    SELECT res.*, 1 as depth, array[ordering] as sorting FROM 
+                    resources res WHERE res.resource_id = :id
                   UNION ALL
-                    SELECT res_u.*, depth+1 as depth, (st.sorting || ARRAY[res_u.ordering] ) as sort  FROM resources res_u, subtree st WHERE res_u.parent_id = st.resource_id  
+                    SELECT res_u.*, depth+1 as depth, 
+                    (st.sorting || ARRAY[res_u.ordering] ) as sort 
+                    FROM resources res_u, subtree st 
+                    WHERE res_u.parent_id = st.resource_id  
             )
             SELECT * FROM subtree WHERE depth<=:depth ORDER BY sorting;
         """
         db_session = get_db_session(db_session)
         q = db_session.query(cls).from_statement(raw_q).params(id=object_id,
-                                                               depth=limit_depth
-                                                               )
+                                                        depth=limit_depth)
         return q
 
     @classmethod
-    def path_upper(cls, object_id, limit_depth=1000000, flat=True, db_session=None):
+    def path_upper(cls, object_id, limit_depth=1000000, flat=True,
+                   db_session=None):
         """ This returns you path to root node starting from object_id 
             currently only for postgresql
         """
         raw_q = """
             WITH RECURSIVE subtree AS (
-                    SELECT res.*, 1 as depth FROM resources res WHERE res.resource_id = :id
+                    SELECT res.*, 1 as depth FROM resources res 
+                    WHERE res.resource_id = :id
                   UNION ALL
-                    SELECT res_u.*, depth+1 as depth FROM resources res_u, subtree st WHERE res_u.resource_id = st.parent_id  
+                    SELECT res_u.*, depth+1 as depth 
+                    FROM resources res_u, subtree st 
+                    WHERE res_u.resource_id = st.parent_id  
             )
             SELECT * FROM subtree WHERE depth<=:depth;
         """
         db_session = get_db_session(db_session)
         q = db_session.query(cls).from_statement(raw_q).params(id=object_id,
-                                                               depth=limit_depth
-                                                               )
+                                                        depth=limit_depth)
         return q

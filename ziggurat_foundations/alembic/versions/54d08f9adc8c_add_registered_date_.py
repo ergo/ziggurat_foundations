@@ -15,9 +15,10 @@ import sqlalchemy as sa
 
 
 def upgrade():
-    add_column('users', sa.Column('registered_date', sa.TIMESTAMP(timezone=False),
-                                default=sa.sql.func.now(),
-                                server_default=sa.func.now()))
+    add_column('users', sa.Column('registered_date',
+                                  sa.TIMESTAMP(timezone=False),
+                                  default=sa.sql.func.now(),
+                                  server_default=sa.func.now()))
 
 def downgrade():
     drop_column('users', 'registered_date')

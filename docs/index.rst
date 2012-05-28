@@ -6,14 +6,14 @@
 Welcome to ziggurat_foundations's documentation!
 ================================================
 
-Framework agnostic (with bias towards pyramid) set of sqlalchemy 
-classes that make building applications that require permissions (ACL's) an easy task.
+Framework agnostic set of sqlalchemy classes that make building applications 
+that require permissions (ACL's) an easy task.
 
-.. tip::
+.. hint::
 
-    By default ziggurat aims at **postgresql 8.4+** (CTE support) as main RDBMS system,
-    but currently *everything* except recursive queries(for optional resource tree structures) 
-    is tested using sqlite, and will run on other popular database systems including mysql.     
+    By default ziggurat_foundations expose some properties and functionalities that 
+    will make building apps with pyramid/flask/(your-favourite-framework-here) 
+    an easier task.   
 
 **DOCUMENTATION**: http://ziggurat_foundations.readthedocs.org/en/latest/
 
@@ -29,6 +29,13 @@ Contents:
    api
    changelog
 
+
+.. note::
+
+    By default ziggurat aims at **postgresql 8.4+** (CTE support) as main RDBMS system,
+    but currently *everything* except recursive queries(for **optional** resource tree structures) 
+    is tested using sqlite, and will run on other popular database systems including mysql.
+    **For other database systems that don't support CTE's fallbacks will be supplied.**
 
 Indices and tables
 ==================

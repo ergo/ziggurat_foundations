@@ -32,8 +32,8 @@ and save development time.
    to at least stamp the database with latest alembic timestamp. It is recommended 
    to use alembic for table creation**.
 
-Example usage
--------------
+Quick usage examples
+--------------------
 
 assigning custom "read" permission for user "foo" for a given resource::
 
