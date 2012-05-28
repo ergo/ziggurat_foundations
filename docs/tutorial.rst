@@ -7,7 +7,7 @@ Installation and initial migration
 
 Install the package::
 
-    pip install ziggurat_foundationss
+    pip install ziggurat_foundations
 
 Now it's time to initialize your model structure with alembic.
 
