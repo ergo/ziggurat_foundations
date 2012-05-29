@@ -5,6 +5,7 @@ import logging
 CONFIG_KEY = 'ziggurat_foundations'
 log = logging.getLogger(__name__)
 
+
 class ZigguratSignInSuccess(object):
 
     def __contains__(self, other):
@@ -15,6 +16,7 @@ class ZigguratSignInSuccess(object):
         self.came_from = came_from
         self.user = user
 
+
 class ZigguratSignInBadAuth(object):
 
     def __contains__(self, other):
@@ -24,6 +26,7 @@ class ZigguratSignInBadAuth(object):
         self.headers = headers
         self.came_from = came_from
 
+
 class ZigguratSignOut(object):
 
     def __contains__(self, other):
@@ -31,6 +34,7 @@ class ZigguratSignOut(object):
 
     def __init__(self, headers):
         self.headers = headers
+
 
 def includeme(config):
     settings = config.registry.settings
@@ -57,10 +61,10 @@ def includeme(config):
     UserModel = getattr(_tmp, parts[1])
 
     endpoint = ZigguratSignInProvider(settings=settings,
-                                      UserModel=UserModel,
-                                      signin_came_from_key=signin_came_from_key,
-                                      signin_username_key=signin_username_key,
-                                      signin_password_key=signin_password_key
+                                    UserModel=UserModel,
+                                    signin_came_from_key=signin_came_from_key,
+                                    signin_username_key=signin_username_key,
+                                    signin_password_key=signin_password_key
                                       )
     config.add_route('ziggurat.routes.sign_in', sign_in_path,
                      use_global_views=True,

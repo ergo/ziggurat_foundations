@@ -12,7 +12,7 @@ Automatic user sign in/sign out
 **ziggurat_foundations.ext.pyramid.sign_in**
 
 This extension registers basic views for user authentication using 
-**AuthTktAuthenticationPolicy**, and  can fetch user object and verify it 
+**AuthTktAuthenticationPolicy**, and can fetch user object and verify it 
 against supplied password.
 
 Extension setup
@@ -69,14 +69,14 @@ of views registered by extension ::
     </form>
     
 In next step it is required to register 3 views that will listen for specific 
-context objects that extension can return upon signon:
+context objects that extension can return upon form submission/ logout request:
 
-* ZigguratSignInSuccess - user and password were matched
+* **ZigguratSignInSuccess** - user and password were matched
     * contains headers that set cookie to persist user identity,
       fetched user object, "came from" value
-* ZigguratSignInBadAuth - there were no positive matches for user and password
+* **ZigguratSignInBadAuth** - there were no positive matches for user and password
     * contains headers used to unauthenticate any current user identity 
-* ZigguratSignOut - user signed out of application
+* **ZigguratSignOut** - user signed out of application
     * contains headers used to unauthenticate any current user identity
 
 
@@ -99,12 +99,8 @@ ZigguratSignInSuccess context view example
     @view_config(context=ZigguratSignInSuccess, permission=NO_PERMISSION_REQUIRED)
     def sign_in(request):
         user = request.context.user
-        ''' START example actions performed on sucessful logon '''
-        request.session.new_csrf_token()
-        user.last_login_date = datetime.datetime.utcnow()
-        request.session.flash(_('Signed in successfully'))
-        ''' END example actions performed on sucessful logon '''
-        ''' this persists user identity via cookie '''
+        # actions performed on sucessful logon, flash message/new csrf token
+        # user status validation etc.
         if request.context.came_from != '/':
             return HTTPFound(location=request.context.came_from,
                              headers=request.context.headers)
@@ -119,10 +115,7 @@ ZigguratSignInBadAuth context view example
 
     @view_config(context=ZigguratSignInBadAuth, permission=NO_PERMISSION_REQUIRED)
     def bad_auth(request):
-        ''' START some example action '''
-        request.session.flash(_('Incorrect username or password'), 'warning')
-        ''' END some example action '''
-        ''' last line actually "forgets" user's identity '''
+        # action like a warning flash message on bad logon
         return HTTPFound(location=request.route_url('/'),
                          headers=request.context.headers)
                          
