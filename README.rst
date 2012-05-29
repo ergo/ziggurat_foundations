@@ -1,16 +1,17 @@
 ziggurat_foundations
 =====================
 
-Framework agnostic (with bias towards pyramid) set of sqlalchemy 
+Framework agnostic set of sqlalchemy 
 classes that make building applications that require permissions an easy task.
 
 ziggurat_foundations supplies a set of *sqlalchemy mixins* that can be used to extend
-models in your application. The aim of this project is to supply set of generic 
-models that cover the most common needs in application development when it comes 
-to authorization - using flat and tree like data structures.
+models in your application built in pyramid/flask/(your-favourite-framework-here).
+The aim of this project is to supply set of generic models that cover the most 
+common needs in application development when it comes to authorization - using 
+flat and tree like data structures.
 
 
-**DOCUMENTATION**: http://ziggurat_foundations.readthedocs.org/en/latest/
+**DOCUMENTATION**: http://readthedocs.org/docs/ziggurat-foundations/en/latest/
 
 **BUG TRACKER**: https://bitbucket.org/ergo/ziggurat_foundations
 

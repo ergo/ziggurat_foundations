@@ -15,7 +15,7 @@ that require permissions (ACL's) an easy task.
     will make building apps with pyramid/flask/(your-favourite-framework-here) 
     an easier task.   
 
-**DOCUMENTATION**: http://ziggurat_foundations.readthedocs.org/en/latest/
+**DOCUMENTATION**: http://readthedocs.org/docs/ziggurat-foundations/en/latest/
 
 **BUG TRACKER**: https://bitbucket.org/ergo/ziggurat_foundations
 
