@@ -26,9 +26,9 @@ Contents:
    
    overview
    tutorial
+   extensions/pyramid
    api
    changelog
-
 
 .. note::
 
