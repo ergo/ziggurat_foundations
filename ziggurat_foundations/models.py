@@ -103,9 +103,7 @@ class UserMixin(BaseModel):
         to be extended with other application specific properties"""
 
     __mapper_args__ = {}
-    __table_args__ = {
-                      'mysql_engine': 'InnoDB',
-                      'mysql_charset': 'utf8'
+    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'
                       }
 
     @declared_attr
