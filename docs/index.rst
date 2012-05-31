@@ -6,6 +6,12 @@
 Welcome to ziggurat_foundations's documentation!
 ================================================
 
+.. image:: https://errormator.com/static/images/logos/pyramid_small.png
+   :alt: Pyramid Logo
+  
+.. image:: https://errormator.com/static/images/logos/flask_small.png
+   :alt: Flask Logo
+
 Framework agnostic set of sqlalchemy classes that make building applications 
 that require permissions (ACL's) an easy task.
 
