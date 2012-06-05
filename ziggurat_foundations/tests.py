@@ -753,6 +753,14 @@ class GroupResourcePermissionTestCase(BaseTestCase):
         self.assertEqual(repr(group_resource_perm),
                          '<GroupResourcePermission: group, perm, 1>')
 
+class AddResourceTestCase(BaseTestCase):
+    def test_pkey(self):
+        resource = self._addResource(99, 'some random name')
+        self.assertEqual(resource.resource_id, 99)
+
+    def test_nopkey(self):
+        resource = self._addResource(None, 'some random name')
+        self.assertEqual(resource.resource_id, 1)
 
 if __name__ == '__main__':
     unittest.main()  # pragma: nocover

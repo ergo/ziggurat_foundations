@@ -9,6 +9,12 @@ Changelog
     Alembic 0.3.3+ (or current trunk for 2012-05-27) is required for this to function properly
 
 
+2012-06-05
+----------
+
+* shrinked integer sized on primary keys
+* previous revision ID: 54d08f9adc8c
+
 2012-05-27 version 0.2 First public release
 -------------------------------------------
 

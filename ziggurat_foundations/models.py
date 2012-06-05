@@ -113,7 +113,7 @@ class UserMixin(BaseModel):
     @declared_attr
     def id(self):
         """ Unique identifier of user object"""
-        return sa.Column(sa.Integer, primary_key=True)
+        return sa.Column(sa.Integer, primary_key=True, autoincrement=True)
 
     @declared_attr
     def user_name(self):
@@ -456,7 +456,7 @@ class GroupMixin(BaseModel):
 
     @declared_attr
     def id(self):
-        return sa.Column(sa.Integer, primary_key=True)
+        return sa.Column(sa.Integer, primary_key=True, autoincrement=True)
 
     @declared_attr
     def group_name(self):
@@ -650,7 +650,7 @@ class GroupResourcePermissionMixin(BaseModel):
 
     @declared_attr
     def resource_id(self):
-        return sa.Column(sa.BigInteger(),
+        return sa.Column(sa.Integer(),
                          sa.ForeignKey('resources.resource_id',
                                        onupdate='CASCADE',
                                        ondelete='CASCADE'),
@@ -684,7 +684,7 @@ class UserResourcePermissionMixin(BaseModel):
 
     @declared_attr
     def resource_id(self):
-        return sa.Column(sa.BigInteger(),
+        return sa.Column(sa.Integer(),
                          sa.ForeignKey('resources.resource_id',
                                        onupdate='CASCADE',
                                        ondelete='CASCADE'),
@@ -729,11 +729,12 @@ class ResourceMixin(BaseModel):
 
     @declared_attr
     def resource_id(self):
-        return sa.Column(sa.BigInteger(), primary_key=True, nullable=False)
+        return sa.Column(sa.Integer(), primary_key=True, nullable=False,
+                         autoincrement=True)
 
     @declared_attr
     def parent_id(self):
-        return sa.Column(sa.BigInteger(),
+        return sa.Column(sa.Integer(),
                          sa.ForeignKey('resources.resource_id',
                                 onupdate='CASCADE', ondelete='SET NULL'))
 

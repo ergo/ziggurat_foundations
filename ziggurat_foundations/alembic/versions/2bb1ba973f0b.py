@@ -14,7 +14,8 @@ import sqlalchemy as sa
 
 def upgrade():
     create_table('groups',
-                 sa.Column('id', sa.Integer, primary_key=True),
+                 sa.Column('id', sa.Integer, primary_key=True,
+                           autoincrement=True),
                  sa.Column('group_name', sa.Unicode(50), unique=True),
                  sa.Column('description', sa.Text()),
                  sa.Column('member_count', sa.Integer, nullable=False,
@@ -32,7 +33,8 @@ def upgrade():
     
         
     create_table('users',
-                 sa.Column('id', sa.Integer, primary_key=True),
+                 sa.Column('id', sa.Integer, primary_key=True,
+                           autoincrement=True),
                  sa.Column('user_name', sa.Unicode(30), unique=True),
                  sa.Column('user_password', sa.String(40)),
                  sa.Column('email', sa.Unicode(100), nullable=False,
@@ -78,7 +80,7 @@ def upgrade():
 
     create_table('resources',
                  sa.Column('resource_id', sa.BigInteger(), primary_key=True,
-                           nullable=False),
+                           nullable=False, autoincrement=True),
                  sa.Column('resource_name', sa.Unicode(100), nullable=False),
                  sa.Column('resource_type', sa.Unicode(30), nullable=False),
                  sa.Column('owner_group_name', sa.Unicode(50),

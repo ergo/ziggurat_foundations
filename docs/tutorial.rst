@@ -11,11 +11,9 @@ Install the package::
 
 Now it's time to initialize your model structure with alembic.
 
-In time of writing this tutorial (2012-05-27) proper separate versioning of alembic  
-schemes is planned for **alembic 0.3.3+** , so you will first need to install trunk  
-version of alembic itself for this to work properly::
+You will first need to install alembic version **0.3.4** or above::
 
-    pip install hg+http://bitbucket.org/zzzeek/alembic
+    pip install alembic\>=0.3.4
 
 After you obtain recent alembic you can now run your migrations agains databae of your choice.
 
