@@ -1,0 +1,31 @@
+"""groups pkey change
+
+Revision ID: 3cfc41c4a5f0
+Revises: 53927300c277
+Create Date: 2012-06-27 02:15:58.776223
+
+"""
+
+# revision identifiers, used by Alembic.
+revision = '3cfc41c4a5f0'
+down_revision = '53927300c277'
+
+from alembic import op
+import sqlalchemy as sa
+
+
+def upgrade():
+    op.drop_column('groups', 'id')
+    op.alter_column('groups', 'group_name',
+                    type_=sa.String(128),
+                    existing_type=sa.String(50),
+                    )
+    op.execute("ALTER TABLE groups ADD CONSTRAINT groups_pkey PRIMARY KEY(group_name)")
+
+def downgrade():
+    op.add_column('groups', sa.Column('id', sa.Integer, primary_key=True,
+                                      autoincrement=True)
+                  )
+    op.execute("ALTER TABLE groups DROP CONSTRAINT groups_pkey")
+    
+

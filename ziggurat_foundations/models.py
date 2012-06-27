@@ -56,6 +56,13 @@ def get_db_session(session=None, obj=None):
     raise Exception('No Session found')
 
 
+def groupfinder(userid, request):
+    if userid and hasattr(request, 'user') and request.user:
+        groups = ['group:%s' % g.group_name.lower() for g in request.user.groups]
+        return groups
+    return []
+
+
 class BaseModel(object):
     """ Basic class that all other classes inherit from that supplies some 
     basic methods useful for interaction with packages like:
@@ -455,12 +462,8 @@ class GroupMixin(BaseModel):
                                 'manage_apps',)
 
     @declared_attr
-    def id(self):
-        return sa.Column(sa.Integer, primary_key=True, autoincrement=True)
-
-    @declared_attr
     def group_name(self):
-        return sa.Column(sa.Unicode(50), unique=True)
+        return sa.Column(sa.Unicode(128), primary_key=True,)
 
     @declared_attr
     def description(self):
@@ -754,13 +757,13 @@ class ResourceMixin(BaseModel):
     def owner_group_name(self):
         return sa.Column(sa.Unicode(50),
                        sa.ForeignKey('groups.group_name', onupdate='CASCADE',
-                                     ondelete='SET NULL'))
+                                     ondelete='SET NULL'), index=True)
 
     @declared_attr
     def owner_user_name(self):
         return sa.Column(sa.Unicode(30),
                        sa.ForeignKey('users.user_name', onupdate='CASCADE',
-                                     ondelete='SET NULL'))
+                                     ondelete='SET NULL'), index=True)
 
     @declared_attr
     def group_permissions(self):
@@ -809,7 +812,7 @@ class ResourceMixin(BaseModel):
 
     @property
     def __acl__(self):
-        acls = [(Allow, 'group:Administrators', ALL_PERMISSIONS,), ]
+        acls = [(Allow, 'group:administrators', ALL_PERMISSIONS,), ]
 
         if self.owner_user_name:
             acls.extend([(Allow, self.owner_user_name, ALL_PERMISSIONS,), ])
