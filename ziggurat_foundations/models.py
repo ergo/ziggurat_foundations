@@ -812,7 +812,7 @@ class ResourceMixin(BaseModel):
 
     @property
     def __acl__(self):
-        acls = [(Allow, 'group:administrators', ALL_PERMISSIONS,), ]
+        acls = [(Allow, 'group:Administrators', ALL_PERMISSIONS,), ]
 
         if self.owner_user_name:
             acls.extend([(Allow, self.owner_user_name, ALL_PERMISSIONS,), ])
