@@ -9,6 +9,18 @@ Changelog
     Alembic 0.3.3+ (or current trunk for 2012-05-27) is required for this to function properly
 
 
+2012-06-26
+----------
+
+* added some indexes to resource owners
+* previous revision ID: 3cfc41c4a5f0
+
+2012-06-25
+----------
+
+* dropped groups.id column
+* previous revision ID: 53927300c277
+
 2012-06-05
 ----------
 
