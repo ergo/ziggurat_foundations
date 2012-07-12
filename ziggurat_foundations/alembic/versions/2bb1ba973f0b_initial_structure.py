@@ -7,6 +7,7 @@ Create Date: 2011-11-10 22:32:14.464939
 """
 
 # downgrade revision identifier, used by Alembic.
+revision = '2bb1ba973f0b'
 down_revision = None
 
 from alembic.op import *
@@ -130,12 +131,4 @@ def upgrade():
     # CHECK (perm_name::text = lower(perm_name::text))
 
 def downgrade():
-    # Operations to reverse the above upgrade go here.
-    drop_table('users_resources_permissions')
-    drop_table('groups_resources_permissions')
-    drop_table('resources')
-    drop_table('users_groups')
-    drop_table('users_permissions')
-    drop_table('users')
-    drop_table('groups_permissions')
-    drop_table('groups')
+    pass

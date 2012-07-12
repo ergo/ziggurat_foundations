@@ -18,4 +18,4 @@ def upgrade():
                                          server_default='0', nullable=False))
 
 def downgrade():
-    op.drop_column('resources', 'ordering')
+    pass

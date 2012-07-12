@@ -23,9 +23,4 @@ def upgrade():
     op.execute("ALTER TABLE groups ADD CONSTRAINT groups_pkey PRIMARY KEY(group_name)")
 
 def downgrade():
-    op.add_column('groups', sa.Column('id', sa.Integer, primary_key=True,
-                                      autoincrement=True)
-                  )
-    op.execute("ALTER TABLE groups DROP CONSTRAINT groups_pkey")
-    
-
+    pass

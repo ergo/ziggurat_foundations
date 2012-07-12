@@ -26,11 +26,4 @@ def upgrade():
 
 
 def downgrade():
-    op.alter_column('resources', 'resource_id',
-                    type_=sa.BigInteger(), existing_type=sa.Integer())
-    op.alter_column('resources', 'parent_id',
-                    type_=sa.BigInteger(), existing_type=sa.Integer())
-    op.alter_column('users_resources_permissions', 'resource_id',
-                    type_=sa.BigInteger(), existing_type=sa.Integer())
-    op.alter_column('groups_resources_permissions', 'resource_id',
-                    type_=sa.BigInteger(), existing_type=sa.Integer())
+    pass

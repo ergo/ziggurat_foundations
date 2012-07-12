@@ -7,6 +7,7 @@ Create Date: 2011-11-10 23:18:19.446844
 """
 
 # downgrade revision identifier, used by Alembic.
+revision = '24ab8d11f014'
 down_revision = '2bb1ba973f0b'
 
 from alembic.op import *

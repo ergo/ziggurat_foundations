@@ -7,6 +7,7 @@ Create Date: 2011-11-11 00:09:09.624704
 """
 
 # downgrade revision identifier, used by Alembic.
+revision = '5c84d7260c5'
 down_revision = '24ab8d11f014'
 
 from alembic.op import *
@@ -18,4 +19,4 @@ def upgrade():
                       onupdate='CASCADE', ondelete='SET NULL')))
 
 def downgrade():
-    drop_column('resources', 'parent_id')
+    pass

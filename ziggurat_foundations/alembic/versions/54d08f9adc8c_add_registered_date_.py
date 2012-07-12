@@ -21,4 +21,4 @@ def upgrade():
                                   server_default=sa.func.now()))
 
 def downgrade():
-    drop_column('users', 'registered_date')
+    pass

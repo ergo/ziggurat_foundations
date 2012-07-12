@@ -19,5 +19,4 @@ def upgrade():
     op.create_index('owner_group_name_ix', 'resources', ['owner_group_name'])
 
 def downgrade():
-    op.drop_index('owner_user_name_ix', 'resources')
-    op.drop_index('owner_group_name_ix', 'resources')
+    pass

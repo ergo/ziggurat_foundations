@@ -21,7 +21,4 @@ def upgrade():
                     type_=sa.String(255), existing_type=sa.String(50))
 
 def downgrade():
-    op.alter_column('external_identities', 'external_id',
-                    type_=sa.String(50), existing_type=sa.String(256))
-    op.alter_column('external_identities', 'external_user_name',
-                    type_=sa.String(50), existing_type=sa.String(256))
+    pass
