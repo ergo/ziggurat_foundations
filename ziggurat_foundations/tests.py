@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import unittest
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -65,7 +66,8 @@ ziggurat_model_init(User, Group, UserGroup, GroupPermission, UserPermission,
                    ExternalIdentity)
 
 def _initTestingDB():
-    engine = create_engine('sqlite://')
+    sql_str = os.environ.get("DB_STRING", 'sqlite://')
+    engine = create_engine(sql_str)
     # pyramid way
     maker = sessionmaker(bind=engine)
     Base.metadata.bind = engine
@@ -74,7 +76,7 @@ def _initTestingDB():
     return maker()
 
     # pylons/akhet monkeypatching way
-#    import ziggurat_foundations    
+#    import ziggurat_foundations
 #    DBSession = scoped_session(sessionmaker())
 #    dbsession = DBSession()
 #    dbsession.configure(bind=engine)
