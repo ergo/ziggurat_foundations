@@ -229,8 +229,9 @@ class UserMixin(BaseModel):
         """ returns all non-resource permissions based on what groups user
             belongs and directly set ones for this user"""
         db_session = get_db_session(None, self)
-        query = db_session.query((sa.literal(u'group:').op("||")(sa.sql.cast(self.GroupPermission.group_id,sa.String))).label('owner_id'),
-                             self.GroupPermission.perm_name.label('perm_name'))
+        query = db_session.query(self.GroupPermission.group_id.label('owner_id'),
+                             self.GroupPermission.perm_name.label('perm_name'),
+                             sa.literal('group').label('type'))
         query = query.filter(self.GroupPermission.group_id == \
                              self.UserGroup.group_id)
         query = query.filter(self.User.id == self.UserGroup.user_id)
@@ -238,10 +239,12 @@ class UserMixin(BaseModel):
 
         query2 = db_session.query(
                             self.UserPermission.user_id.label('owner_id'),
-                            self.UserPermission.perm_name.label('perm_name'))
+                            self.UserPermission.perm_name.label('perm_name'),
+                            sa.literal('user').label('type'))
         query2 = query2.filter(self.UserPermission.user_id == self.id)
         query = query.union(query2)
-        return [(row.owner_id, row.perm_name) for row in query]
+        return [(row.owner_id if row.type == 'user' else u'group:%s' % row.owner_id,
+                 row.perm_name)for row in query]
 
     def resources_with_perms(self, perms, resource_ids=None,
                              db_session=None):
@@ -829,8 +832,9 @@ class ResourceMixin(BaseModel):
             from groups and directly set ones too"""
         db_session = get_db_session(db_session, self)
         query = db_session.query(
-                        sa.literal(u'group:').op("||")(sa.sql.cast(self.GroupResourcePermission.group_id,sa.String)),
-                        self.GroupResourcePermission.perm_name)
+                        self.GroupResourcePermission.group_id.label('owner_id'),
+                        self.GroupResourcePermission.perm_name,
+                        sa.literal('group').label('type'))
         query = query.filter(self.GroupResourcePermission.group_id.in_(
                                         [gr.id for gr in user.groups]
                                         )
@@ -838,14 +842,20 @@ class ResourceMixin(BaseModel):
         query = query.filter(self.GroupResourcePermission.resource_id == \
                              self.resource_id)
 
-        query2 = db_session.query(self.UserResourcePermission.user_id,
-                              self.UserResourcePermission.perm_name)
+        query2 = db_session.query(self.UserResourcePermission.user_id.label('owner_id'),
+                              self.UserResourcePermission.perm_name,
+                              sa.literal('user').label('type'))
         query2 = query2.filter(self.UserResourcePermission.user_id == \
                                user.id)
         query2 = query2.filter(self.UserResourcePermission.resource_id == \
                                self.resource_id)
         query = query.union(query2)
-        perms = [(row[0], row.perm_name,) for row in query]
+
+        
+        perms = [(row.owner_id if row.type == 'user' else u'group:%s' % row.owner_id,
+                  row.perm_name,) for row in query]
+        
+        
         #include all perms if user is the owner of this resource
         if self.owner_user_id == user.id:
             perms.append((self.owner_user_id, ALL_PERMISSIONS,))
@@ -872,7 +882,7 @@ class ResourceMixin(BaseModel):
             that are inherited from groups """
         db_session = get_db_session(db_session, self)
         query = db_session.query(
-                        sa.literal(u'group:').op("||")(sa.sql.cast(self.GroupResourcePermission.group_id,sa.String)),
+                        self.GroupResourcePermission.group_id.label('owner_id'),
                         self.GroupResourcePermission.perm_name)
         query = query.filter(self.GroupResourcePermission.group_id.in_(
                                     [gr.id for gr in user.groups]
@@ -880,7 +890,8 @@ class ResourceMixin(BaseModel):
                      )
         query = query.filter(self.GroupResourcePermission.resource_id == \
                              self.resource_id)
-        perms = [(row[0], row.perm_name,) for row in query]
+
+        perms = [('group:%s' %row.owner_id, row.perm_name,) for row in query]
 #        if self.owner_group_id:
 #            perms.append(('group:' + self.owner_group_id, ALL_PERMISSIONS,))
         return perms
