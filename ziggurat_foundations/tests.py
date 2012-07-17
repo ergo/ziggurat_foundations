@@ -18,8 +18,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 
 from alembic.config import Config
-from alembic.script import ScriptDirectory
-from alembic.migration import MigrationContext
+from alembic import command
 
 
 Base = declarative_base()
@@ -88,7 +87,6 @@ def _initTestingDB():
         alembic_cfg = Config()
         alembic_cfg.set_main_option("script_location", "ziggurat_foundations:migrations")
         alembic_cfg.set_main_option("sqlalchemy.url", sql_str)
-        from alembic import command
         command.stamp(alembic_cfg, None)
         command.upgrade(alembic_cfg, "head")
     return maker()
