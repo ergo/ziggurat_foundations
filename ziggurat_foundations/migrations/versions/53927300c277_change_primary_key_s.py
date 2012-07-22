@@ -37,6 +37,8 @@ def upgrade():
                     type_=sa.Integer(), existing_type=sa.BigInteger())
     
     if isinstance(c.connection.engine.dialect, MySQLDialect):
+        op.execute("ALTER TABLE resources MODIFY resource_id INT NOT NULL AUTO_INCREMENT;")
+        
         op.create_foreign_key("groups_resources_permissions_resource_fk",
                               'groups_resources_permissions', 
                               "resources", ["resource_id"], ["resource_id"],
