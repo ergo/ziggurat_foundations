@@ -85,7 +85,7 @@ class ZigguratSignInProvider(object):
         user = self.UserModel.by_user_name(
                                 request.params.get(self.signin_username_key))
         if user:
-            password = request.params.get('sign_in_user_password')
+            password = request.params.get(self.signin_password_key)
             if user.check_password(password):
                 headers = pyramid.security.remember(request, user.id)
                 return ZigguratSignInSuccess(headers=headers,
