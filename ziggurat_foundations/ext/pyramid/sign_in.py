@@ -44,7 +44,7 @@ def includeme(config):
                                  '/sign_out')
     user_model_location = settings.get('%s.model_locations.User' % CONFIG_KEY)
     signin_came_from_key = settings.get('%s.sign_in.came_from_key' % \
-                                            CONFIG_KEY)
+                                            CONFIG_KEY, 'came_from')
     signin_username_key = settings.get('%s.sign_in.username_key' % \
                                             CONFIG_KEY, 'login')
     signin_password_key = settings.get('%s.sign_in.password_key' % \
