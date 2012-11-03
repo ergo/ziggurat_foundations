@@ -57,7 +57,7 @@ def includeme(config):
         ''')
 
     parts = user_model_location.split(':')
-    _tmp = __import__(parts[0], globals(), locals(), [parts[1], ], -1)
+    _tmp = __import__(parts[0], globals(), locals(), [parts[1], ], 0)
     UserModel = getattr(_tmp, parts[1])
 
     endpoint = ZigguratSignInProvider(settings=settings,
