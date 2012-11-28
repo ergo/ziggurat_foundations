@@ -28,11 +28,7 @@ def upgrade():
                                       ondelete='CASCADE'), primary_key=True),
                  sa.Column('perm_name', sa.Unicode(30), primary_key=True)
                  )
-    # TODO
-    # CONSTRAINT groups_permissions_perm_name_check 
-    # CHECK (perm_name::text = lower(perm_name::text))
-    
-        
+
     create_table('users',
                  sa.Column('id', sa.Integer, primary_key=True,
                            autoincrement=True),
@@ -47,29 +43,14 @@ def upgrade():
                                 server_default=sa.func.now()
                                 )
                  )
-    # TODO for postgresql
-#CREATE UNIQUE INDEX users_email_key
-#  ON users
-#  USING btree
-#  (lower(email::text));
-#
-#-- Index: users_username_uq
-#
-#-- DROP INDEX users_username_uq;
-#
-#CREATE INDEX users_username_uq
-#  ON users
-#  USING btree
-#  (lower(user_name::text));
 
-    
     create_table('users_permissions',
                  sa.Column('user_name', sa.Unicode(50),
                          sa.ForeignKey('users.user_name', onupdate='CASCADE',
                                        ondelete='CASCADE'), primary_key=True),
                  sa.Column('perm_name', sa.Unicode(30), primary_key=True)
                  )
-    
+
     create_table('users_groups',
                  sa.Column('group_name', sa.Unicode(50),
                          sa.ForeignKey('groups.group_name', onupdate='CASCADE',
@@ -106,10 +87,6 @@ def upgrade():
                            autoincrement=False),
                  sa.Column('perm_name', sa.Unicode(50), primary_key=True)
                  )
-    # TODO for postgresql
-    # CONSTRAINT groups_resources_permissions_perm_name_check 
-    # CHECK (perm_name::text = lower(perm_name::text))
-
 
     create_table('users_resources_permissions',
                  sa.Column('user_name', sa.Unicode(50),
@@ -125,10 +102,6 @@ def upgrade():
                            autoincrement=False),
                  sa.Column('perm_name', sa.Unicode(50), primary_key=True)
                  )
-
-    # TODO for postgresql
-    # CONSTRAINT users_resources_permissions_perm_name_check 
-    # CHECK (perm_name::text = lower(perm_name::text))
 
 def downgrade():
     pass

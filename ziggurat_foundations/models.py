@@ -319,11 +319,11 @@ class UserMixin(BaseModel):
 
     def regenerate_security_code(self):
         """ generates new security code"""
-        self.security_code = self.generate_random_string(32)
+        self.security_code = self.generate_random_string(64)
 
     @staticmethod
     def generate_random_string(chars=7):
-        return u''.join(random.sample(string.ascii_letters + string.digits,
+        return u''.join(random.sample(string.ascii_letters*2 + string.digits,
                                       chars))
 
     @classmethod
@@ -551,8 +551,10 @@ class GroupMixin(BaseModel):
         return permission
 
     def get_user_paginator(self, page=1, item_count=None, items_per_page=50,
-                           user_ids=None, GET_params={}):
+                           user_ids=None, GET_params=None):
         """ returns paginator over users belonging to the group"""
+        if not GET_params:
+            GET_params = {}
         GET_params.pop('page', None)
         query = self.users_dynamic
         if user_ids:

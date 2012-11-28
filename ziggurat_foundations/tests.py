@@ -393,7 +393,7 @@ class UserTestCase(BaseTestCase):
         new_code = created_user.security_code
 
         self.assertNotEqual(old_code, new_code)
-        self.assertEqual(len(new_code), 32)
+        self.assertEqual(len(new_code), 64)
 
     def test_user_permissions(self):
         created_user = self._addUser()

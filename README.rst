@@ -31,3 +31,5 @@ Currently following information and data manipulation is supported:
  
 The sqlalchemy mixins make all the interactions easy to use in your application 
 and save development time.
+
+Ziggurat Foundations is BSD Licensed
