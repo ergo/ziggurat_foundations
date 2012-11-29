@@ -9,6 +9,17 @@ Changelog
     Alembic 0.3.3+ (or current trunk for 2012-05-27) is required for this to function properly
 
 
+2012-11-28 version 0.3 First Alpha release
+-------------------------------------------
+* This release should have a fairly stable API
+* Hundreds of small and big changes - based on all great feedback we are now 
+  using surrogate pkeys instead of natural pkeys for most models. 
+  As result of this few methods started accepting id's instead usernames, 
+  so consider yourself warned that this release might be bw. incompatible a bit 
+  with your application
+* At this point all tests should pass on mysql, postgresql, sqlite
+
+
 2012-05-27 version 0.2 First public release
 -------------------------------------------
 

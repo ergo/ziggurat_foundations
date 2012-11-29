@@ -70,8 +70,8 @@ Using ziggurat_foundations within your application
     class names like User inside ziggurat_foundations.models namespace CAN NOT be changed 
     because they are reused in various queries - unless you reimplement ziggurat_model_init
 
-We need to include the mixins inside our application and map classes together so
-internal metods can function properly.
+We need to *include ALL mixins inside our application* 
+and map classes together so internal methods can function properly.
 
 How to use the mixins inside your application::
 
@@ -156,7 +156,7 @@ Adding arbitrary user a 'view' permission to resource
 ::
 
     permission = UserResourcePermission(perm_name=perm_name,
-                                        user_name=user.user_name)
+                                        user_id=user.user_id)
     resource.user_permissions.append(permission)
 
 
