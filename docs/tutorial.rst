@@ -20,7 +20,7 @@ After you obtain recent alembic you can now run your migrations agains databae o
 First you will need to create alembic.ini file with following contents::
 
     [alembic]
-    script_location = ziggurat_foundations:alembic
+    script_location = ziggurat_foundations:migrations
     sqlalchemy.url = driver://user:pass@host/dbname
     
     [loggers]
