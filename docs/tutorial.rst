@@ -15,7 +15,14 @@ You will first need to install alembic version **0.3.4** or above::
 
     pip install alembic\>=0.3.4
 
-After you obtain recent alembic you can now run your migrations agains databae of your choice.
+After you obtain recent alembic you can now run your migrations against database of your choice.
+
+.. warning ::
+    It is *critical* that you use alembic for migrations, if you perform normal 
+    table creation like metadata.create_all() with sqlalchemy you will not be 
+    able to perform migrations if database schema changes for ziggurat and some 
+    constraints *will* be missing from your database even if things will appear 
+    to work fine for you.
 
 First you will need to create alembic.ini file with following contents::
 
