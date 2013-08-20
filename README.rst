@@ -13,7 +13,7 @@ flat and tree like data structures.
 
 **DOCUMENTATION**: http://readthedocs.org/docs/ziggurat-foundations/en/latest/
 
-**BUG TRACKER**: https://bitbucket.org/ergo/ziggurat_foundations
+**BUG TRACKER**: https://github.com/ergo/ziggurat_foundations
 
 So far following basics are supplied:
 
