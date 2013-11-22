@@ -33,10 +33,10 @@ DBSession = None
 
 
 def get_db_session(session=None, obj=None):
-    """ utility function that attempts to return sqlalchemy session that could 
+    """ utility function that attempts to return sqlalchemy session that could
     have been created/passed in one of few ways:
 
-    * It first tries to read session attached to instance 
+    * It first tries to read session attached to instance
       if object argument was passed
 
     * then it tries to return  session passed as argument
@@ -64,7 +64,7 @@ def groupfinder(userid, request):
 
 
 class BaseModel(object):
-    """ Basic class that all other classes inherit from that supplies some 
+    """ Basic class that all other classes inherit from that supplies some
     basic methods useful for interaction with packages like:
     deform, colander or wtforms """
 
@@ -90,23 +90,23 @@ class BaseModel(object):
         return l
 
     def populate_obj(self, appstruct):
-        """ updates instance properties with dictionary values *for keys that 
+        """ updates instance properties with dictionary values *for keys that
         exist* for this model """
         for k in self._get_keys():
             if k in appstruct:
                 setattr(self, k, appstruct[k])
 
     def get_db_session(self, session=None):
-        """ Attempts to return session via get_db_session utility function 
+        """ Attempts to return session via get_db_session utility function
         :meth:`~ziggurat_foundations.models.get_db_session`"""
         return get_db_session(session, self)
 
 
 class UserMixin(BaseModel):
     """ Base mixin for user object representation.
-        It supplies all the basic functionality from password hash generation 
-        and matching to utility methods used for querying database for users 
-        and their permissions or resources they have access to. It is meant 
+        It supplies all the basic functionality from password hash generation
+        and matching to utility methods used for querying database for users
+        and their permissions or resources they have access to. It is meant
         to be extended with other application specific properties"""
 
     __mapper_args__ = {}
@@ -140,7 +140,7 @@ class UserMixin(BaseModel):
     @declared_attr
     def status(self):
         """ Status of user object """
-        return sa.Column(sa.SmallInteger(), nullable=False)
+        return sa.Column(sa.SmallInteger(), nullable=False, default=1)
 
     @declared_attr
     def security_code(self):
@@ -168,7 +168,7 @@ class UserMixin(BaseModel):
 
     @declared_attr
     def groups_dynamic(self):
-        """ returns dynamic relationship for groups - allowing for 
+        """ returns dynamic relationship for groups - allowing for
         filtering of data """
         return sa.orm.relationship('Group', secondary='users_groups',
                         lazy='dynamic',
@@ -201,9 +201,9 @@ class UserMixin(BaseModel):
 
     @declared_attr
     def resources(cls):
-        """ Returns all resources directly owned by user, can be used to assign 
+        """ Returns all resources directly owned by user, can be used to assign
         ownership of new resources::
-        
+
             user.resources.append(resource) """
         return sa.orm.relationship('Resource',
                         cascade="all",
@@ -214,7 +214,7 @@ class UserMixin(BaseModel):
 
     @declared_attr
     def external_identities(self):
-        """ dynamic relation for external identities for this user - 
+        """ dynamic relation for external identities for this user -
         allowing for filtering of data """
         return sa.orm.relationship('ExternalIdentity',
                         lazy='dynamic',
@@ -267,9 +267,9 @@ class UserMixin(BaseModel):
                             (self.GroupResourcePermission,
                              sa.and_(*join_conditions),)
                             )
-            # ensure outerjoin permissions are correct - 
+            # ensure outerjoin permissions are correct -
             # dont add empty rows from join
-            # conditions are - join ON possible group permissions 
+            # conditions are - join ON possible group permissions
             # OR owning group/user
             query = query.filter(sa.or_(
                             self.Resource.owner_user_id == self.id,
@@ -335,7 +335,7 @@ class UserMixin(BaseModel):
         query = query.options(sa.orm.eagerload('groups'))
         return query.first()
 
-    
+
     @classmethod
     def by_user_name(cls, user_name, db_session=None):
         """ fetch user by user name """
@@ -371,7 +371,7 @@ class UserMixin(BaseModel):
     def user_names_like(cls, user_name, db_session=None):
         """
         fetch users with similar names
-        
+
         For now rely on LIKE in db - shouldnt be issue ever
         in future we can plug in fulltext search like solr or whoosh
         """
@@ -730,7 +730,7 @@ class UserResourcePermissionMixin(BaseModel):
 
 #    @classmethod
 #    def allowed_permissions(cls, key):
-#        """ ensures we can only use permission that can be assigned 
+#        """ ensures we can only use permission that can be assigned
 #            to this resource type"""
 #        if key in cls.__possible_permissions__:
 #            return key
@@ -853,11 +853,11 @@ class ResourceMixin(BaseModel):
                                self.resource_id)
         query = query.union(query2)
 
-        
+
         perms = [(row.owner_id if row.type == 'user' else u'group:%s' % row.owner_id,
                   row.perm_name,) for row in query]
-        
-        
+
+
         #include all perms if user is the owner of this resource
         if self.owner_user_id == user.id:
             perms.append((self.owner_user_id, ALL_PERMISSIONS,))
@@ -899,7 +899,7 @@ class ResourceMixin(BaseModel):
         return perms
 
     def users_for_perm(self, perm_name, db_session=None):
-        """ return tuple (user,perm_name) that have given 
+        """ return tuple (user,perm_name) that have given
         permission for the resource """
         db_session = get_db_session(db_session, self)
         query = db_session.query(self.User,
@@ -964,18 +964,18 @@ class ResourceMixin(BaseModel):
     @classmethod
     def subtree_deeper(cls, object_id, limit_depth=1000000, flat=True,
                        db_session=None):
-        """ This returns you subree of ordered objects relative 
+        """ This returns you subree of ordered objects relative
         to the start object id currently only postgresql
         """
         raw_q = """
             WITH RECURSIVE subtree AS (
-                    SELECT res.*, 1 as depth, array[ordering] as sorting FROM 
+                    SELECT res.*, 1 as depth, array[ordering] as sorting FROM
                     resources res WHERE res.resource_id = :id
                   UNION ALL
-                    SELECT res_u.*, depth+1 as depth, 
-                    (st.sorting || ARRAY[res_u.ordering] ) as sort 
-                    FROM resources res_u, subtree st 
-                    WHERE res_u.parent_id = st.resource_id  
+                    SELECT res_u.*, depth+1 as depth,
+                    (st.sorting || ARRAY[res_u.ordering] ) as sort
+                    FROM resources res_u, subtree st
+                    WHERE res_u.parent_id = st.resource_id
             )
             SELECT * FROM subtree WHERE depth<=:depth ORDER BY sorting;
         """
@@ -987,17 +987,17 @@ class ResourceMixin(BaseModel):
     @classmethod
     def path_upper(cls, object_id, limit_depth=1000000, flat=True,
                    db_session=None):
-        """ This returns you path to root node starting from object_id 
+        """ This returns you path to root node starting from object_id
             currently only for postgresql
         """
         raw_q = """
             WITH RECURSIVE subtree AS (
-                    SELECT res.*, 1 as depth FROM resources res 
+                    SELECT res.*, 1 as depth FROM resources res
                     WHERE res.resource_id = :id
                   UNION ALL
-                    SELECT res_u.*, depth+1 as depth 
-                    FROM resources res_u, subtree st 
-                    WHERE res_u.resource_id = st.parent_id  
+                    SELECT res_u.*, depth+1 as depth
+                    FROM resources res_u, subtree st
+                    WHERE res_u.resource_id = st.parent_id
             )
             SELECT * FROM subtree WHERE depth<=:depth;
         """
