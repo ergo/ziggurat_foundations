@@ -15,6 +15,7 @@ except ImportError as e:
     # source https://github.com/Pylons/pyramid/blob/master/pyramid/security.py
 
     class AllPermissionsList(object):
+
         """ Stand in 'permission list' to represent all permissions """
 
         def __iter__(self):
@@ -64,6 +65,7 @@ def groupfinder(userid, request):
 
 
 class BaseModel(object):
+
     """ Basic class that all other classes inherit from that supplies some
     basic methods useful for interaction with packages like:
     deform, colander or wtforms """
@@ -103,6 +105,7 @@ class BaseModel(object):
 
 
 class UserMixin(BaseModel):
+
     """ Base mixin for user object representation.
         It supplies all the basic functionality from password hash generation
         and matching to utility methods used for querying database for users
@@ -567,6 +570,7 @@ class GroupMixin(BaseModel):
 
 
 class GroupPermissionMixin(BaseModel):
+
     """ group permission mixin """
 
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}

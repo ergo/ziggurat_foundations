@@ -43,16 +43,16 @@ def includeme(config):
     sign_out_path = settings.get('%s.sign_in.sign_out_pattern' % CONFIG_KEY,
                                  '/sign_out')
     user_model_location = settings.get('%s.model_locations.User' % CONFIG_KEY)
-    signin_came_from_key = settings.get('%s.sign_in.came_from_key' % \
-                                            CONFIG_KEY, 'came_from')
-    signin_username_key = settings.get('%s.sign_in.username_key' % \
-                                            CONFIG_KEY, 'login')
-    signin_password_key = settings.get('%s.sign_in.password_key' % \
-                                            CONFIG_KEY, 'password')
+    signin_came_from_key = settings.get('%s.sign_in.came_from_key' %
+                                        CONFIG_KEY, 'came_from')
+    signin_username_key = settings.get('%s.sign_in.username_key' %
+                                       CONFIG_KEY, 'login')
+    signin_password_key = settings.get('%s.sign_in.password_key' %
+                                       CONFIG_KEY, 'password')
 
     if not user_model_location:
-        raise Exception('''You need to pass location of user model 
-        inside your application eg.: 
+        raise Exception('''You need to pass location of user model
+        inside your application eg.:
         ziggurat_foundations.user_model_location = youappname.models:User
         ''')
 
@@ -61,10 +61,10 @@ def includeme(config):
     UserModel = getattr(_tmp, parts[1])
 
     endpoint = ZigguratSignInProvider(settings=settings,
-                                    UserModel=UserModel,
-                                    signin_came_from_key=signin_came_from_key,
-                                    signin_username_key=signin_username_key,
-                                    signin_password_key=signin_password_key
+                                      UserModel=UserModel,
+                                      signin_came_from_key=signin_came_from_key,
+                                      signin_username_key=signin_username_key,
+                                      signin_password_key=signin_password_key
                                       )
     config.add_route('ziggurat.routes.sign_in', sign_in_path,
                      use_global_views=True,
@@ -75,7 +75,7 @@ def includeme(config):
 
 
 class ZigguratSignInProvider(object):
-    
+
     def __init__(self, *args, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)
@@ -83,7 +83,7 @@ class ZigguratSignInProvider(object):
     def sign_in(self, request):
         came_from = request.params.get(self.signin_came_from_key, '/')
         user = self.UserModel.by_user_name(
-                                request.params.get(self.signin_username_key))
+            request.params.get(self.signin_username_key))
         if user:
             password = request.params.get(self.signin_password_key)
             if user.check_password(password):
