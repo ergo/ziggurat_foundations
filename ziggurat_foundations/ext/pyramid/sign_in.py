@@ -84,12 +84,18 @@ class ZigguratSignInProvider(object):
         came_from = request.params.get(self.signin_came_from_key, '/')
         user = self.UserModel.by_user_name(
             request.params.get(self.signin_username_key))
+        if user == None:
+            # if no result, test to see if email exists
+            user = self.UserModel.by_email(
+                request.params.get(self.signin_username_key))
         if user:
             password = request.params.get(self.signin_password_key)
             if user.check_password(password):
                 headers = pyramid.security.remember(request, user.id)
                 return ZigguratSignInSuccess(headers=headers,
                                              came_from=came_from, user=user)
+
+
         headers = pyramid.security.forget(request)
         return ZigguratSignInBadAuth(headers=headers, came_from=came_from)
 

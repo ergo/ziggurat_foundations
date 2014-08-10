@@ -349,6 +349,16 @@ class UserMixin(BaseModel):
         return query.first()
 
     @classmethod
+    def by_email(cls, email, db_session=None):
+        """ fetch user by email """
+        db_session = get_db_session(db_session)
+        query = db_session.query(cls)
+        query = query.filter(sa.func.lower(cls.email) ==
+                             (email or '').lower())
+        query = query.options(sa.orm.eagerload('groups'))
+        return query.first()
+
+    @classmethod
     def by_user_name_and_security_code(cls, user_name, security_code,
                                        db_session=None):
         """ fetch user objects by user name and security code"""
