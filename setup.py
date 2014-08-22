@@ -16,5 +16,6 @@ setup(name='ziggurat_foundations',
         'ziggurat_foundations': ['migrations/versions/*.py'],
         },
       test_suite='ziggurat_foundations.tests',
-      install_requires=["sqlalchemy", "cryptacular", 'webhelpers']
+      install_requires=["sqlalchemy", "cryptacular", "paginate",
+        "paginate_sqlalchemy"]
       )
