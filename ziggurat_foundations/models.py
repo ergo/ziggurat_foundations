@@ -3,7 +3,7 @@ import hashlib
 import urllib
 import random
 import string
-import webhelpers.paginate
+from paginate_sqlalchemy import SqlalchemyOrmPage
 
 from sqlalchemy.ext.declarative import declared_attr
 
@@ -562,11 +562,9 @@ class GroupMixin(BaseModel):
         query = self.users_dynamic
         if user_ids:
             query = query.filter(self.UserGroup.user_id.in_(user_ids))
-        return webhelpers.paginate.Page(query, page=page,
-                                        item_count=item_count,
-                                        items_per_page=items_per_page,
-                                        **GET_params
-                                        )
+        return SqlalchemyOrmPage(query, page=page, item_count=item_count,
+                                items_per_page=items_per_page, 
+                                **GET_params)
 
 
 class GroupPermissionMixin(BaseModel):

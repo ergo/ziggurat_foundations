@@ -1,6 +1,14 @@
 Changelog
 =========
 
+2014-08-25
+----------
+* Second Alpha Release 0.4
+* Move to paginate from webhelpers.paginate
+* Users can now log in via username or email address
+* Python 3 compatibale after moving away from webhelpers.paginate
+
+
 2012-11-28
 ----------
 * First Alpha Release 0.3 - This release should have a fairly stable API
