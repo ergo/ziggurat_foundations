@@ -8,6 +8,11 @@ Changelog
     from this point onwards you will be able to update schemas automaticly.
     Alembic 0.3.3+ (or current trunk for 2012-05-27) is required for this to function properly
 
+2014-08-25 Second Alpha Release 0.4
+-----------------------------------
+* Move to paginate from webhelpers.paginate
+* Users can now log in via username or email address
+* Python 3 compatibale after moving away from webhelpers.paginate
 
 2012-11-28 version 0.3 First Alpha release
 -------------------------------------------
