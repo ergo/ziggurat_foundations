@@ -570,10 +570,9 @@ class UserTestCase(BaseTestCase):
     def test_resources_with_direct_user_perms(self):
         self.__set_up_user_group_and_perms()
         # test_perm1 from group perms should be ignored
-        self.assertEqual(self.resource.direct_perms_for_user(self.user,
-                                                    db_session=self.session),
-                [(1, u'foo_perm'), (1, u'test_perm2')]
-                         )
+        self.assertCountEqual(self.resource.direct_perms_for_user(self.user, db_session=self.session),
+                              [(1, u'foo_perm'), (1, u'test_perm2')]
+        )
 
     def test_resources_with_direct_group_perms(self):
         self.__set_up_user_group_and_perms()
@@ -585,36 +584,30 @@ class UserTestCase(BaseTestCase):
 
     def test_resources_with_user_perms(self):
         self.__set_up_user_group_and_perms()
-        self.assertEqual(
-                sorted(self.resource.perms_for_user(self.user,
-                                                    db_session=self.session)),
-                sorted([(1, u'foo_perm'),
-                        (u'group:1', u'group_perm'),
-                        (1, u'test_perm2')])
-                        )
+        first = self.resource.perms_for_user(self.user, db_session=self.session)
+        second = [(1, u'foo_perm'),
+                  (u'group:1', u'group_perm'),
+                  (1, u'test_perm2')]
+        self.assertCountEqual(first, second)
 
     def test_users_for_perm(self):
         self.__set_up_user_group_and_perms()
-        self.assertEqual(
-                sorted(self.resource.users_for_perm(u'foo_perm',
-                                                    db_session=self.session)),
-                sorted([(self.user, u'foo_perm',), (self.user2, u'foo_perm',)])
-                        )
+        first = self.resource.users_for_perm(u'foo_perm', db_session=self.session)
+        second = [(self.user, u'foo_perm',), (self.user2, u'foo_perm',)]
+        self.assertCountEqual(first, second)
 
     def test_users_for_any_perm(self):
         self.__set_up_user_group_and_perms()
-        self.assertEqual(
-                sorted(self.resource.users_for_perm('__any_permission__',
-                                                    db_session=self.session)),
-                sorted([
-                        (self.user, u'group_perm',),
-                        (self.user, u'test_perm2',),
-                        (self.user, u'foo_perm',),
-                        (self.user2, u'foo_perm',),
-                        (self.user3, u'test_perm',),
-                        (self.user4, u'group_perm',),
-                        ])
-                )
+        first = self.resource.users_for_perm('__any_permission__',db_session=self.session)
+        second = [
+            (self.user, u'group_perm',),
+            (self.user, u'test_perm2',),
+            (self.user, u'foo_perm',),
+            (self.user2, u'foo_perm',),
+            (self.user3, u'test_perm',),
+            (self.user4, u'group_perm',),
+            ]
+        self.assertCountEqual(first, second)
 
 
 class GroupTestCase(BaseTestCase):
