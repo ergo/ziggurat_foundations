@@ -174,6 +174,11 @@ class ModelTestCase(BaseTestCase):
         dict_ = created_user.get_dict()
         self.assertEqual(len(dict_), 8)
 
+    def test_get_dict_excluded(self):
+        created_user = self._addUser()
+        dict_ = created_user.get_dict(exclude_keys=['user_name'])
+        assert 'user_name' not in dict_
+
     def test_appstruct(self):
         created_user = self._addUser()
         appstruct = created_user.get_appstruct()

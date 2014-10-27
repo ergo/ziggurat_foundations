@@ -75,12 +75,15 @@ class BaseModel(object):
         """ returns column names for this model """
         return sa.orm.class_mapper(cls).c.keys()
 
-    def get_dict(self):
+    def get_dict(self, exclude_keys=None):
         """ return dictionary of keys and values corresponding to this model's
-        data """
+        data
+        ::arg exclude_keys is a list of columns from model that should not be returned by this function
+        """
         d = {}
         for k in self._get_keys():
-            d[k] = getattr(self, k)
+            if k not in (exclude_keys or []):
+                d[k] = getattr(self, k)
         return d
 
     def get_appstruct(self):
