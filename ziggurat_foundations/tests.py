@@ -2,6 +2,7 @@
 from __future__ import with_statement
 import os
 import unittest
+import six
 
 from sqlalchemy.ext.declarative import declarative_base
 from ziggurat_foundations.models import UserMixin
@@ -380,13 +381,13 @@ class UserTestCase(BaseTestCase):
         rand_str = User.generate_random_string()
 
         self.assertEqual(len(rand_str), 7)
-        self.assertIsInstance(rand_str, str)
+        self.assertIsInstance(rand_str, six.string_types)
 
     def test_generate_random_pass(self):
         rand_str = User.generate_random_pass()
 
         self.assertEqual(len(rand_str), 7)
-        self.assertIsInstance(rand_str, str)
+        self.assertIsInstance(rand_str, six.string_types)
 
         rand_str = User.generate_random_pass(20)
         self.assertEqual(len(rand_str), 20)
@@ -570,17 +571,20 @@ class UserTestCase(BaseTestCase):
     def test_resources_with_direct_user_perms(self):
         self.__set_up_user_group_and_perms()
         # test_perm1 from group perms should be ignored
-        self.assertCountEqual(self.resource.direct_perms_for_user(self.user, db_session=self.session),
-                              [(1, u'foo_perm'), (1, u'test_perm2')]
-        )
+        first = self.resource.direct_perms_for_user(self.user, db_session=self.session)
+        second = [(1, u'foo_perm'), (1, u'test_perm2')]
+        if six.PY2:
+            return self.assertItemsEqual(first, second)
+        return self.assertCountEqual(first, second)
 
     def test_resources_with_direct_group_perms(self):
         self.__set_up_user_group_and_perms()
         # test_perm1 from group perms should be ignored
-        self.assertEqual(self.resource.group_perms_for_user(self.user,
-                                                db_session=self.session),
-                [('group:1', u'group_perm')]
-                )
+        first = self.resource.group_perms_for_user(self.user, db_session=self.session)
+        second = [('group:1', u'group_perm')]
+        if six.PY2:
+            return self.assertItemsEqual(first, second)
+        return self.assertCountEqual(first, second)
 
     def test_resources_with_user_perms(self):
         self.__set_up_user_group_and_perms()
@@ -588,13 +592,17 @@ class UserTestCase(BaseTestCase):
         second = [(1, u'foo_perm'),
                   (u'group:1', u'group_perm'),
                   (1, u'test_perm2')]
-        self.assertCountEqual(first, second)
+        if six.PY2:
+            return self.assertItemsEqual(first, second)
+        return self.assertCountEqual(first, second)
 
     def test_users_for_perm(self):
         self.__set_up_user_group_and_perms()
         first = self.resource.users_for_perm(u'foo_perm', db_session=self.session)
         second = [(self.user, u'foo_perm',), (self.user2, u'foo_perm',)]
-        self.assertCountEqual(first, second)
+        if six.PY2:
+            return self.assertItemsEqual(first, second)
+        return self.assertCountEqual(first, second)
 
     def test_users_for_any_perm(self):
         self.__set_up_user_group_and_perms()
@@ -607,7 +615,9 @@ class UserTestCase(BaseTestCase):
             (self.user3, u'test_perm',),
             (self.user4, u'group_perm',),
             ]
-        self.assertCountEqual(first, second)
+        if six.PY2:
+            return self.assertItemsEqual(first, second)
+        return self.assertCountEqual(first, second)
 
 
 class GroupTestCase(BaseTestCase):

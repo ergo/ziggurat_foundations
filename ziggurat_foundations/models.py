@@ -329,7 +329,7 @@ class UserMixin(BaseModel):
 
     @staticmethod
     def generate_random_string(chars=7):
-        return ''.join(random.sample(string.ascii_letters * 2 + string.digits,
+        return u''.join(random.sample(string.ascii_letters * 2 + string.digits,
                                       chars))
 
     @classmethod
