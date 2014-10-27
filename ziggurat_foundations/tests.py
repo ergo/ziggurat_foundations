@@ -380,13 +380,13 @@ class UserTestCase(BaseTestCase):
         rand_str = User.generate_random_string()
 
         self.assertEqual(len(rand_str), 7)
-        self.assertIsInstance(rand_str, unicode)
+        self.assertIsInstance(rand_str, str)
 
     def test_generate_random_pass(self):
         rand_str = User.generate_random_pass()
 
         self.assertEqual(len(rand_str), 7)
-        self.assertIsInstance(rand_str, unicode)
+        self.assertIsInstance(rand_str, str)
 
         rand_str = User.generate_random_pass(20)
         self.assertEqual(len(rand_str), 20)

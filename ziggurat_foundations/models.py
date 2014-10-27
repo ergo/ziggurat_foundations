@@ -3,6 +3,7 @@ import hashlib
 import urllib
 import random
 import string
+import six
 from paginate_sqlalchemy import SqlalchemyOrmPage
 
 from sqlalchemy.ext.declarative import declared_attr
@@ -304,8 +305,12 @@ class UserMixin(BaseModel):
         """ returns user gravatar url """
         # construct the url
         hash = hashlib.md5(self.email.encode('utf8').lower()).hexdigest()
+        if six.PY2:
+            encoded = urllib.urlencode({'d': default})
+        else:
+            encoded = urllib.parse.urlencode({'d': default})
         gravatar_url = "https://secure.gravatar.com/avatar/%s?%s" % (
-            hash, urllib.urlencode({'d': default}))
+            hash, encoded)
         return gravatar_url
 
     def set_password(self, raw_password):
@@ -329,7 +334,7 @@ class UserMixin(BaseModel):
 
     @staticmethod
     def generate_random_string(chars=7):
-        return u''.join(random.sample(string.ascii_letters * 2 + string.digits,
+        return ''.join(random.sample(string.ascii_letters * 2 + string.digits,
                                       chars))
 
     @classmethod

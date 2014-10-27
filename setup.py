@@ -17,5 +17,5 @@ setup(name='ziggurat_foundations',
         },
       test_suite='ziggurat_foundations.tests',
       install_requires=["sqlalchemy", "cryptacular", "paginate",
-        "paginate_sqlalchemy"]
+        "paginate_sqlalchemy", "alembic", "six"]
       )
