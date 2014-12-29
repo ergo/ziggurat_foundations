@@ -1,6 +1,5 @@
 import sqlalchemy as sa
 import hashlib
-import urllib
 import random
 import string
 import six
@@ -301,12 +300,16 @@ class UserMixin(BaseModel):
         query = query.order_by(self.Resource.resource_name)
         return query
 
-    def gravatar_url(self, default='mm'):
+    def gravatar_url(self, default='mm', **kwargs):
         """ returns user gravatar url """
         # construct the url
         hash = hashlib.md5(self.email.encode('utf8').lower()).hexdigest()
-        gravatar_url = "https://secure.gravatar.com/avatar/%s?%s" % (hash, six.moves.urllib.parse.urlencode({'d': default}))
-        return gravatar_url
+        if 'd' not in kwargs:
+            kwargs['d'] = default
+        params = '&'.join([six.moves.urllib.parse.urlencode({key: value})
+                           for key, value in kwargs.items()])
+        return "https://secure.gravatar.com/avatar/{}?{}"\
+            .format(hash, params)
 
     def set_password(self, raw_password):
         """ sets new password """
@@ -566,8 +569,8 @@ class GroupMixin(BaseModel):
         if user_ids:
             query = query.filter(self.UserGroup.user_id.in_(user_ids))
         return SqlalchemyOrmPage(query, page=page, item_count=item_count,
-                                items_per_page=items_per_page, 
-                                **GET_params)
+                                 items_per_page=items_per_page,
+                                 **GET_params)
 
 
 class GroupPermissionMixin(BaseModel):
