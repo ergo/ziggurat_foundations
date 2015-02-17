@@ -63,6 +63,9 @@ class TestResource(Resource):
     __mapper_args__ = {'polymorphic_identity': u'test_resource'}
 
 
+class TestResourceB(Resource):
+    __mapper_args__ = {'polymorphic_identity': u'test_resource_b'}
+
 class UserPermission(UserPermissionMixin, Base):
     pass
 
@@ -139,6 +142,16 @@ class BaseTestCase(unittest.TestCase):
                                              u'group_perm']
         resource = TestResource(resource_id=resource_id,
                                 resource_name=resource_name)
+        self.session.add(resource)
+        self.session.flush()
+        return resource
+
+    def _addResourceB(self, resource_id, resource_name=u'test_resource'):
+        Resource.__possible_permissions__ = [u'test_perm', u'test_perm1',
+                                             u'test_perm2', u'foo_perm',
+                                             u'group_perm']
+        resource = TestResourceB(resource_id=resource_id,
+                                 resource_name=resource_name)
         self.session.add(resource)
         self.session.flush()
         return resource
@@ -436,6 +449,61 @@ class UserTestCase(BaseTestCase):
         resources = created_user.resources_with_perms([u'test_perm'],
                                                       db_session=self.session).all()
         self.assertEqual(resources[0], resource)
+
+    def test_resources_with_perm_type_found(self):
+        created_user = self._addUser()
+        resource = self._addResource(1, u'test_resource')
+        permission = UserResourcePermission(perm_name=u'test_perm',
+                                            user_id=created_user.id,
+                                            resource_id=resource.resource_id)
+        resource.user_permissions.append(permission)
+        self.session.flush()
+        resources = created_user.resources_with_perms([u'test_perm'],
+                                                      resource_types=['test_resource'],
+                                                      db_session=self.session).all()
+        self.assertEqual(resources[0], resource)
+
+    def test_resources_with_perm_type_not_found(self):
+        created_user = self._addUser()
+        resource = self._addResource(1, u'test_resource')
+        permission = UserResourcePermission(perm_name=u'test_perm',
+                                            user_id=created_user.id,
+                                            resource_id=resource.resource_id)
+        resource.user_permissions.append(permission)
+        self.session.flush()
+        resources = created_user.resources_with_perms([u'test_perm'],
+                                                      resource_types=['test_resource_b'],
+                                                      db_session=self.session).all()
+        self.assertEqual(resources, [])
+
+    def test_resources_with_perm_type_other_found(self):
+        created_user = self._addUser()
+        resource = self._addResource(1, u'test_resource')
+        resource2 = self._addResourceB(2, u'test_resource')
+        resource3 = self._addResource(3, u'test_resource')
+        resource4 = self._addResourceB(4, u'test_resource')
+        self.session.flush()
+        permission = UserResourcePermission(perm_name=u'test_perm',
+                                            user_id=created_user.id,
+                                            resource_id=resource.resource_id)
+        resource.user_permissions.append(permission)
+        permission2 = UserResourcePermission(perm_name=u'test_perm',
+                                            user_id=created_user.id,
+                                            resource_id=resource2.resource_id)
+        resource2.user_permissions.append(permission2)
+        permission3 = UserResourcePermission(perm_name=u'test_perm',
+                                            user_id=created_user.id,
+                                            resource_id=resource3.resource_id)
+        resource3.user_permissions.append(permission3)
+        permission4 = UserResourcePermission(perm_name=u'test_perm',
+                                            user_id=created_user.id,
+                                            resource_id=resource4.resource_id)
+        resource4.user_permissions.append(permission4)
+        self.session.flush()
+        resources = created_user.resources_with_perms([u'test_perm'],
+                                                      resource_types=['test_resource_b'],
+                                                      db_session=self.session).all()
+        self.assertEqual(len(resources), 2)
 
     def test_resources_with_wrong_perm(self):
         created_user = self._addUser()

@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2015-02-XX
+----------
+* Added a way to filter on resource types in UserMixin.resources_with_perms()
+
 2014-08-25
 ----------
 * Second Alpha Release 0.4

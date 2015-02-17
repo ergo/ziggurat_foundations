@@ -253,6 +253,7 @@ class UserMixin(BaseModel):
                  row.perm_name)for row in query]
 
     def resources_with_perms(self, perms, resource_ids=None,
+                             resource_types=None,
                              db_session=None):
         """ returns all resources that user has perms for,
             note that at least one perm needs to be met,
@@ -296,6 +297,11 @@ class UserMixin(BaseModel):
         if resource_ids:
             query = query.filter(self.Resource.resource_id.in_(resource_ids))
             query2 = query2.filter(self.Resource.resource_id.in_(resource_ids))
+
+        if resource_types:
+            query = query.filter(self.Resource.resource_type.in_(resource_types))
+            query2 \
+                = query2.filter(self.Resource.resource_type.in_(resource_types))
         query = query.union(query2)
         query = query.order_by(self.Resource.resource_name)
         return query
