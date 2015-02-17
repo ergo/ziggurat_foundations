@@ -438,6 +438,15 @@ class UserTestCase(BaseTestCase):
         self.assertEqual(permissions, [(1, u'alter_users'),
                                        (1, u'root')])
 
+    def test_owned_permissions(self):
+        created_user = self._addUser()
+        resource = self._addResource(1, u'test_resource')
+        created_user.resources.append(resource)
+        self.session.flush()
+        resources = created_user.resources_with_perms([u'test_perm'],
+                                                      db_session=self.session).all()
+        self.assertEqual(resources[0], resource)
+
     def test_resources_with_perm(self):
         created_user = self._addUser()
         resource = self._addResource(1, u'test_resource')
@@ -449,6 +458,23 @@ class UserTestCase(BaseTestCase):
         resources = created_user.resources_with_perms([u'test_perm'],
                                                       db_session=self.session).all()
         self.assertEqual(resources[0], resource)
+
+    def test_mixed_perms(self):
+        created_user = self._addUser()
+        resource = self._addResource(1, u'test_resource')
+        permission = UserResourcePermission(perm_name=u'test_perm',
+                                            user_id=created_user.id,
+                                            resource_id=resource.resource_id)
+        resource.user_permissions.append(permission)
+        resource2 = self._addResource(2, u'test_resource')
+        created_user.resources.append(resource2)
+        resource3 = self._addResource(3, u'test_resource')
+        resource4 = self._addResourceB(4, u'test_resource')
+        self.session.flush()
+        resources = created_user.resources_with_perms([u'test_perm'],
+                                                      db_session=self.session).all()
+        found_ids = [r.resource_id for r in resources]
+        self.assertEqual(sorted(found_ids), [1, 2])
 
     def test_resources_with_perm_type_found(self):
         created_user = self._addUser()

@@ -4,6 +4,7 @@ Changelog
 2015-02-XX
 ----------
 * Added a way to filter on resource types in UserMixin.resources_with_perms()
+* Made User.resources dynamic relationship
 
 2014-08-25
 ----------

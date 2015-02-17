@@ -215,7 +215,8 @@ class UserMixin(BaseModel):
                                    cascade="all",
                                    passive_deletes=True,
                                    passive_updates=True,
-                                   backref='owner'
+                                   backref='owner',
+                                   lazy='dynamic'
                                    )
 
     @declared_attr
