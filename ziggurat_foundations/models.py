@@ -75,7 +75,7 @@ class BaseModel(object):
         """ returns column names for this model """
         return sa.orm.class_mapper(cls).c.keys()
 
-    def get_dict(self, include_keys=None, exclude_keys=None):
+    def get_dict(self, exclude_keys=None, include_keys=None):
         """ return dictionary of keys and values corresponding to this model's
         data
         if include_keys is null the function will return all keys
