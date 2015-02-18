@@ -202,6 +202,18 @@ class ModelTestCase(BaseTestCase):
         dict_ = created_user.get_dict(exclude_keys=['user_name'])
         assert 'user_name' not in dict_
 
+    def test_get_dict_included(self):
+        created_user = self._addUser()
+        dict_ = created_user.get_dict(include_keys=['user_name'])
+        assert ['user_name'] == dict_.keys()
+
+    def test_get_dict_included_excluded(self):
+        created_user = self._addUser()
+        dict_ = created_user.get_dict(
+            include_keys=['user_name', 'id', 'email', 'status'],
+            exclude_keys=['email'])
+        assert sorted(['user_name', 'id', 'status']) == sorted(dict_.keys())
+
     def test_appstruct(self):
         created_user = self._addUser()
         appstruct = created_user.get_appstruct()
