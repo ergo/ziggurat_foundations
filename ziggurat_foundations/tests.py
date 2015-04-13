@@ -722,7 +722,7 @@ class UserTestCase(BaseTestCase):
             return self.assertItemsEqual(first, second)
         return self.assertCountEqual(first, second)
 
-    def test_users_for_perm(self):
+    def test_resource_users_for_perm(self):
         self.__set_up_user_group_and_perms()
         first = self.resource.users_for_perm(
             u'foo_perm', db_session=self.session)
@@ -731,7 +731,7 @@ class UserTestCase(BaseTestCase):
             return self.assertItemsEqual(first, second)
         return self.assertCountEqual(first, second)
 
-    def test_users_for_any_perm(self):
+    def test_resource_users_for_any_perm(self):
         self.__set_up_user_group_and_perms()
         first = self.resource.users_for_perm(
             '__any_permission__', db_session=self.session)
@@ -746,6 +746,34 @@ class UserTestCase(BaseTestCase):
         if six.PY2:
             return self.assertItemsEqual(first, second)
         return self.assertCountEqual(first, second)
+
+    def test_users_for_perms(self):
+        user = User(user_name='aaa', email='aaa', status=0)
+        user.set_password('password')
+        aaa_perm = UserPermission(perm_name=u'aaa')
+        bbb_perm = UserPermission(perm_name=u'bbb')
+        bbb2_perm = UserPermission(perm_name=u'bbb')
+        user.user_permissions.append(aaa_perm)
+        user.user_permissions.append(bbb_perm)
+        user2 = User(user_name='bbb', email='bbb', status=0)
+        user2.set_password('password')
+        user2.user_permissions.append(bbb2_perm)
+        user3 = User(user_name='ccc', email='ccc', status=0)
+        user3.set_password('password')
+        group = self._addGroup()
+        group.users.append(user3)
+        self.session.add(user)
+        self.session.add(user2)
+        self.session.flush()
+        users = User.users_for_perms(['aaa'], db_session=self.session)
+        assert len(users.all()) == 1
+        assert users[0].user_name == 'aaa'
+        users = User.users_for_perms(['bbb'], db_session=self.session).all()
+        assert len(users) == 2
+        assert ['aaa', 'bbb'] == sorted([u.user_name for u in users])
+        users = User.users_for_perms(['aaa', 'bbb', 'manage_apps'],
+                                     db_session=self.session)
+        assert ['aaa', 'bbb', 'ccc'] == sorted([u.user_name for u in users])
 
 
 class GroupTestCase(BaseTestCase):

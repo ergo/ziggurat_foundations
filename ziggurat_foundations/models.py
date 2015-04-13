@@ -406,7 +406,7 @@ class UserMixin(BaseModel):
 
     @classmethod
     def by_email(cls, email, db_session=None):
-        """ fetch user objects by email """
+        """ fetch user object by email """
         db_session = get_db_session(db_session)
         query = db_session.query(cls).filter(sa.func.lower(cls.email) == (email or '').lower())
         query = query.options(sa.orm.eagerload('groups'))
@@ -414,13 +414,32 @@ class UserMixin(BaseModel):
 
     @classmethod
     def by_email_and_username(cls, email, user_name, db_session=None):
-        """ fetch user objects by email and username """
+        """ fetch user object by email and username """
         db_session = get_db_session(db_session)
         query = db_session.query(cls).filter(cls.email == email)
         query = query.filter(sa.func.lower(cls.user_name) ==
                              (user_name or '').lower())
         query = query.options(sa.orm.eagerload('groups'))
         return query.first()
+
+    @classmethod
+    def users_for_perms(cls, perm_names, db_session=None):
+        """ return users hat have one of given permissions """
+        db_session = get_db_session(db_session)
+        query = db_session.query(cls)
+        query = query.filter(cls.User.id == cls.UserGroup.user_id)
+        query = query.filter(cls.UserGroup.group_id ==
+                             cls.GroupPermission.group_id)
+        query = query.filter(
+            cls.GroupPermission.perm_name.in_(perm_names))
+
+        query2 = db_session.query(cls)
+        query2 = query2.filter(cls.User.id ==
+                               cls.UserPermission.user_id)
+        query2 = query2.filter(cls.UserPermission.perm_name.in_(perm_names))
+        users = query.union(query2).order_by(cls.id)
+        return users
+
 
 
 class ExternalIdentityMixin(BaseModel):
@@ -611,7 +630,7 @@ class GroupPermissionMixin(BaseModel):
 
     @classmethod
     def by_group_and_perm(cls, group_id, perm_name, db_session=None):
-        """" return all instances by group and permission names """
+        """" return by by_user_and_perm and permission name """
         db_session = get_db_session(db_session)
         query = db_session.query(cls).filter(cls.group_id == group_id)
         query = query.filter(cls.perm_name == perm_name)
@@ -641,7 +660,7 @@ class UserPermissionMixin(BaseModel):
 
     @classmethod
     def by_user_and_perm(cls, user_id, perm_name, db_session=None):
-        """ return all instances by user and permission name"""
+        """ return by user and permission name"""
         db_session = get_db_session(db_session)
         query = db_session.query(cls).filter(cls.user_id == user_id)
         query = query.filter(cls.perm_name == perm_name)
@@ -919,7 +938,8 @@ class ResourceMixin(BaseModel):
 
     def users_for_perm(self, perm_name, db_session=None):
         """ return tuple (user,perm_name) that have given
-        permission for the resource """
+        permission for the resource, perm_name is __any_permission__ then
+        users with any permission will be listed """
         db_session = get_db_session(db_session, self)
         query = db_session.query(self.User,
                                  self.GroupResourcePermission.perm_name)
