@@ -4,6 +4,7 @@ import random
 import string
 import six
 from paginate_sqlalchemy import SqlalchemyOrmPage
+from collections import namedtuple
 
 from sqlalchemy.ext.declarative import declared_attr
 
@@ -31,6 +32,73 @@ except ImportError as e:
 
 __version__ = '0.2'
 DBSession = None
+
+class ANY_PERMISSION_CLS(object):
+    def __eq__(self, other):
+        return '__any_permission__' == other
+
+    def __ne__(self, other):
+        return '__any_permission__' != other
+
+ANY_PERMISSION = ANY_PERMISSION_CLS()
+
+PermissionTuple = namedtuple('PermissionTuple', ['user', 'perm_name',
+                                                 'type', 'group', 'resource'])
+
+
+def resource_permissions_for_users(model, perm_names, resource_ids=None,
+                                   user_ids=None, group_ids=None,
+                                   resource_types=None, db_session=None):
+    db_session = get_db_session(db_session, model)
+    query = db_session.query(model.User,
+                             model.GroupResourcePermission.perm_name,
+                             model.Group,
+                             sa.literal('group').label('type'),
+                             model.Resource
+                             )
+    query = query.filter(model.User.id == model.UserGroup.user_id)
+    query = query.filter(model.Resource.resource_id == model.GroupResourcePermission.resource_id)
+    query = query.filter(model.Group.id == model.GroupResourcePermission.group_id)
+    if resource_ids:
+        query = query.filter(
+            model.GroupResourcePermission.resource_id.in_(resource_ids))
+    if resource_types:
+        query = query.filter(model.Resource.resource_type.in_(resource_types))
+    query = query.filter(model.UserGroup.group_id ==
+                         model.GroupResourcePermission.group_id)
+    if (perm_names not in ([ANY_PERMISSION], ANY_PERMISSION) and perm_names):
+        query = query.filter(
+            model.GroupResourcePermission.perm_name.in_(perm_names))
+    if group_ids:
+        query = query.filter(
+        model.GroupResourcePermission.group_id.in_(group_ids))
+    if user_ids:
+        query = query.filter(
+            model.UserGroup.user_id.in_(user_ids))
+
+    query2 = db_session.query(model.User,
+                              model.UserResourcePermission.perm_name,
+                              model.Group,
+                              sa.literal('user').label('type'),
+                              model.Resource)
+    query2 = query2.outerjoin(model.Group, model.Group.id == None)
+    query2 = query2.filter(model.User.id ==
+                           model.UserResourcePermission.user_id)
+    query2 = query2.filter(model.Resource.resource_id == model.UserResourcePermission.resource_id)
+    if (perm_names not in ([ANY_PERMISSION], ANY_PERMISSION) and perm_names):
+        query2 = query2.filter(
+            model.UserResourcePermission.perm_name.in_(perm_names))
+    if resource_ids:
+        query2 = query2.filter(
+            model.UserResourcePermission.resource_id.in_(resource_ids))
+    if resource_types:
+        query2 = query2.filter(model.Resource.resource_type.in_(resource_types))
+    if user_ids:
+        query2 = query2.filter(
+            model.UserResourcePermission.user_id.in_(user_ids))
+    query = query.union(query2)
+    users = [PermissionTuple(row.User, row.perm_name, row.type, row.Group or None, row.Resource) for row in query]
+    return users
 
 
 def get_db_session(session=None, obj=None):
@@ -312,6 +380,19 @@ class UserMixin(BaseModel):
         query = query.union(query2)
         query = query.order_by(self.Resource.resource_name)
         return query
+
+    def resources_with_possible_perms(self, resource_ids=None,
+                             resource_types=None,
+                             db_session=None):
+        """ returns all resources that user has perms for,
+            resource_ids restricts the search to specific resources"""
+        def resource_permissions_for_users(model, perm_names,
+                                               resource_ids=None,
+                                               user_ids=None,
+                                               group_ids=None,
+                                               db_session=None):
+            return query
+
 
     def gravatar_url(self, default='mm', **kwargs):
         """ returns user gravatar url """
@@ -936,36 +1017,44 @@ class ResourceMixin(BaseModel):
 #            perms.append(('group:' + self.owner_group_id, ALL_PERMISSIONS,))
         return perms
 
-    def users_for_perm(self, perm_name, db_session=None):
+    def users_for_perm(self, perm_name, user_ids=None, group_ids=None,
+                       db_session=None):
         """ return tuple (user,perm_name) that have given
         permission for the resource, perm_name is __any_permission__ then
-        users with any permission will be listed """
+        users with any permission will be listed
+        user_ids - limits the permissions to specific user ids,
+        group_ids - limits the permissions to specific group ids,
+        """
         db_session = get_db_session(db_session, self)
-        query = db_session.query(self.User,
-                                 self.GroupResourcePermission.perm_name)
-        query = query.filter(self.User.id == self.UserGroup.user_id)
-        query = query.filter(self.UserGroup.group_id ==
-                             self.GroupResourcePermission.group_id)
-        if perm_name != '__any_permission__':
-            query = query.filter(self.GroupResourcePermission.perm_name ==
-                                 perm_name)
-        query = query.filter(self.GroupResourcePermission.resource_id ==
-                             self.resource_id)
-        query2 = db_session.query(self.User,
-                                  self.UserResourcePermission.perm_name)
-        query2 = query2.filter(self.User.id ==
-                               self.UserResourcePermission.user_id)
-        if perm_name != '__any_permission__':
-            query2 = query2.filter(self.UserResourcePermission.perm_name ==
-                                   perm_name)
-        query2 = query2.filter(self.UserResourcePermission.resource_id ==
-                               self.resource_id)
-        query = query.union(query2)
-        users = [(row.User, row.perm_name,) for row in query]
+        users_perms = resource_permissions_for_users(self, [perm_name],
+                                               [self.resource_id],
+                                               user_ids=user_ids,
+                                               group_ids=group_ids,
+                                               db_session=db_session)
+        users_perms = [(u.user, u.perm_name) for u in users_perms]
         if self.owner_user_id:
-            users.append((self.User.by_id(self.owner_user_id),
+            users_perms.append((self.User.by_id(self.owner_user_id),
                           ALL_PERMISSIONS,))
-        return users
+        return users_perms
+
+    def users_for_perm_detailed(self, perm_name, user_ids=None, group_ids=None,
+                       db_session=None):
+        """ return tuple (user,perm_name, type) that have given
+        permission for the resource, perm_name is __any_permission__ then
+        users with any permission will be listed
+        user_ids - limits the permissions to specific user ids,
+        group_ids - limits the permissions to specific group ids,
+        """
+        db_session = get_db_session(db_session, self)
+        users_perms = resource_permissions_for_users(self, [perm_name],
+                                                     [self.resource_id],
+                                                     user_ids=user_ids,
+                                                     group_ids=group_ids,
+                                                     db_session=db_session)
+        if self.owner_user_id:
+            users_perms.append((self.User.by_id(self.owner_user_id),
+                                ALL_PERMISSIONS,), 'user')
+        return users_perms
 
     @classmethod
     def by_resource_id(cls, resource_id, db_session=None):

@@ -1,6 +1,13 @@
 Changelog
 =========
 
+2015-04-XX
+----------
+BACKWARDS INCOMPATIBLE
+* ResourceMixin.users_for_perm() accepts additional parameters group_ids, and user_ids
+  to limit the amount of results if needed
+
+
 2015-02-18
 ----------
 * Release: 0.4.3
