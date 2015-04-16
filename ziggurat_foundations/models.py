@@ -42,8 +42,8 @@ class ANY_PERMISSION_CLS(object):
 
 ANY_PERMISSION = ANY_PERMISSION_CLS()
 
-PermissionTuple = namedtuple('PermissionTuple', ['user', 'perm_name',
-                                                 'type', 'group', 'resource'])
+PermissionTuple = namedtuple('PermissionTuple', ['user', 'perm_name', 'type',
+                                                 'group', 'resource', 'owner'])
 
 
 def resource_permissions_for_users(model, perm_names, resource_ids=None,
@@ -97,7 +97,7 @@ def resource_permissions_for_users(model, perm_names, resource_ids=None,
         query2 = query2.filter(
             model.UserResourcePermission.user_id.in_(user_ids))
     query = query.union(query2)
-    users = [PermissionTuple(row.User, row.perm_name, row.type, row.Group or None, row.Resource) for row in query]
+    users = [PermissionTuple(row.User, row.perm_name, row.type, row.Group or None, row.Resource, False) for row in query]
     return users
 
 
@@ -324,8 +324,12 @@ class UserMixin(BaseModel):
             sa.literal('user').label('type'))
         query2 = query2.filter(self.UserPermission.user_id == self.id)
         query = query.union(query2)
-        return [(row.owner_id if row.type == 'user' else u'group:%s' % row.owner_id,
-                 row.perm_name)for row in query]
+        groups_dict = dict([(g.id, g) for g in self.groups])
+        return [PermissionTuple(self,
+                                row.perm_name,
+                                row.type,
+                                groups_dict.get(row.owner_id) if row.type == 'group' else None,
+                                None, False)for row in query]
 
     def resources_with_perms(self, perms, resource_ids=None,
                              resource_types=None,
@@ -384,14 +388,16 @@ class UserMixin(BaseModel):
     def resources_with_possible_perms(self, resource_ids=None,
                              resource_types=None,
                              db_session=None):
-        """ returns all resources that user has perms for,
+        """ returns list of permissions and resources for this user,
             resource_ids restricts the search to specific resources"""
-        def resource_permissions_for_users(model, perm_names,
-                                               resource_ids=None,
-                                               user_ids=None,
-                                               group_ids=None,
-                                               db_session=None):
-            return query
+        perms = resource_permissions_for_users(self, ANY_PERMISSION,
+                                               resource_ids=resource_ids,
+                                               user_ids=[self.id],
+                                               db_session=db_session)
+        for resource in self.resources:
+            perms.append(PermissionTuple(self, ALL_PERMISSIONS, 'user', None, resource, True))
+        return perms
+
 
 
     def gravatar_url(self, default='mm', **kwargs):
@@ -649,6 +655,20 @@ class GroupMixin(BaseModel):
                                    passive_deletes=True,
                                    passive_updates=True
                                    )
+
+    @declared_attr
+    def resources(cls):
+        """ Returns all resources directly owned by group, can be used to assign
+        ownership of new resources::
+
+            user.resources.append(resource) """
+        return sa.orm.relationship('Resource',
+                                   cascade="all",
+                                   passive_deletes=True,
+                                   passive_updates=True,
+                                   backref='owner_group',
+                                   lazy='dynamic'
+        )
 
     def __repr__(self):
         return '<Group: %s, %s>' % (self.group_name, self.id)
@@ -974,12 +994,18 @@ class ResourceMixin(BaseModel):
                                self.resource_id)
         query = query.union(query2)
 
-        perms = [(row.owner_id if row.type == 'user' else u'group:%s' % row.owner_id,
-                  row.perm_name,) for row in query]
+
+        groups_dict = dict([(g.id, g) for g in user.groups])
+        perms = [PermissionTuple(user,
+                                row.perm_name,
+                                row.type,
+                                groups_dict.get(row.owner_id) if row.type == 'group' else None,
+                                self, False) for row in query]
 
         # include all perms if user is the owner of this resource
         if self.owner_user_id == user.id:
-            perms.append((self.owner_user_id, ALL_PERMISSIONS,))
+            perms.append(PermissionTuple(user, ALL_PERMISSIONS, 'user',
+                                         None, self, True))
         return perms
 
     def direct_perms_for_user(self, user, db_session=None):
@@ -992,29 +1018,33 @@ class ResourceMixin(BaseModel):
                              user.id)
         query = query.filter(self.UserResourcePermission.resource_id ==
                              self.resource_id)
-        perms = [(row[0], row.perm_name,) for row in query]
+
+        perms = [PermissionTuple(user,
+                                 row.perm_name,
+                                 'user',
+                                 None,
+                                 self, False) for row in query]
+
         # include all perms if user is the owner of this resource
         if self.owner_user_id == user.id:
-            perms.append((self.id, ALL_PERMISSIONS,))
+            perms.append(PermissionTuple(user, ALL_PERMISSIONS, 'user',
+                                         None, self, True))
         return perms
 
     def group_perms_for_user(self, user, db_session=None):
         """ returns permissions that given user has for this resource
             that are inherited from groups """
         db_session = get_db_session(db_session, self)
-        query = db_session.query(
-            self.GroupResourcePermission.group_id.label('owner_id'),
-            self.GroupResourcePermission.perm_name)
-        query = query.filter(self.GroupResourcePermission.group_id.in_(
-            [gr.id for gr in user.groups]
-        )
-        )
-        query = query.filter(self.GroupResourcePermission.resource_id ==
-                             self.resource_id)
-
-        perms = [('group:%s' % row.owner_id, row.perm_name,) for row in query]
-#        if self.owner_group_id:
-#            perms.append(('group:' + self.owner_group_id, ALL_PERMISSIONS,))
+        perms = resource_permissions_for_users(self, ANY_PERMISSION,
+                                               resource_ids=[self.resource_id],
+                                               user_ids=[user.id],
+                                               db_session=None)
+        perms = [p for p in perms if p.type == 'group']
+        # include all perms if user is the owner of this resource
+        group_ids = [g.id for g in user.groups]
+        if self.owner_group_id in group_ids:
+            perms.append(PermissionTuple(user, ALL_PERMISSIONS, 'group',
+                                         self.owner_group, self, True))
         return perms
 
     def users_for_perm(self, perm_name, user_ids=None, group_ids=None,
@@ -1031,29 +1061,10 @@ class ResourceMixin(BaseModel):
                                                user_ids=user_ids,
                                                group_ids=group_ids,
                                                db_session=db_session)
-        users_perms = [(u.user, u.perm_name) for u in users_perms]
         if self.owner_user_id:
-            users_perms.append((self.User.by_id(self.owner_user_id),
-                          ALL_PERMISSIONS,))
-        return users_perms
-
-    def users_for_perm_detailed(self, perm_name, user_ids=None, group_ids=None,
-                       db_session=None):
-        """ return tuple (user,perm_name, type) that have given
-        permission for the resource, perm_name is __any_permission__ then
-        users with any permission will be listed
-        user_ids - limits the permissions to specific user ids,
-        group_ids - limits the permissions to specific group ids,
-        """
-        db_session = get_db_session(db_session, self)
-        users_perms = resource_permissions_for_users(self, [perm_name],
-                                                     [self.resource_id],
-                                                     user_ids=user_ids,
-                                                     group_ids=group_ids,
-                                                     db_session=db_session)
-        if self.owner_user_id:
-            users_perms.append((self.User.by_id(self.owner_user_id),
-                                ALL_PERMISSIONS,), 'user')
+            users_perms.append(
+                PermissionTuple(self.User.by_id(self.owner_user_id),
+                          ALL_PERMISSIONS, 'user', None, self, True))
         return users_perms
 
     @classmethod

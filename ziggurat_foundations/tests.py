@@ -5,6 +5,7 @@ import unittest
 import six
 
 from sqlalchemy.ext.declarative import declarative_base
+from ziggurat_foundations.models import PermissionTuple
 from ziggurat_foundations.models import UserMixin
 from ziggurat_foundations.models import GroupMixin
 from ziggurat_foundations.models import GroupPermissionMixin
@@ -447,8 +448,9 @@ class UserTestCase(BaseTestCase):
     def test_user_permissions(self):
         created_user = self._addUser()
         permissions = created_user.permissions
-        self.assertEqual(permissions, [(1, u'alter_users'),
-                                       (1, u'root')])
+        expected = [PermissionTuple(created_user, u'alter_users', 'user', None, None, False),
+                    PermissionTuple(created_user, u'root', 'user', None, None, False)]
+        self.assertEqual(permissions, expected)
 
     def test_owned_permissions(self):
         created_user = self._addUser()
@@ -715,7 +717,8 @@ class UserTestCase(BaseTestCase):
         # test_perm1 from group perms should be ignored
         first = self.resource.direct_perms_for_user(
             self.user, db_session=self.session)
-        second = [(1, u'foo_perm'), (1, u'test_perm2')]
+        second = [PermissionTuple(self.user, u'foo_perm', 'user', None, self.resource, False),
+                  PermissionTuple(self.user, u'test_perm2', 'user', None, self.resource, False)]
         if six.PY2:
             return self.assertItemsEqual(first, second)
         return self.assertCountEqual(first, second)
@@ -725,18 +728,20 @@ class UserTestCase(BaseTestCase):
         # test_perm1 from group perms should be ignored
         first = self.resource.group_perms_for_user(
             self.user, db_session=self.session)
-        second = [('group:1', u'group_perm')]
+        second = [PermissionTuple(self.user, u'group_perm', 'group', self.group ,self.resource, False)]
         if six.PY2:
             return self.assertItemsEqual(first, second)
         return self.assertCountEqual(first, second)
 
     def test_resources_with_user_perms(self):
+        self.maxDiff = 9999
         self.__set_up_user_group_and_perms()
         first = self.resource.perms_for_user(
             self.user, db_session=self.session)
-        second = [(1, u'foo_perm'),
-                  (u'group:1', u'group_perm'),
-                  (1, u'test_perm2')]
+        second = [PermissionTuple(self.user, u'foo_perm', 'user', None, self.resource, False),
+                  PermissionTuple(self.user, u'group_perm', 'group', self.group, self.resource, False),
+                  PermissionTuple(self.user, u'test_perm2', 'user', None, self.resource, False)]
+
         if six.PY2:
             return self.assertItemsEqual(first, second)
         return self.assertCountEqual(first, second)
@@ -745,20 +750,21 @@ class UserTestCase(BaseTestCase):
         self.__set_up_user_group_and_perms()
         first = self.resource.users_for_perm(
             u'foo_perm', db_session=self.session)
-        second = [(self.user, u'foo_perm',)]
+        second = [PermissionTuple(self.user, u'foo_perm', 'user', None, self.resource, False)]
         if six.PY2:
             return self.assertItemsEqual(first, second)
         return self.assertCountEqual(first, second)
 
     def test_resource_users_for_any_perm(self):
+        self.maxDiff = 99999
         self.__set_up_user_group_and_perms()
         first = self.resource.users_for_perm(
             '__any_permission__', db_session=self.session)
         second = [
-            (self.user, u'group_perm',),
-            (self.user, u'test_perm2',),
-            (self.user, u'foo_perm',),
-            (self.user4, u'group_perm',),
+            PermissionTuple(self.user, u'group_perm', 'group', self.group, self.resource, False),
+            PermissionTuple(self.user, u'test_perm2', 'user', None, self.resource, False),
+            PermissionTuple (self.user, u'foo_perm', 'user', None, self.resource, False),
+            PermissionTuple(self.user4, u'group_perm', 'group', self.group2, self.resource, False),
         ]
         if six.PY2:
             return self.assertItemsEqual(first, second)
@@ -769,8 +775,8 @@ class UserTestCase(BaseTestCase):
         first = self.resource2.users_for_perm(
             '__any_permission__', db_session=self.session)
         second = [
-            (self.user2, u'foo_perm',),
-            (self.user3, u'test_perm',),
+            PermissionTuple(self.user2, u'foo_perm', 'user', None, self.resource2, False),
+            PermissionTuple(self.user3,  u'test_perm', 'user', None, self.resource2, False),
             ]
         if six.PY2:
             return self.assertItemsEqual(first, second)
@@ -779,7 +785,7 @@ class UserTestCase(BaseTestCase):
     def test_resource_users_limited_users(self):
         self.maxDiff = 9999
         self.__set_up_user_group_and_perms()
-        perms = self.resource.users_for_perm_detailed('__any_permission__',
+        perms = self.resource.users_for_perm('__any_permission__',
                                                       user_ids=[self.user.id],
                                                       db_session=self.session)
         first = [(p.user, p.perm_name, p.type, p.group) for p in perms]
@@ -795,7 +801,7 @@ class UserTestCase(BaseTestCase):
     def test_resource_users_limited_group(self):
         self.maxDiff = 9999
         self.__set_up_user_group_and_perms()
-        perms = self.resource.users_for_perm_detailed('__any_permission__',
+        perms = self.resource.users_for_perm('__any_permission__',
                                                       user_ids=[self.user.id],
                                                       group_ids=[self.group2.id],
                                                       db_session=self.session)
@@ -811,7 +817,7 @@ class UserTestCase(BaseTestCase):
     def test_resource_users_limited_group_other_user_3(self):
         self.maxDiff = 9999
         self.__set_up_user_group_and_perms()
-        perms = self.resource2.users_for_perm_detailed('__any_permission__',
+        perms = self.resource2.users_for_perm('__any_permission__',
                                                       user_ids=[self.user3.id],
                                                       db_session=self.session)
         first = [(p.user, p.perm_name, p.type, p.group) for p in perms]
@@ -825,7 +831,7 @@ class UserTestCase(BaseTestCase):
     def test_resource_users_limited_group_other_user_4(self):
         self.maxDiff = 9999
         self.__set_up_user_group_and_perms()
-        perms = self.resource.users_for_perm_detailed('__any_permission__',
+        perms = self.resource.users_for_perm('__any_permission__',
                                                       user_ids=[self.user4.id],
                                                       group_ids=[self.group2.id],
                                                       db_session=self.session)
