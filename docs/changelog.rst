@@ -8,7 +8,7 @@ Changelog
     from this point onwards you will be able to update schemas automaticly.
     Alembic 0.3.3+ (or current trunk for 2012-05-27) is required for this to function properly
 
-2015-04-XX Release: 0.5
+2015-04-17 Release: 0.5
 -----------------------
 * Now uses detailed permissions
 * Methods also return "owned" permissions where applicable
