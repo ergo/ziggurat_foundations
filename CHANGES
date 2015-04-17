@@ -3,7 +3,7 @@ Changelog
 
 2015-04-XX
 ----------
-* Relase: 0.5
+* Release: 0.5
 * Now uses detailed permissions
 * BACKWARDS INCOMPATIBLE API CHANGES
     * ResourceMixin.users_for_perm() accepts additional parameters group_ids, and user_ids

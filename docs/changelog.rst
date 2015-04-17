@@ -8,6 +8,28 @@ Changelog
     from this point onwards you will be able to update schemas automaticly.
     Alembic 0.3.3+ (or current trunk for 2012-05-27) is required for this to function properly
 
+2015-04-XX Release: 0.5
+-----------------------
+* Now uses detailed permissions
+* Methods also return "owned" permissions where applicable
+* **BACKWARDS INCOMPATIBLE API CHANGES**
+    * ResourceMixin.users_for_perm() accepts additional parameters group_ids, and user_ids
+      to limit the amount of results if needed
+    * User.permissions, Resource.perms_for_user, Resource.direct_perms_for_user,
+      Resource.group_perms_for_user, Resource.users_for_perm_detailed, Resource.users_for_perm
+      now return list of detailed PermissionTuple's instead simple [id, perm_name] pairs
+      this will break your application
+      You can use ziggurat_foundations.utils.permission_to_04_acls() to convert
+      the new tuples to pre 0.5 format
+
+
+2015-02-18
+----------------
+* Release: 0.4.3
+* Added a way to filter on resource types in UserMixin.resources_with_perms()
+* Made User.resources dynamic relationship
+
+
 2014-08-25 Second Alpha Release 0.4
 -----------------------------------
 * Move to paginate from webhelpers.paginate

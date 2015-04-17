@@ -179,7 +179,8 @@ Checking "resourceless" permission like "user can access admin panel::
 Checking all permissions user has to specific resource::
 
     resource = Resource.by_resource_id(rid)
-    for perm_user, perm_name in resource.perms_for_user(user):
+    for perm in resource.perms_for_user(user):
+        print perm.user, perm.perm_name, perm.type, perm.group, perm.resource, perm.owner
         .... list acls ....
 
 Fetch all resources that user can "edit" or "vote"::
@@ -213,8 +214,8 @@ This root factory can be used to allow only authenticated users to view::
             # general page factory - append custom non resource permissions
             # request.user object from cookbook recipie
             if request.user:
-                for perm_user, perm_name in request.user.permissions:
-                    self.__acl__.append((Allow, perm_user, perm_name,))
+                for perm in request.user.permissions:
+                    self.__acl__.append((Allow, perm.user.user_name, perm.perm_name,))
 
 This example covers the case where every view is secured with a default "view" permission, 
 and some pages require other permissions like "view_admin_panel", "create_objects" etc.
@@ -241,5 +242,5 @@ resources, you can configure your view to expect "edit" or "delete" permissions:
                 # append basic resource acl that gives all permissions to owner
                 self.__acl__ = self.resource.__acl__
                 # append permissions that current user may have for this context resource
-                for perm_user, perm_name in self.resource.perms_for_user(request.user):
-                    self.__acl__.append((Allow, perm_user, perm_name,))
+                for perm in self.resource.perms_for_user(request.user):
+                    self.__acl__.append((Allow, perm.user.user_name, perm.perm_name,))

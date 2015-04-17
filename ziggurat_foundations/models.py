@@ -1091,7 +1091,7 @@ class ResourceMixin(BaseModel):
 
     def users_for_perm(self, perm_name, user_ids=None, group_ids=None,
                        db_session=None):
-        """ return tuple (user,perm_name) that have given
+        """ return PermissionTuples that have given
         permission for the resource, perm_name is __any_permission__ then
         users with any permission will be listed
         user_ids - limits the permissions to specific user ids,
