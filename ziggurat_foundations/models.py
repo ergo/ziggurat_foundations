@@ -740,6 +740,40 @@ class GroupMixin(BaseModel):
                                  items_per_page=items_per_page,
                                  **GET_params)
 
+    def resources_with_possible_perms(self, perm_names=None, resource_ids=None,
+                                      resource_types=None,
+                                      db_session=None):
+        """ returns list of permissions and resources for this group,
+            resource_ids restricts the search to specific resources"""
+        db_session = get_db_session(db_session, self)
+        perms = []
+
+        query = db_session.query(self.GroupResourcePermission.perm_name,
+                                 self.Group,
+                                 self.Resource
+        )
+        query = query.filter(self.Resource.resource_id == self.GroupResourcePermission.resource_id)
+        query = query.filter(self.Group.id == self.GroupResourcePermission.group_id)
+        if resource_ids:
+            query = query.filter(
+                self.GroupResourcePermission.resource_id.in_(resource_ids))
+
+        if resource_types:
+            query = query.filter(self.Resource.resource_type.in_(resource_types))
+
+        if (perm_names not in ([ANY_PERMISSION], ANY_PERMISSION) and perm_names):
+            query = query.filter(
+                self.GroupResourcePermission.perm_name.in_(perm_names))
+        query = query.filter(self.GroupResourcePermission.group_id == self.id)
+
+        perms = [PermissionTuple(None, row.perm_name, 'group',
+                                 self, row.Resource, False, True)
+                 for row in query]
+        for resource in self.resources:
+            perms.append(PermissionTuple(None, ALL_PERMISSIONS, 'group', self,
+                                         resource, True, True))
+        return perms
+
 
 class GroupPermissionMixin(BaseModel):
 

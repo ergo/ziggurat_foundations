@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import sys
 setup(name='ziggurat_foundations',
-      version='0.5',
+      version='0.5.1',
       description=""" Set of classes that are reusable across various types of
       web apps, base user object, auth relationships + structured resource tree
       """,

@@ -1,6 +1,11 @@
 Changelog
 =========
 
+2015-04-23
+----------
+* Release: 0.5.1
+* Group.resources_with_possible_perms() added
+
 2015-04-17
 ----------
 * Release: 0.5
