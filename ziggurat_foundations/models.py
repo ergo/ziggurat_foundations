@@ -50,22 +50,31 @@ PermissionTuple = namedtuple('PermissionTuple',
 
 def resource_permissions_for_users(model, perm_names, resource_ids=None,
                                    user_ids=None, group_ids=None,
-                                   resource_types=None, db_session=None):
+                                   resource_types=None,
+                                   limit_group_permissions=False,
+                                   db_session=None):
     """
     Returns permission tuples that match one of passed permission names
     perm_names - list of permissions that can be matched
     user_ids - restrict to specific users
     group_ids - restrict to specific groups
     resource_ids - restrict to specific resources
+    limit_group_permissions - should be used if we do not want to have
+    user objects returned for group permissions, this might cause performance
+    issues for big groups
     """
     db_session = get_db_session(db_session, model)
-    query = db_session.query(model.User,
-                             model.GroupResourcePermission.perm_name,
+    query = db_session.query(model.GroupResourcePermission.perm_name,
+                             model.User,
                              model.Group,
                              sa.literal('group').label('type'),
                              model.Resource
                              )
-    query = query.filter(model.User.id == model.UserGroup.user_id)
+    if limit_group_permissions:
+        query = query.outerjoin(model.User, model.User.id == None)
+    else:
+        query = query.filter(model.User.id == model.UserGroup.user_id)
+
     query = query.filter(model.Resource.resource_id == model.GroupResourcePermission.resource_id)
     query = query.filter(model.Group.id == model.GroupResourcePermission.group_id)
     if resource_ids:
@@ -85,11 +94,12 @@ def resource_permissions_for_users(model, perm_names, resource_ids=None,
         query = query.filter(
             model.UserGroup.user_id.in_(user_ids))
 
-    query2 = db_session.query(model.User,
-                              model.UserResourcePermission.perm_name,
+    query2 = db_session.query(model.UserResourcePermission.perm_name,
+                              model.User,
                               model.Group,
                               sa.literal('user').label('type'),
                               model.Resource)
+    # group needs to be present to work for union, but never actually matched
     query2 = query2.outerjoin(model.Group, model.Group.id == None)
     query2 = query2.filter(model.User.id ==
                            model.UserResourcePermission.user_id)
@@ -1124,7 +1134,7 @@ class ResourceMixin(BaseModel):
         return perms
 
     def users_for_perm(self, perm_name, user_ids=None, group_ids=None,
-                       db_session=None):
+                       limit_group_permissions=False, db_session=None):
         """ return PermissionTuples that have given
         permission for the resource, perm_name is __any_permission__ then
         users with any permission will be listed
@@ -1136,6 +1146,7 @@ class ResourceMixin(BaseModel):
                                                [self.resource_id],
                                                user_ids=user_ids,
                                                group_ids=group_ids,
+                                               limit_group_permissions=limit_group_permissions,
                                                db_session=db_session)
         if self.owner_user_id:
             users_perms.append(

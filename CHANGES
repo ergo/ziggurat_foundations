@@ -1,6 +1,13 @@
 Changelog
 =========
 
+2015-04-24
+----------
+* resource.users_for_perm() now accepts `limit_group_permissions` param that
+  that makes it return just group with perm name instead tuples including every
+  user/perm pairs
+
+
 2015-04-23
 ----------
 * Release: 0.5.1
