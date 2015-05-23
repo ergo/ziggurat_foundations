@@ -28,6 +28,7 @@ def permission_to_04_acls(permissions):
             acls.append(('group:%s' % perm.group.id, perm.perm_name))
     return acls
 
+
 def permission_to_pyramid_acls(permissions):
     acls = []
     for perm in permissions:

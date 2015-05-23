@@ -7,7 +7,6 @@ log = logging.getLogger(__name__)
 
 
 class ZigguratSignInSuccess(object):
-
     def __contains__(self, other):
         return True
 
@@ -18,7 +17,6 @@ class ZigguratSignInSuccess(object):
 
 
 class ZigguratSignInBadAuth(object):
-
     def __contains__(self, other):
         return False
 
@@ -28,7 +26,6 @@ class ZigguratSignInBadAuth(object):
 
 
 class ZigguratSignOut(object):
-
     def __contains__(self, other):
         return True
 
@@ -65,7 +62,7 @@ def includeme(config):
                                       signin_came_from_key=signin_came_from_key,
                                       signin_username_key=signin_username_key,
                                       signin_password_key=signin_password_key
-                                      )
+    )
     config.add_route('ziggurat.routes.sign_in', sign_in_path,
                      use_global_views=True,
                      factory=endpoint.sign_in)
@@ -75,7 +72,6 @@ def includeme(config):
 
 
 class ZigguratSignInProvider(object):
-
     def __init__(self, *args, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)
@@ -86,7 +82,8 @@ class ZigguratSignInProvider(object):
             request.params.get(self.signin_username_key))
         if user is None:
             # if no result, test to see if email exists
-            user = self.UserModel.by_email(request.params.get(self.signin_username_key))
+            user = self.UserModel.by_email(
+                request.params.get(self.signin_username_key))
         if user:
             password = request.params.get(self.signin_password_key)
             if user.check_password(password):
