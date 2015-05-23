@@ -3,6 +3,7 @@ from __future__ import with_statement
 import os
 import unittest
 import six
+import sqlalchemy
 
 from sqlalchemy.ext.declarative import declarative_base
 from ziggurat_foundations.models import PermissionTuple
@@ -107,15 +108,16 @@ def _initTestingDB():
         command.upgrade(alembic_cfg, "head")
     return maker()
 
-    # pylons/akhet monkeypatching way
-#    import ziggurat_foundations
-#    DBSession = scoped_session(sessionmaker())
-#    dbsession = DBSession()
-#    dbsession.configure(bind=engine)
-#    ziggurat_foundations.models.DBSession = DBSession
-#    Base.metadata.bind = engine
-#    Base.metadata.create_all(engine)
-#    return dbsession
+# pylons/akhet monkeypatching way
+# import ziggurat_foundations
+#
+# DBSession = scoped_session(sessionmaker())
+# dbsession = DBSession()
+# dbsession.configure(bind=engine)
+# ziggurat_foundations.models.DBSession = DBSession
+# Base.metadata.bind = engine
+# Base.metadata.create_all(engine)
+
 
 
 class BaseTestCase(unittest.TestCase):
@@ -280,7 +282,8 @@ class ModelTestCase(BaseTestCase):
     def test_get_dict_included(self):
         created_user = self._addUser()
         dict_ = created_user.get_dict(include_keys=['user_name'])
-        assert ['user_name'] == dict_.keys()
+        print(dict_, dict_.keys())
+        assert ['user_name'] == list(dict_.keys())
 
     def test_get_dict_included_excluded(self):
         created_user = self._addUser()
@@ -300,10 +303,35 @@ class ModelTestCase(BaseTestCase):
         created_user.populate_obj(app_struct)
         self.assertEqual(created_user.user_name, u'new_name')
 
-#    def test_session(self):
-#        session = get_db_session(None, self._addUser())
-#        from sqlalchemy.orm import ScopedSession
-#        self.assertIsInstance(session, ScopedSession)
+    def test_session(self):
+        from ziggurat_foundations.models import get_db_session
+        from sqlalchemy.orm.session import Session
+        session = get_db_session(None, self._addUser())
+        self.assertIsInstance(session, Session)
+
+    def test_add_object_without_flush(self):
+        user = User(user_name='some_new_user', email='foo')
+        assert user.id is None
+        user.persist(db_session=self.session)
+        assert user.id is None
+
+    def test_add_object_with_flush(self):
+        user = User(user_name='some_new_user', email='foo')
+        assert user.id is None
+        user.persist(flush=True, db_session=self.session)
+        assert user.id is not None
+
+    def test_delete_object_with_flush(self):
+        user = User(user_name='some_new_user', email='foo')
+        assert user.id is None
+        user.persist(flush=True, db_session=self.session)
+        assert user.id is not None
+        uid = user.id
+        User.by_id(uid, db_session=self.session) is not None
+        user.delete()
+        assert User.by_id(uid, db_session=self.session) is None
+
+
 
 
 class UserTestCase(BaseTestCase):
@@ -489,11 +517,13 @@ class UserTestCase(BaseTestCase):
                          'cbb6777e4a7ec0d96b33d2033e59fec6?d=mm')
 
     def test_gravatar_url_with_params(self):
+        import six.moves.urllib.parse as parser
         user = self._addUser()
         user.email = 'arkadiy@bk.ru'
-        self.assertEqual(user.gravatar_url(s=100, r='pg'),
-                         'https://secure.gravatar.com/avatar/'
-                         'cbb6777e4a7ec0d96b33d2033e59fec6?s=100&r=pg&d=mm')
+        gravatar_url = user.gravatar_url(s=100, r='pg')
+        parsed_url = parser.urlparse(gravatar_url)
+        qs_dict = parser.parse_qs(parsed_url.query)
+        self.assertEqual(qs_dict, {'s': ['100'], 'd': ['mm'], 'r': ['pg']})
 
     def test_generate_random_string(self):
         rand_str = User.generate_random_string()

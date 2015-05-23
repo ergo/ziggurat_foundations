@@ -137,7 +137,7 @@ def get_db_session(session=None, obj=None):
 
     * then it tries to return  session passed as argument
 
-    * finally tries to read pylons-like object called DBSession
+    * finally tries to read pylons-like threadlocal called DBSession
 
     * if this fails exception is thrown """
     # try to read the session from instance
@@ -206,6 +206,37 @@ class BaseModel(object):
         """ Attempts to return session via get_db_session utility function
         :meth:`~ziggurat_foundations.models.get_db_session`"""
         return get_db_session(session, self)
+
+    def persist(self, flush=False, db_session=None):
+        """
+        Adds object to session, if the object was freshly created this will
+        persist the object in the storage on commit
+
+        :param flush: boolean - if true then the session will be flushed
+        instantly
+        :param db_session:
+        :return:
+        """
+        db_session = get_db_session(db_session)
+        db_session.add(self)
+        if flush:
+            db_session.flush()
+
+    def delete(self, db_session=None):
+        """ Deletes the object via session, this will permanently delete the
+        object from storage on commit """
+        db_session = get_db_session(db_session, self)
+        db_session.delete(self)
+
+    @classmethod
+    def base_query(cls, db_session=None):
+        """
+        Returns a base query object one can use to search on simple properties
+        :param db_session:
+        :return:
+        """
+        return get_db_session(db_session).query(cls)
+
 
 
 class UserMixin(BaseModel):

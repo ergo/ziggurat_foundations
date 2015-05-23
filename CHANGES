@@ -1,6 +1,11 @@
 Changelog
 =========
 
+2015-05-XX
+----------
+* Release: 0.5.5
+* added persist(), delete(), base_query() methods to Base model
+
 2015-04-27
 ----------
 * Release: 0.5.3

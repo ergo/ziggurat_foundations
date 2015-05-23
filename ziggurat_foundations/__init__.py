@@ -1,4 +1,4 @@
-__version__ = {'major': 0, 'minor': 5, 'patch': 4}
+__version__ = {'major': 0, 'minor': 5, 'patch': 5}
 
 
 def make_passwordmanager():
