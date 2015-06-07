@@ -10,7 +10,7 @@ setup(name='ziggurat_foundations',
       license='BSD',
       packages=find_packages(),
       zip_safe=True,
-      include_package_data=True,
+      # include_package_data=True,
       package_data={
         '': ['*.txt', '*.rst', '*.ini'],
         'ziggurat_foundations': ['migrations/versions/*.py'],
