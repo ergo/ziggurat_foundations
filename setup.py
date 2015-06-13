@@ -1,5 +1,6 @@
 from setuptools import setup, find_packages
 import sys
+
 setup(name='ziggurat_foundations',
       version='0.5.5',
       description=""" Set of classes that are reusable across various types of
@@ -12,10 +13,14 @@ setup(name='ziggurat_foundations',
       zip_safe=True,
       # include_package_data=True,
       package_data={
-        '': ['*.txt', '*.rst', '*.ini', '*.mako', 'README'],
-        'ziggurat_foundations': ['migrations/versions/*.py'],
-        },
+          '': ['*.txt', '*.rst', '*.ini', '*.mako', 'README'],
+          'ziggurat_foundations': ['migrations/versions/*.py'],
+      },
       test_suite='ziggurat_foundations.tests',
-      install_requires=["sqlalchemy", "cryptacular", "paginate",
-        "paginate_sqlalchemy", "alembic", "six"]
-      )
+      install_requires=["sqlalchemy",
+                        "cryptacular",
+                        "paginate",
+                        "paginate_sqlalchemy",
+                        "alembic",
+                        "six"]
+)

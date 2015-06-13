@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import with_statement
+import logging
 import os
 import unittest
 import six
@@ -23,8 +24,11 @@ from sqlalchemy import create_engine
 from alembic.config import Config
 from alembic import command
 
+logging.basicConfig()
 
 Base = declarative_base()
+
+
 
 
 class Group(GroupMixin, Base):
@@ -96,15 +100,14 @@ def _initTestingDB():
     maker = sessionmaker(bind=engine)
     Base.metadata.bind = engine
     Base.metadata.drop_all(engine)
+    engine.execute('DROP TABLE IF EXISTS alembic_ziggurat_foundations_version');
     if sql_str.startswith('sqlite'):
         # sqlite will not work with alembic
         Base.metadata.create_all(engine)
     else:
         alembic_cfg = Config()
-        alembic_cfg.set_main_option(
-            "script_location", "ziggurat_foundations:migrations")
-        alembic_cfg.set_main_option("sqlalchemy.url", sql_str)
-        command.stamp(alembic_cfg, None)
+        alembic_cfg.set_main_option('script_location', 'ziggurat_foundations:migrations')
+        alembic_cfg.set_main_option('sqlalchemy.url', sql_str)
         command.upgrade(alembic_cfg, "head")
     return maker()
 

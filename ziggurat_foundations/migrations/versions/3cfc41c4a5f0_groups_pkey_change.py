@@ -20,7 +20,8 @@ def upgrade():
                     type_=sa.String(128),
                     existing_type=sa.String(50),
                     )
-    op.execute("ALTER TABLE groups ADD CONSTRAINT groups_pkey PRIMARY KEY(group_name)")
+    op.create_primary_key('groups_pkey', 'groups', cols=['group_name'])
+
 
 def downgrade():
     pass

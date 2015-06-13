@@ -16,41 +16,38 @@ from sqlalchemy.dialects.mysql.base import MySQLDialect
 from alembic.context import get_context
 from sqlalchemy.engine.reflection import Inspector
 
+
 def upgrade():
     c = get_context()
+    # drop foreign keys for mysql
     if isinstance(c.connection.engine.dialect, MySQLDialect):
         insp = Inspector.from_engine(c.connection.engine)
-        for t in ['groups_resources_permissions','users_resources_permissions','resources']:
+        for t in ['groups_resources_permissions', 'users_resources_permissions', 'resources']:
             for constraint in insp.get_foreign_keys(t):
                 if constraint['referred_columns'] == ['resource_id']:
-                    op.drop_constraint(constraint['name'], t, type='foreignkey')    
-    
-    
-    
+                    op.drop_constraint(constraint['name'], t, type='foreignkey')
+
     op.alter_column('resources', 'resource_id',
-                    type_=sa.Integer(), existing_type=sa.BigInteger())
+                    type_=sa.Integer(), existing_type=sa.BigInteger(),
+                    autoincrement=True)
     op.alter_column('resources', 'parent_id',
                     type_=sa.Integer(), existing_type=sa.BigInteger())
     op.alter_column('users_resources_permissions', 'resource_id',
                     type_=sa.Integer(), existing_type=sa.BigInteger())
     op.alter_column('groups_resources_permissions', 'resource_id',
                     type_=sa.Integer(), existing_type=sa.BigInteger())
-    
+
+    # recreate foreign keys for mysql
     if isinstance(c.connection.engine.dialect, MySQLDialect):
-        op.execute("ALTER TABLE resources MODIFY resource_id INT NOT NULL AUTO_INCREMENT;")
-        
         op.create_foreign_key("groups_resources_permissions_resource_fk",
-                              'groups_resources_permissions', 
+                              'groups_resources_permissions',
                               "resources", ["resource_id"], ["resource_id"],
-                              onupdate='CASCADE',ondelete='CASCADE')
+                              onupdate='CASCADE', ondelete='CASCADE')
         op.create_foreign_key("users_resources_permissions_fk",
-                              'users_resources_permissions', 
+                              'users_resources_permissions',
                               "resources", ["resource_id"], ["resource_id"],
-                              onupdate='CASCADE',ondelete='CASCADE')
-#        op.create_foreign_key("resources_parent_fk",
-#                              'resources', 
-#                              "resources", ["parent_id"],["resource_id"],
-#                              onupdate='CASCADE',ondelete='CASCADE')
+                              onupdate='CASCADE', ondelete='CASCADE')
+
 
 def downgrade():
     pass
