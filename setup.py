@@ -12,7 +12,7 @@ setup(name='ziggurat_foundations',
       zip_safe=True,
       # include_package_data=True,
       package_data={
-        '': ['*.txt', '*.rst', '*.ini'],
+        '': ['*.txt', '*.rst', '*.ini', '*.mako', 'README'],
         'ziggurat_foundations': ['migrations/versions/*.py'],
         },
       test_suite='ziggurat_foundations.tests',
