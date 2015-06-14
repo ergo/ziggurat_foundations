@@ -304,6 +304,13 @@ class UserMixin(BaseModel):
                          default=sa.sql.func.now(),
                          server_default=sa.func.now()
         )
+    @declared_attr
+    def security_code_date(self):
+        """ Date of user's security code update """
+        return sa.Column(sa.TIMESTAMP(timezone=False),
+                         default='2000-01-01 01:01',
+                         server_default='2000-01-01 01:01'
+        )
 
     def __repr__(self):
         return '<User: %s>' % self.user_name
