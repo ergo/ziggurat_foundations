@@ -1,11 +1,14 @@
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
 from .base import BaseModel
-from .services.group import GroupManager
+from .services.group import GroupService
+from ..utils import get_db_session
 
 
-class GroupMixin(GroupManager, BaseModel):
+class GroupMixin(BaseModel):
     """ base mixin for group object"""
+
+    _ziggurat_service = GroupService
 
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
 
@@ -102,3 +105,33 @@ class GroupMixin(GroupManager, BaseModel):
 
     def __repr__(self):
         return '<Group: %s, %s>' % (self.group_name, self.id)
+
+
+    @classmethod
+    def all(cls, db_session=None):
+        db_session = get_db_session(db_session)
+        return GroupService.all(db_session=db_session)
+
+
+    @classmethod
+    def by_group_name(cls, group_name, db_session=None):
+        """ fetch group by name"""
+        db_session = get_db_session(db_session)
+        return GroupService.by_group_name(group_name=group_name, db_session=db_session)
+
+
+    def get_user_paginator(self, page=1, item_count=None, items_per_page=50,
+                           user_ids=None, GET_params=None, db_session=None):
+        db_session = get_db_session(db_session, self)
+        return GroupService.get_user_paginator(
+            self, page=page, item_count=item_count, items_per_page=items_per_page,
+            user_ids=user_ids, GET_params=GET_params)
+
+
+    def resources_with_possible_perms(self, perm_names=None, resource_ids=None,
+                                      resource_types=None,
+                                      db_session=None):
+        db_session = get_db_session(db_session, self)
+        return GroupService.resources_with_possible_perms(
+            self, perm_names=perm_names, resource_ids=resource_ids,
+            resource_types=resource_types, db_session=db_session)

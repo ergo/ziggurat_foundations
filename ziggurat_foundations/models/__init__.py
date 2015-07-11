@@ -1,4 +1,14 @@
-# bw compat
+# should hold global scoped session
+DBSession = None
+
+
+def groupfinder(userid, request):
+    if userid and hasattr(request, 'user') and request.user:
+        groups = ['group:%s' % g.group_name for g in request.user.groups]
+        return groups
+    return []
+
+# bw compat (this creates cyclic dep but for now I want to leave this to not break existing codebase)
 from ziggurat_foundations.permissions import ANY_PERMISSION, ALL_PERMISSIONS, Allow, Deny, PermissionTuple
 from ziggurat_foundations.utils import get_db_session
 
@@ -11,14 +21,3 @@ from .user import UserMixin
 from .user_group import UserGroupMixin
 from .user_permission import UserPermissionMixin
 from .user_resource_permission import UserResourcePermissionMixin
-
-
-# should hold global scoped session
-DBSession = None
-
-
-def groupfinder(userid, request):
-    if userid and hasattr(request, 'user') and request.user:
-        groups = ['group:%s' % g.group_name for g in request.user.groups]
-        return groups
-    return []
