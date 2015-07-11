@@ -94,5 +94,11 @@ class GroupMixin(GroupManager, BaseModel):
                                    passive_updates=True,
                                    lazy='dynamic')
 
+    @sa.orm.validates('permissions')
+    def validate_permission(self, key, permission):
+        """ validates if group can get assigned with permission"""
+        assert permission.perm_name in self.__possible_permissions__
+        return permission
+
     def __repr__(self):
         return '<Group: %s, %s>' % (self.group_name, self.id)

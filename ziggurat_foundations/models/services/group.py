@@ -21,12 +21,6 @@ class GroupManager(ModelManager):
         query = db_session.query(cls).filter(cls.group_name == group_name)
         return query.first()
 
-    @sa.orm.validates('permissions')
-    def validate_permission(self, key, permission):
-        """ validates if group can get assigned with permission"""
-        assert permission.perm_name in self.__possible_permissions__
-        return permission
-
     def get_user_paginator(self, page=1, item_count=None, items_per_page=50,
                            user_ids=None, GET_params=None):
         """ returns paginator over users belonging to the group"""

@@ -174,11 +174,6 @@ class ResourceManager(ModelManager):
 
         return group_perms
 
-    @sa.orm.validates('user_permissions', 'group_permissions')
-    def validate_permission(self, key, permission):
-        """ validate if resouce can have specific permission """
-        assert permission.perm_name in self.__possible_permissions__
-        return permission
 
     @classmethod
     def subtree_deeper(cls, object_id, limit_depth=1000000, flat=True,

@@ -89,3 +89,10 @@ class ResourceMixin(ResourceManager, BaseModel):
     @property
     def __acl__(self):
         raise Exception("The model should have implemented __acl__")
+
+
+    @sa.orm.validates('user_permissions', 'group_permissions')
+    def validate_permission(self, key, permission):
+        """ validate if resouce can have specific permission """
+        assert permission.perm_name in self.__possible_permissions__
+        return permission
