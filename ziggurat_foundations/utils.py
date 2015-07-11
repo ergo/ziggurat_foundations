@@ -5,7 +5,6 @@ Utility functions.
 import sqlalchemy as sa
 
 from cryptacular.core import PasswordChecker
-from ziggurat_foundations.models import Allow
 
 
 class PlaceholderPasswordChecker(PasswordChecker):
@@ -64,3 +63,4 @@ def get_db_session(session=None, obj=None):
     elif models.DBSession:
         return models.DBSession
     raise Exception('No Session found')
+
