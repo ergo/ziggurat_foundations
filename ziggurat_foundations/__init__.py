@@ -1,5 +1,8 @@
 __version__ = {'major': 0, 'minor': 5, 'patch': 6}
 
+class ModelProxy(object):
+    pass
+
 
 def make_passwordmanager():
     from cryptacular.bcrypt import BCRYPTPasswordManager
@@ -25,5 +28,8 @@ def ziggurat_model_init(*k, **kw):
                 cls.passwordmanager = kw['passwordmanager']
             else:
                 cls.passwordmanager = make_passwordmanager()
+
+        models = ModelProxy()
         for cls2 in k:
-            setattr(cls, cls2.__name__, cls2)
+            setattr(models, cls2.__name__, cls2)
+        setattr(cls, "_ziggurat_models", models)

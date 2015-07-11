@@ -70,59 +70,59 @@ def resource_permissions_for_users(model, perm_names, resource_ids=None,
     issues for big groups
     """
     db_session = get_db_session(db_session, model)
-    query = db_session.query(model.GroupResourcePermission.perm_name,
-                             model.User,
-                             model.Group,
+    query = db_session.query(model._ziggurat_models.GroupResourcePermission.perm_name,
+                             model._ziggurat_models.User,
+                             model._ziggurat_models.Group,
                              sa.literal('group').label('type'),
-                             model.Resource
+                             model._ziggurat_models.Resource
     )
     if limit_group_permissions:
-        query = query.outerjoin(model.User, model.User.id == None)
+        query = query.outerjoin(model._ziggurat_models.User, model._ziggurat_models.User.id == None)
     else:
-        query = query.filter(model.User.id == model.UserGroup.user_id)
+        query = query.filter(model._ziggurat_models.User.id == model._ziggurat_models.UserGroup.user_id)
 
     query = query.filter(
-        model.Resource.resource_id == model.GroupResourcePermission.resource_id)
+        model._ziggurat_models.Resource.resource_id == model._ziggurat_models.GroupResourcePermission.resource_id)
     query = query.filter(
-        model.Group.id == model.GroupResourcePermission.group_id)
+        model._ziggurat_models.Group.id == model._ziggurat_models.GroupResourcePermission.group_id)
     if resource_ids:
         query = query.filter(
-            model.GroupResourcePermission.resource_id.in_(resource_ids))
+            model._ziggurat_models.GroupResourcePermission.resource_id.in_(resource_ids))
     if resource_types:
-        query = query.filter(model.Resource.resource_type.in_(resource_types))
-    query = query.filter(model.UserGroup.group_id ==
-                         model.GroupResourcePermission.group_id)
+        query = query.filter(model._ziggurat_models.Resource.resource_type.in_(resource_types))
+    query = query.filter(model._ziggurat_models.UserGroup.group_id ==
+                         model._ziggurat_models.GroupResourcePermission.group_id)
     if (perm_names not in ([ANY_PERMISSION], ANY_PERMISSION) and perm_names):
         query = query.filter(
-            model.GroupResourcePermission.perm_name.in_(perm_names))
+            model._ziggurat_models.GroupResourcePermission.perm_name.in_(perm_names))
     if group_ids:
         query = query.filter(
-            model.GroupResourcePermission.group_id.in_(group_ids))
+            model._ziggurat_models.GroupResourcePermission.group_id.in_(group_ids))
     if user_ids:
         query = query.filter(
-            model.UserGroup.user_id.in_(user_ids))
-    query2 = db_session.query(model.UserResourcePermission.perm_name,
-                              model.User,
-                              model.Group,
+            model._ziggurat_models.UserGroup.user_id.in_(user_ids))
+    query2 = db_session.query(model._ziggurat_models.UserResourcePermission.perm_name,
+                              model._ziggurat_models.User,
+                              model._ziggurat_models.Group,
                               sa.literal('user').label('type'),
-                              model.Resource)
+                              model._ziggurat_models.Resource)
     # group needs to be present to work for union, but never actually matched
-    query2 = query2.outerjoin(model.Group, model.Group.id == None)
-    query2 = query2.filter(model.User.id ==
-                           model.UserResourcePermission.user_id)
+    query2 = query2.outerjoin(model._ziggurat_models.Group, model._ziggurat_models.Group.id == None)
+    query2 = query2.filter(model._ziggurat_models.User.id ==
+                           model._ziggurat_models.UserResourcePermission.user_id)
     query2 = query2.filter(
-        model.Resource.resource_id == model.UserResourcePermission.resource_id)
+        model._ziggurat_models.Resource.resource_id == model._ziggurat_models.UserResourcePermission.resource_id)
     if (perm_names not in ([ANY_PERMISSION], ANY_PERMISSION) and perm_names):
         query2 = query2.filter(
-            model.UserResourcePermission.perm_name.in_(perm_names))
+            model._ziggurat_models.UserResourcePermission.perm_name.in_(perm_names))
     if resource_ids:
         query2 = query2.filter(
-            model.UserResourcePermission.resource_id.in_(resource_ids))
+            model._ziggurat_models.UserResourcePermission.resource_id.in_(resource_ids))
     if resource_types:
-        query2 = query2.filter(model.Resource.resource_type.in_(resource_types))
+        query2 = query2.filter(model._ziggurat_models.Resource.resource_type.in_(resource_types))
     if user_ids:
         query2 = query2.filter(
-            model.UserResourcePermission.user_id.in_(user_ids))
+            model._ziggurat_models.UserResourcePermission.user_id.in_(user_ids))
 
     if not skip_group_perms and not skip_user_perms:
         query = query.union(query2)
@@ -382,19 +382,19 @@ class UserMixin(BaseModel):
             belongs and directly set ones for this user"""
         db_session = get_db_session(None, self)
         query = db_session.query(
-            self.GroupPermission.group_id.label('owner_id'),
-            self.GroupPermission.perm_name.label('perm_name'),
+            self._ziggurat_models.GroupPermission.group_id.label('owner_id'),
+            self._ziggurat_models.GroupPermission.perm_name.label('perm_name'),
             sa.literal('group').label('type'))
-        query = query.filter(self.GroupPermission.group_id ==
-                             self.UserGroup.group_id)
-        query = query.filter(self.User.id == self.UserGroup.user_id)
-        query = query.filter(self.User.id == self.id)
+        query = query.filter(self._ziggurat_models.GroupPermission.group_id ==
+                             self._ziggurat_models.UserGroup.group_id)
+        query = query.filter(self._ziggurat_models.User.id == self._ziggurat_models.UserGroup.user_id)
+        query = query.filter(self._ziggurat_models.User.id == self.id)
 
         query2 = db_session.query(
-            self.UserPermission.user_id.label('owner_id'),
-            self.UserPermission.perm_name.label('perm_name'),
+            self._ziggurat_models.UserPermission.user_id.label('owner_id'),
+            self._ziggurat_models.UserPermission.perm_name.label('perm_name'),
             sa.literal('user').label('type'))
-        query2 = query2.filter(self.UserPermission.user_id == self.id)
+        query2 = query2.filter(self._ziggurat_models.UserPermission.user_id == self.id)
         query = query.union(query2)
         groups_dict = dict([(g.id, g) for g in self.groups])
         return [PermissionTuple(self,
@@ -414,16 +414,16 @@ class UserMixin(BaseModel):
         # even without explict perms set
         # TODO: implement admin superrule perm - maybe return all apps
         db_session = get_db_session(db_session, self)
-        query = db_session.query(self.Resource).distinct()
+        query = db_session.query(self._ziggurat_models.Resource).distinct()
         group_ids = [gr.id for gr in self.groups]
         # if user has some groups lets try to join based on their permissions
         if group_ids:
             join_conditions = (
-                self.GroupResourcePermission.group_id.in_(group_ids),
-                self.Resource.resource_id == self.GroupResourcePermission.resource_id,
-                self.GroupResourcePermission.perm_name.in_(perms),)
+                self._ziggurat_models.GroupResourcePermission.group_id.in_(group_ids),
+                self._ziggurat_models.Resource.resource_id == self._ziggurat_models.GroupResourcePermission.resource_id,
+                self._ziggurat_models.GroupResourcePermission.perm_name.in_(perms),)
             query = query.outerjoin(
-                (self.GroupResourcePermission,
+                (self._ziggurat_models.GroupResourcePermission,
                  sa.and_(*join_conditions),)
             )
             # ensure outerjoin permissions are correct -
@@ -431,32 +431,32 @@ class UserMixin(BaseModel):
             # conditions are - join ON possible group permissions
             # OR owning group/user
             query = query.filter(sa.or_(
-                self.Resource.owner_user_id == self.id,
-                self.Resource.owner_group_id.in_(group_ids),
-                self.GroupResourcePermission.perm_name != None, ))
+                self._ziggurat_models.Resource.owner_user_id == self.id,
+                self._ziggurat_models.Resource.owner_group_id.in_(group_ids),
+                self._ziggurat_models.GroupResourcePermission.perm_name != None, ))
         else:
             # filter just by username
-            query = query.filter(self.Resource.owner_user_id ==
+            query = query.filter(self._ziggurat_models.Resource.owner_user_id ==
                                  self.id)
         # lets try by custom user permissions for resource
-        query2 = db_session.query(self.Resource).distinct()
-        query2 = query2.filter(self.UserResourcePermission.user_id ==
+        query2 = db_session.query(self._ziggurat_models.Resource).distinct()
+        query2 = query2.filter(self._ziggurat_models.UserResourcePermission.user_id ==
                                self.id)
-        query2 = query2.filter(self.Resource.resource_id ==
-                               self.UserResourcePermission.resource_id)
+        query2 = query2.filter(self._ziggurat_models.Resource.resource_id ==
+                               self._ziggurat_models.UserResourcePermission.resource_id)
         query2 = query2.filter(
-            self.UserResourcePermission.perm_name.in_(perms))
+            self._ziggurat_models.UserResourcePermission.perm_name.in_(perms))
         if resource_ids:
-            query = query.filter(self.Resource.resource_id.in_(resource_ids))
-            query2 = query2.filter(self.Resource.resource_id.in_(resource_ids))
+            query = query.filter(self._ziggurat_models.Resource.resource_id.in_(resource_ids))
+            query2 = query2.filter(self._ziggurat_models.Resource.resource_id.in_(resource_ids))
 
         if resource_types:
             query = query.filter(
-                self.Resource.resource_type.in_(resource_types))
+                self._ziggurat_models.Resource.resource_type.in_(resource_types))
             query2 \
-                = query2.filter(self.Resource.resource_type.in_(resource_types))
+                = query2.filter(self._ziggurat_models.Resource.resource_type.in_(resource_types))
         query = query.union(query2)
-        query = query.order_by(self.Resource.resource_name)
+        query = query.order_by(self._ziggurat_models.Resource.resource_name)
         return query
 
     def groups_with_resources(self):
@@ -464,7 +464,7 @@ class UserMixin(BaseModel):
         resources owned by those groups """
 
         return self.groups_dynamic.options(
-            sa.orm.eagerload(self.Group.resources))
+            sa.orm.eagerload(self._ziggurat_models.Group.resources))
 
     def resources_with_possible_perms(self, resource_ids=None,
                                       resource_types=None,
@@ -602,16 +602,16 @@ class UserMixin(BaseModel):
         """ return users hat have one of given permissions """
         db_session = get_db_session(db_session)
         query = db_session.query(cls)
-        query = query.filter(cls.User.id == cls.UserGroup.user_id)
-        query = query.filter(cls.UserGroup.group_id ==
-                             cls.GroupPermission.group_id)
+        query = query.filter(cls._ziggurat_models.User.id == cls._ziggurat_models.UserGroup.user_id)
+        query = query.filter(cls._ziggurat_models.UserGroup.group_id ==
+                             cls._ziggurat_models.GroupPermission.group_id)
         query = query.filter(
-            cls.GroupPermission.perm_name.in_(perm_names))
+            cls._ziggurat_models.GroupPermission.perm_name.in_(perm_names))
 
         query2 = db_session.query(cls)
-        query2 = query2.filter(cls.User.id ==
-                               cls.UserPermission.user_id)
-        query2 = query2.filter(cls.UserPermission.perm_name.in_(perm_names))
+        query2 = query2.filter(cls._ziggurat_models.User.id ==
+                               cls._ziggurat_models.UserPermission.user_id)
+        query2 = query2.filter(cls._ziggurat_models.UserPermission.perm_name.in_(perm_names))
         users = query.union(query2).order_by(cls.id)
         return users
 
@@ -665,9 +665,9 @@ class ExternalIdentityMixin(BaseModel):
     def user_by_external_id_and_provider(cls, external_id, provider_name,
                                          db_session=None):
         db_session = get_db_session(db_session)
-        query = db_session.query(cls.User)
+        query = db_session.query(cls._ziggurat_models.User)
         query = query.filter(cls.external_id == external_id)
-        query = query.filter(cls.User.user_name == cls.local_user_name)
+        query = query.filter(cls._ziggurat_models.User.user_name == cls.local_user_name)
         query = query.filter(cls.provider_name == provider_name)
         return query.first()
 
@@ -798,7 +798,7 @@ class GroupMixin(BaseModel):
         GET_params.pop('page', None)
         query = self.users_dynamic
         if user_ids:
-            query = query.filter(self.UserGroup.user_id.in_(user_ids))
+            query = query.filter(self._ziggurat_models.UserGroup.user_id.in_(user_ids))
         return SqlalchemyOrmPage(query, page=page, item_count=item_count,
                                  items_per_page=items_per_page,
                                  **GET_params)
@@ -811,27 +811,27 @@ class GroupMixin(BaseModel):
         db_session = get_db_session(db_session, self)
         perms = []
 
-        query = db_session.query(self.GroupResourcePermission.perm_name,
-                                 self.Group,
-                                 self.Resource
+        query = db_session.query(self._ziggurat_models.GroupResourcePermission.perm_name,
+                                 self._ziggurat_models.Group,
+                                 self._ziggurat_models.Resource
         )
         query = query.filter(
-            self.Resource.resource_id == self.GroupResourcePermission.resource_id)
+            self._ziggurat_models.Resource.resource_id == self._ziggurat_models.GroupResourcePermission.resource_id)
         query = query.filter(
-            self.Group.id == self.GroupResourcePermission.group_id)
+            self._ziggurat_models.Group.id == self._ziggurat_models.GroupResourcePermission.group_id)
         if resource_ids:
             query = query.filter(
-                self.GroupResourcePermission.resource_id.in_(resource_ids))
+                self._ziggurat_models.GroupResourcePermission.resource_id.in_(resource_ids))
 
         if resource_types:
             query = query.filter(
-                self.Resource.resource_type.in_(resource_types))
+                self._ziggurat_models.Resource.resource_type.in_(resource_types))
 
         if (perm_names not in (
         [ANY_PERMISSION], ANY_PERMISSION) and perm_names):
             query = query.filter(
-                self.GroupResourcePermission.perm_name.in_(perm_names))
-        query = query.filter(self.GroupResourcePermission.group_id == self.id)
+                self._ziggurat_models.GroupResourcePermission.perm_name.in_(perm_names))
+        query = query.filter(self._ziggurat_models.GroupResourcePermission.group_id == self.id)
 
         perms = [PermissionTuple(None, row.perm_name, 'group',
                                  self, row.Resource, False, True)
@@ -1106,23 +1106,23 @@ class ResourceMixin(BaseModel):
             from groups and directly set ones too"""
         db_session = get_db_session(db_session, self)
         query = db_session.query(
-            self.GroupResourcePermission.group_id.label('owner_id'),
-            self.GroupResourcePermission.perm_name,
+            self._ziggurat_models.GroupResourcePermission.group_id.label('owner_id'),
+            self._ziggurat_models.GroupResourcePermission.perm_name,
             sa.literal('group').label('type'))
-        query = query.filter(self.GroupResourcePermission.group_id.in_(
+        query = query.filter(self._ziggurat_models.GroupResourcePermission.group_id.in_(
             [gr.id for gr in user.groups]
         )
         )
-        query = query.filter(self.GroupResourcePermission.resource_id ==
+        query = query.filter(self._ziggurat_models.GroupResourcePermission.resource_id ==
                              self.resource_id)
 
         query2 = db_session.query(
-            self.UserResourcePermission.user_id.label('owner_id'),
-            self.UserResourcePermission.perm_name,
+            self._ziggurat_models.UserResourcePermission.user_id.label('owner_id'),
+            self._ziggurat_models.UserResourcePermission.perm_name,
             sa.literal('user').label('type'))
-        query2 = query2.filter(self.UserResourcePermission.user_id ==
+        query2 = query2.filter(self._ziggurat_models.UserResourcePermission.user_id ==
                                user.id)
-        query2 = query2.filter(self.UserResourcePermission.resource_id ==
+        query2 = query2.filter(self._ziggurat_models.UserResourcePermission.resource_id ==
                                self.resource_id)
         query = query.union(query2)
 
@@ -1150,11 +1150,11 @@ class ResourceMixin(BaseModel):
         """ returns permissions that given user has for this resource
             without ones inherited from groups that user belongs to"""
         db_session = get_db_session(db_session, self)
-        query = db_session.query(self.UserResourcePermission.user_id,
-                                 self.UserResourcePermission.perm_name)
-        query = query.filter(self.UserResourcePermission.user_id ==
+        query = db_session.query(self._ziggurat_models.UserResourcePermission.user_id,
+                                 self._ziggurat_models.UserResourcePermission.perm_name)
+        query = query.filter(self._ziggurat_models.UserResourcePermission.user_id ==
                              user.id)
-        query = query.filter(self.UserResourcePermission.resource_id ==
+        query = query.filter(self._ziggurat_models.UserResourcePermission.resource_id ==
                              self.resource_id)
 
         perms = [PermissionTuple(user,
@@ -1235,12 +1235,12 @@ class ResourceMixin(BaseModel):
                                     db_session=None):
         """ fetch permissions by group and permission name"""
         db_session = get_db_session(db_session)
-        query = db_session.query(cls.GroupResourcePermission)
+        query = db_session.query(cls._ziggurat_models.GroupResourcePermission)
         query = query.filter(
-            cls.GroupResourcePermission.group_id == group_id)
+            cls._ziggurat_models.GroupResourcePermission.group_id == group_id)
         query = query.filter(
-            cls.GroupResourcePermission.perm_id == perm_name)
-        query = query.filter(cls.GroupResourcePermission.resource_id == res_id)
+            cls._ziggurat_models.GroupResourcePermission.perm_id == perm_name)
+        query = query.filter(cls._ziggurat_models.GroupResourcePermission.resource_id == res_id)
         return query.first()
 
     def groups_for_perm(self, perm_name, group_ids=None,
