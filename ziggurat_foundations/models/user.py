@@ -2,7 +2,7 @@ import sqlalchemy as sa
 from datetime import datetime
 from sqlalchemy.ext.declarative import declared_attr
 from .base import BaseModel
-from ..managers import UserManager
+from .managers.user import UserManager
 
 
 class UserMixin(UserManager, BaseModel):

@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
 from .base import BaseModel
-from ..managers import ExternalIdentityManager
+from .managers.external_identity import ExternalIdentityManager
 
 
 class ExternalIdentityMixin(ExternalIdentityManager, BaseModel):

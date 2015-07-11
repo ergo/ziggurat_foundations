@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
 from .base import BaseModel
-from ..managers import ResourceManager
+from .managers.resource import ResourceManager
 
 
 class ResourceMixin(ResourceManager, BaseModel):
