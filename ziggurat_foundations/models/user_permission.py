@@ -3,6 +3,7 @@ from sqlalchemy.ext.declarative import declared_attr
 from .base import BaseModel
 from ..managers import UserPermissionManager
 
+
 class UserPermissionMixin(UserPermissionManager, BaseModel):
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
 

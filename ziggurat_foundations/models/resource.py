@@ -3,6 +3,7 @@ from sqlalchemy.ext.declarative import declared_attr
 from .base import BaseModel
 from ..managers import ResourceManager
 
+
 class ResourceMixin(ResourceManager, BaseModel):
     __possible_permissions__ = ()
 

@@ -3,6 +3,7 @@ from sqlalchemy.ext.declarative import declared_attr
 from .base import BaseModel
 from ..managers import GroupManager
 
+
 class GroupMixin(GroupManager, BaseModel):
     """ base mixin for group object"""
 

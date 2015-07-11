@@ -1,5 +1,6 @@
 __version__ = {'major': 0, 'minor': 5, 'patch': 6}
 
+
 class ModelProxy(object):
     pass
 

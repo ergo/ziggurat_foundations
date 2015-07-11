@@ -1,6 +1,7 @@
 import sqlalchemy as sa
 from ziggurat_foundations.utils import get_db_session
 
+
 class BaseModel(object):
     """ Basic class that all other classes inherit from that supplies some
     basic methods useful for interaction with packages like:

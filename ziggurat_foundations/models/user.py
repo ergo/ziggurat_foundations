@@ -4,6 +4,7 @@ from sqlalchemy.ext.declarative import declared_attr
 from .base import BaseModel
 from ..managers import UserManager
 
+
 class UserMixin(UserManager, BaseModel):
     """ Base mixin for user object representation.
         It supplies all the basic functionality from password hash generation

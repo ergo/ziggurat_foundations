@@ -63,4 +63,3 @@ def get_db_session(session=None, obj=None):
     elif models.DBSession:
         return models.DBSession
     raise Exception('No Session found')
-
