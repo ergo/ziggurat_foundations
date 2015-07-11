@@ -3,8 +3,10 @@ import hashlib
 import random
 import string
 import six
-from paginate_sqlalchemy import SqlalchemyOrmPage
+
 from collections import namedtuple
+from datetime import datetime, timedelta
+from paginate_sqlalchemy import SqlalchemyOrmPage
 
 from sqlalchemy.ext.declarative import declared_attr
 
@@ -293,7 +295,7 @@ class UserMixin(BaseModel):
     def last_login_date(self):
         """ Date of user's last login """
         return sa.Column(sa.TIMESTAMP(timezone=False),
-                         default=sa.sql.func.now(),
+                         default=lambda x: datetime.utcnow(),
                          server_default=sa.func.now()
         )
 
@@ -301,14 +303,14 @@ class UserMixin(BaseModel):
     def registered_date(self):
         """ Date of user's registration """
         return sa.Column(sa.TIMESTAMP(timezone=False),
-                         default=sa.sql.func.now(),
+                         default=lambda x: datetime.utcnow(),
                          server_default=sa.func.now()
         )
     @declared_attr
     def security_code_date(self):
         """ Date of user's security code update """
         return sa.Column(sa.TIMESTAMP(timezone=False),
-                         default='2000-01-01 01:01',
+                         default=datetime(2000, 1, 1),
                          server_default='2000-01-01 01:01'
         )
 
