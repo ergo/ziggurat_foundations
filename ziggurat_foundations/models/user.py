@@ -2,7 +2,7 @@ import sqlalchemy as sa
 from datetime import datetime
 from sqlalchemy.ext.declarative import declared_attr
 from .base import BaseModel
-from .managers.user import UserManager
+from .services.user import UserManager
 
 
 class UserMixin(UserManager, BaseModel):
@@ -13,8 +13,8 @@ class UserMixin(UserManager, BaseModel):
         to be extended with other application specific properties"""
 
     __mapper_args__ = {}
-    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'
-    }
+    __table_args__ = {'mysql_engine': 'InnoDB',
+                      'mysql_charset': 'utf8'}
 
     @declared_attr
     def __tablename__(self):

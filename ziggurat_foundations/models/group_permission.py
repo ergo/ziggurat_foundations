@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
 from .base import BaseModel
-from .managers.group_permission import GroupPermissionManager
+from .services.group_permission import GroupPermissionManager
 
 
 class GroupPermissionMixin(GroupPermissionManager, BaseModel):

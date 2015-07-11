@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
 from .base import BaseModel
-from .managers.user_permission import UserPermissionManager
+from .services.user_permission import UserPermissionManager
 
 
 class UserPermissionMixin(UserPermissionManager, BaseModel):
