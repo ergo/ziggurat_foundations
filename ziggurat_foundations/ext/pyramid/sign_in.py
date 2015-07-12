@@ -61,8 +61,8 @@ def includeme(config):
                                       UserModel=UserModel,
                                       signin_came_from_key=signin_came_from_key,
                                       signin_username_key=signin_username_key,
-                                      signin_password_key=signin_password_key
-    )
+                                      signin_password_key=signin_password_key)
+
     config.add_route('ziggurat.routes.sign_in', sign_in_path,
                      use_global_views=True,
                      factory=endpoint.sign_in)
@@ -72,6 +72,7 @@ def includeme(config):
 
 
 class ZigguratSignInProvider(object):
+
     def __init__(self, *args, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)

@@ -16,7 +16,7 @@ class UserResourcePermissionManager(ModelManager):
 
         # @classmethod
         # def allowed_permissions(cls, key):
-        #        """ ensures we can only use permission that can be assigned
+        # """ ensures we can only use permission that can be assigned
         #            to this resource type"""
         #        if key in cls.__possible_permissions__:
         #            return key
