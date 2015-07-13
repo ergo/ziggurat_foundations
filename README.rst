@@ -1,13 +1,15 @@
+|Build Status| |Coverage Status| |PyPI|
+
 ziggurat_foundations
 =====================
 
-Framework agnostic set of sqlalchemy 
+Framework agnostic set of sqlalchemy
 classes that make building applications that require permissions an easy task.
 
 ziggurat_foundations supplies a set of *sqlalchemy mixins* that can be used to extend
 models in your application built in pyramid/flask/(your-favourite-framework-here).
-The aim of this project is to supply set of generic models that cover the most 
-common needs in application development when it comes to authorization - using 
+The aim of this project is to supply set of generic models that cover the most
+common needs in application development when it comes to authorization - using
 flat and tree like data structures.
 
 
@@ -18,18 +20,25 @@ flat and tree like data structures.
 So far following basics are supplied:
 
 - User - base for user accounts
-- Group - container for many users 
+- Group - container for many users
 - Resource - Arbitrary database entity that can represent various object hierarchies - blogs, forums, cms documents, pages etc.
 
 Currently following information and data manipulation is supported:
 
-- assigning arbitrary permissions directly to users (ie. access admin panel) 
+- assigning arbitrary permissions directly to users (ie. access admin panel)
 - assigning users to groups
-- assigning arbitrary permissions to groups 
+- assigning arbitrary permissions to groups
 - assigning arbitrary resource permissions to users (ie. only user X can access  private forum)
-- assigning arbitrary resource permissions to groups 
- 
-The sqlalchemy mixins make all the interactions easy to use in your application 
+- assigning arbitrary resource permissions to groups
+
+The sqlalchemy mixins make all the interactions easy to use in your application
 and save development time.
 
 Ziggurat Foundations is BSD Licensed
+
+.. |Build Status| image:: https://travis-ci.org/ergo/ziggurat_foundations.svg?branch=maste
+   :target: https://travis-ci.org/ergo/ziggurat_foundations
+.. |Coverage Status| image:: https://coveralls.io/repos/ergo/ziggurat_foundations/badge.png?branch=maste
+   :target: https://coveralls.io/r/ergo/ziggurat_foundations?branch=maste
+.. |PyPI| image:: http://img.shields.io/pypi/dm/ziggurat_foundations.svg
+   :target: https://pypi.python.org/pypi/ziggurat_foundations/

@@ -1,0 +1,27 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+# vim:fenc=utf-8
+#
+# Copyright © 2014 uralbash <root@uralbash.ru>
+#
+# Distributed under terms of the MIT license.
+sudo: false
+language: python
+
+notifications:
+    on_success: change
+    on_failure: always
+
+python:
+  - "2.7"
+  - "3.3"
+  - "3.4"
+  - "pypy"
+  - "pypy3"
+
+script:
+  - python setup.py nosetests
+
+after_success:
+  - pip install coveralls
+  - coveralls

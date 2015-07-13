@@ -29,8 +29,6 @@ logging.basicConfig()
 Base = declarative_base()
 
 
-
-
 class Group(GroupMixin, Base):
     __possible_permissions__ = ('root_administration',
                                 'administration',
