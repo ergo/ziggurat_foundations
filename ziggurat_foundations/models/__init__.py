@@ -12,6 +12,7 @@ def groupfinder(userid, request):
 from ziggurat_foundations.permissions import ANY_PERMISSION, ALL_PERMISSIONS, Allow, Deny, PermissionTuple
 from ziggurat_foundations.utils import get_db_session
 
+from .base import BaseModel
 from .external_identity import ExternalIdentityMixin
 from .group import GroupMixin
 from .group_permission import GroupPermissionMixin

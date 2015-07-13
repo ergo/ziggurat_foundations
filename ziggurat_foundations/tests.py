@@ -283,7 +283,6 @@ class ModelTestCase(BaseTestCase):
     def test_get_dict_included(self):
         created_user = self._addUser()
         dict_ = created_user.get_dict(include_keys=['user_name'])
-        print(dict_, dict_.keys())
         assert ['user_name'] == list(dict_.keys())
 
     def test_get_dict_included_excluded(self):
