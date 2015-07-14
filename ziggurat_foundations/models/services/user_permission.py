@@ -2,7 +2,8 @@ from . import ModelManager
 from ...utils import get_db_session
 
 
-class UserPermissionManager(ModelManager):
+class UserPermissionService(ModelManager):
+
     @classmethod
     def by_user_and_perm(cls, user_id, perm_name, db_session=None):
         """ return by user and permission name"""
