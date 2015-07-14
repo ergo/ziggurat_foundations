@@ -61,16 +61,21 @@ def resource_permissions_for_users(models_proxy, perm_names, resource_ids=None,
     issues for big groups
     """
     db_session = get_db_session(db_session)
+
+    # fetch groups and their permissions (possibly with users belonging
+    # to group if needed)
     query = db_session.query(models_proxy.GroupResourcePermission.perm_name,
                              models_proxy.User,
                              models_proxy.Group,
                              sa.literal('group').label('type'),
-                             models_proxy.Resource
-    )
+                             models_proxy.Resource)
+
     if limit_group_permissions:
         query = query.outerjoin(models_proxy.User, models_proxy.User.id == None)
     else:
-        query = query.filter(models_proxy.User.id == models_proxy.UserGroup.user_id)
+        query = query.outerjoin(models_proxy.User, models_proxy.User.id == models_proxy.UserGroup.user_id)
+        query = query.filter(models_proxy.UserGroup.group_id ==
+                             models_proxy.GroupResourcePermission.group_id)
 
     query = query.filter(
         models_proxy.Resource.resource_id == models_proxy.GroupResourcePermission.resource_id)
@@ -81,17 +86,19 @@ def resource_permissions_for_users(models_proxy, perm_names, resource_ids=None,
             models_proxy.GroupResourcePermission.resource_id.in_(resource_ids))
     if resource_types:
         query = query.filter(models_proxy.Resource.resource_type.in_(resource_types))
-    query = query.filter(models_proxy.UserGroup.group_id ==
-                         models_proxy.GroupResourcePermission.group_id)
+
     if (perm_names not in ([ANY_PERMISSION], ANY_PERMISSION) and perm_names):
         query = query.filter(
             models_proxy.GroupResourcePermission.perm_name.in_(perm_names))
     if group_ids:
         query = query.filter(
             models_proxy.GroupResourcePermission.group_id.in_(group_ids))
-    if user_ids:
+
+    if user_ids and not limit_group_permissions:
         query = query.filter(
             models_proxy.UserGroup.user_id.in_(user_ids))
+
+    # 2nd query that will fetch users with direct resource permissions
     query2 = db_session.query(models_proxy.UserResourcePermission.perm_name,
                               models_proxy.User,
                               models_proxy.Group,

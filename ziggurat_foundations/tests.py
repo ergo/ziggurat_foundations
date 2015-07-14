@@ -332,8 +332,6 @@ class ModelTestCase(BaseTestCase):
         assert User.by_id(uid, db_session=self.session) is None
 
 
-
-
 class UserTestCase(BaseTestCase):
 
     def test_add_user(self):
@@ -1074,6 +1072,79 @@ class UserTestCase(BaseTestCase):
         second = [
             PermissionTuple(self.user, u'test_perm2', 'user', None, self.resource, False, True),
             PermissionTuple(self.user, u'foo_perm', 'user', None, self.resource, False, True)
+            ]
+        if six.PY2:
+            return self.assertItemsEqual(first, second)
+        return self.assertCountEqual(first, second)
+
+
+    def test_resource_groups_for_any_perm_just_group_perms_limited_empty_group(self):
+        self.maxDiff = 99999
+        self.set_up_user_group_and_perms()
+        user6 = self._addUser(6, 'user 6')
+        user7 = self._addUser(7, 'user 7')
+        perm2 = GroupResourcePermission(
+            perm_name='group_perm2',
+            resource_id=self.resource.resource_id
+        )
+        self.group.resource_permissions.append(perm2)
+        self.group.users.append(user6)
+        self.group.users.append(user7)
+
+        group3 = self._addGroup('Empty group')
+        perm3 = GroupResourcePermission(
+            perm_name='group_permX',
+            resource_id=self.resource.resource_id
+        )
+        group3.resource_permissions.append(perm3)
+        first = self.resource.groups_for_perm(
+            '__any_permission__', limit_group_permissions=True, db_session=self.session)
+
+        second = [
+            PermissionTuple(None, u'group_perm', 'group', self.group, self.resource, False, True),
+            PermissionTuple(None, u'group_perm2', 'group', self.group, self.resource, False, True),
+            PermissionTuple(None, u'group_perm', 'group', self.group2, self.resource, False, True),
+            PermissionTuple(None, u'group_permX', 'group', group3, self.resource, False, True)
+            ]
+        if six.PY2:
+            return self.assertItemsEqual(first, second)
+        return self.assertCountEqual(first, second)
+
+
+    def test_resource_users_for_any_perm_limited_group_perms_empty_group(self):
+        self.maxDiff = 99999
+        self.set_up_user_group_and_perms()
+        user6 = self._addUser(6, 'user 6')
+        user7 = self._addUser(7, 'user 7')
+        perm2 = GroupResourcePermission(
+            perm_name='group_perm2',
+            resource_id=self.resource.resource_id
+        )
+        self.group.resource_permissions.append(perm2)
+        self.group.users.append(user6)
+        self.group.users.append(user7)
+        group3 = self._addGroup('Empty group')
+        perm3 = GroupResourcePermission(
+            perm_name='group_permX',
+            resource_id=self.resource.resource_id
+        )
+        group3.resource_permissions.append(perm3)
+
+        first = self.resource.users_for_perm(
+            '__any_permission__', limit_group_permissions=True, db_session=self.session)
+
+        print self.session.query(GroupResourcePermission).all()
+        for r in first:
+            print r.group, '   ',r
+
+
+        second = [
+            PermissionTuple(None, u'group_perm', 'group', self.group, self.resource, False, True),
+            PermissionTuple(None, u'group_perm2', 'group', self.group, self.resource, False, True),
+            PermissionTuple(self.user, u'test_perm2', 'user', None, self.resource, False, True),
+            PermissionTuple(self.user, u'foo_perm', 'user', None, self.resource, False, True),
+            PermissionTuple(None, u'group_perm', 'group', self.group2, self.resource, False, True),
+            PermissionTuple(None, u'group_permX', 'group', group3, self.resource, False, True),
             ]
         if six.PY2:
             return self.assertItemsEqual(first, second)
