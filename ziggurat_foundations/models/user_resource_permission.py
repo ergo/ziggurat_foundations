@@ -1,11 +1,13 @@
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
 from .base import BaseModel
-from .services.user_resource_permission import UserResourcePermissionManager
+from .services.user_resource_permission import UserResourcePermissionService
+from ..utils import get_db_session
 
-
-class UserResourcePermissionMixin(UserResourcePermissionManager, BaseModel):
+class UserResourcePermissionMixin(BaseModel):
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
+
+    _ziggurat_model = UserResourcePermissionService
 
     @declared_attr
     def __tablename__(self):
@@ -32,6 +34,14 @@ class UserResourcePermissionMixin(UserResourcePermissionManager, BaseModel):
         return sa.Column(sa.Unicode(50), primary_key=True)
 
     def __repr__(self):
-        return '<userResourcePermission: %s, %s, %s>' % (self.user_id,
+        return '<UserResourcePermission: %s, %s, %s>' % (self.user_id,
                                                          self.perm_name,
                                                          self.resource_id,)
+
+    @classmethod
+    def by_resource_user_and_perm(cls, user_id, perm_name, resource_id,
+                                  db_session=None):
+        db_session = get_db_session(db_session)
+        return UserResourcePermissionService.by_resource_user_and_perm(
+            user_id=user_id, perm_name=perm_name, resource_id=resource_id,
+            db_session=db_session)
