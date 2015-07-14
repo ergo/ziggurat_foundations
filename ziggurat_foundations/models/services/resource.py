@@ -88,7 +88,7 @@ class ResourceService(ModelManager):
         perms = resource_permissions_for_users(instance, ANY_PERMISSION,
                                                resource_ids=[instance.resource_id],
                                                user_ids=[user.id],
-                                               db_session=None)
+                                               db_session=db_session)
         perms = [p for p in perms if p.type == 'group']
         # include all perms if user is the owner of this resource
         groups_dict = dict([(g.id, g) for g in user.groups])
@@ -107,6 +107,10 @@ class ResourceService(ModelManager):
         users with any permission will be listed
         user_ids - limits the permissions to specific user ids,
         group_ids - limits the permissions to specific group ids,
+        limit_group_permissions - should be used if we do not want to have
+        user objects returned for group permissions, this might cause performance
+        issues for big groups
+        skip_group_perms - do not attach group permissions to the resultset
         """
         db_session = get_db_session(db_session, instance)
         users_perms = resource_permissions_for_users(instance, [perm_name],
