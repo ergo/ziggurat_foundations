@@ -2,10 +2,10 @@ import sqlalchemy as sa
 from datetime import datetime
 from sqlalchemy.ext.declarative import declared_attr
 from .base import BaseModel
-from .services.user import UserManager
+from .services.user import UserService
+from ..utils import get_db_session
 
-
-class UserMixin(UserManager, BaseModel):
+class UserMixin(BaseModel):
     """ Base mixin for user object representation.
         It supplies all the basic functionality from password hash generation
         and matching to utility methods used for querying database for users
@@ -15,6 +15,8 @@ class UserMixin(UserManager, BaseModel):
     __mapper_args__ = {}
     __table_args__ = {'mysql_engine': 'InnoDB',
                       'mysql_charset': 'utf8'}
+
+    _ziggurat_service = UserService
 
     @declared_attr
     def __tablename__(self):
@@ -127,3 +129,98 @@ class UserMixin(UserManager, BaseModel):
                                    passive_deletes=True,
                                    passive_updates=True,
                                    backref='owner')
+#
+    @property
+    def permissions(self):
+        db_session = get_db_session(None, self)
+        return UserService.permissions(self, db_session=db_session)
+
+    def resources_with_perms(self, perms, resource_ids=None,
+                             resource_types=None,
+                             db_session=None):
+        db_session = get_db_session(db_session, self)
+        return UserService.resources_with_perms(
+            self, perms=perms, resource_ids=resource_ids,
+            resource_types=resource_types, db_session=db_session)
+
+    def groups_with_resources(self):
+        return UserService.groups_with_resources(self)
+
+    def resources_with_possible_perms(self, resource_ids=None,
+                                      resource_types=None,
+                                      db_session=None):
+        db_session = get_db_session(db_session, self)
+        return UserService.resources_with_possible_perms(
+            self, resource_ids=resource_ids, resource_types=resource_ids,
+            db_session=db_session)
+
+
+    def gravatar_url(self, default='mm', **kwargs):
+        return UserService.gravatar_url(self, default, **kwargs)
+
+    def set_password(self, raw_password):
+        return UserService.set_password(self, raw_password=raw_password)
+
+    def check_password(self, raw_password):
+        return UserService.check_password(self, raw_password=raw_password)
+
+    @classmethod
+    def generate_random_pass(cls, chars=7):
+        return UserService.generate_random_pass(chars=chars)
+
+    def regenerate_security_code(self):
+        return UserService.regenerate_security_code(self)
+
+    @staticmethod
+    def generate_random_string(chars=7):
+        return UserService.generate_random_pass(chars=chars)
+
+    @classmethod
+    def by_id(cls, user_id, db_session=None):
+        db_session = get_db_session(db_session)
+        return UserService.by_id(user_id=user_id, db_session=db_session)
+
+    @classmethod
+    def by_user_name(cls, user_name, db_session=None):
+        db_session = get_db_session(db_session)
+        return UserService.by_user_name(user_name=user_name,
+                                        db_session=db_session)
+
+    @classmethod
+    def by_user_name_and_security_code(cls, user_name, security_code,
+                                       db_session=None):
+        db_session = get_db_session(db_session)
+        return UserService.by_user_name_and_security_code(
+            user_name=user_name, security_code=security_code,
+            db_session=db_session)
+
+    @classmethod
+    def by_user_names(cls, user_names, db_session=None):
+        db_session = get_db_session(db_session)
+        return UserService.by_user_names(user_names=user_names,
+                                         db_session=db_session)
+
+    @classmethod
+    def user_names_like(cls, user_name, db_session=None):
+        db_session = get_db_session(db_session)
+        return UserService.user_names_like(user_name=user_name,
+                                           db_session=db_session)
+
+    @classmethod
+    def by_email(cls, email, db_session=None):
+        db_session = get_db_session(db_session)
+        return UserService.by_email(email=email,
+                                    db_session=db_session)
+
+    @classmethod
+    def by_email_and_username(cls, email, user_name, db_session=None):
+        db_session = get_db_session(db_session)
+        return UserService.by_email_and_username(email=email,
+                                                 user_name=user_name,
+                                                 db_session=db_session)
+
+    @classmethod
+    def users_for_perms(cls, perm_names, db_session=None):
+        db_session = get_db_session(db_session)
+        return UserService.users_for_perms(perm_names=perm_names,
+                                           db_session=db_session)
