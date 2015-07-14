@@ -2,7 +2,7 @@ from . import ModelManager
 from ...utils import get_db_session
 
 
-class ExternalIdentityManager(ModelManager):
+class ExternalIdentityService(ModelManager):
     @classmethod
     def by_external_id_and_provider(cls, external_id, provider_name,
                                     db_session=None):
