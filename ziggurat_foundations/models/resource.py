@@ -1,11 +1,13 @@
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
 from .base import BaseModel
-from .services.resource import ResourceManager
+from .services.resource import ResourceService
+from ..utils import get_db_session
 
-
-class ResourceMixin(ResourceManager, BaseModel):
+class ResourceMixin(BaseModel):
     __possible_permissions__ = ()
+
+    _ziggurat_service = ResourceService
 
     @declared_attr
     def __tablename__(self):
@@ -96,3 +98,73 @@ class ResourceMixin(ResourceManager, BaseModel):
         """ validate if resouce can have specific permission """
         assert permission.perm_name in self.__possible_permissions__
         return permission
+
+    def perms_for_user(self, user, db_session=None):
+        db_session = get_db_session(db_session, self)
+        return ResourceService.perms_for_user(
+            self, user=user, db_session=db_session)
+
+    def direct_perms_for_user(self, user, db_session=None):
+        db_session = get_db_session(db_session, self)
+        return ResourceService.direct_perms_for_user(
+            self, user=user, db_session=db_session)
+
+    def group_perms_for_user(self, user, db_session=None):
+        db_session = get_db_session(db_session, self)
+        return ResourceService.group_perms_for_user(
+            self, user=user, db_session=db_session)
+
+    def users_for_perm(self, perm_name, user_ids=None, group_ids=None,
+                       limit_group_permissions=False, skip_group_perms=False,
+                       db_session=None):
+        db_session = get_db_session(db_session, self)
+        return ResourceService.users_for_perm(
+            self, perm_name, user_ids=user_ids, group_ids=group_ids,
+            limit_group_permissions=limit_group_permissions,
+            skip_group_perms=skip_group_perms, db_session=db_session)
+
+    @classmethod
+    def by_resource_id(cls, resource_id, db_session=None):
+        db_session = get_db_session(db_session)
+        return ResourceService.by_resource_id(resource_id=resource_id,
+                                              db_session=db_session)
+
+    @classmethod
+    def all(cls, db_session=None):
+        db_session = get_db_session(db_session)
+        return ResourceService.all(db_session=db_session)
+
+    @classmethod
+    def perm_by_group_and_perm_name(cls, res_id, group_id, perm_name,
+                                    db_session=None):
+        db_session = get_db_session(db_session)
+        return ResourceService.perm_by_group_and_perm_name(
+            resource_id=res_id, group_id=group_id, perm_name=perm_name,
+            db_session=db_session)
+
+    def groups_for_perm(self, perm_name, group_ids=None,
+                        limit_group_permissions=False,
+                        db_session=None):
+        db_session = get_db_session(db_session, self)
+        return ResourceService.groups_for_perm(
+            self, perm_name=perm_name, group_ids=group_ids,
+            limit_group_permissions=limit_group_permissions,
+            db_session=db_session)
+
+
+    @classmethod
+    def subtree_deeper(cls, object_id, limit_depth=1000000, flat=True,
+                       db_session=None):
+        db_session = get_db_session(db_session)
+        return ResourceService.subtree_deeper(
+            object_id=object_id, limit_depth=limit_depth, flat=flat,
+            db_session=db_session)
+
+    @classmethod
+    def path_upper(cls, object_id, limit_depth=1000000, flat=True,
+                   db_session=None):
+        db_session = get_db_session(db_session)
+        return ResourceService.path_upper(
+            object_id=object_id, limit_depth=limit_depth, flat=flat,
+            db_session=db_session)
+

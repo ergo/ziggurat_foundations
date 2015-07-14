@@ -7,30 +7,33 @@ from ...permissions import (ANY_PERMISSION,
                             resource_permissions_for_users)
 
 
-class ResourceManager(ModelManager):
-    def perms_for_user(self, user, db_session=None):
+class ResourceService(ModelManager):
+
+
+    @classmethod
+    def perms_for_user(cls, instance, user, db_session=None):
         """ returns all permissions that given user has for this resource
             from groups and directly set ones too"""
-        db_session = get_db_session(db_session, self)
+        db_session = get_db_session(db_session, instance)
         query = db_session.query(
-            self._ziggurat_models.GroupResourcePermission.group_id.label('owner_id'),
-            self._ziggurat_models.GroupResourcePermission.perm_name,
+            cls.models_proxy.GroupResourcePermission.group_id.label('owner_id'),
+            cls.models_proxy.GroupResourcePermission.perm_name,
             sa.literal('group').label('type'))
-        query = query.filter(self._ziggurat_models.GroupResourcePermission.group_id.in_(
+        query = query.filter(cls.models_proxy.GroupResourcePermission.group_id.in_(
             [gr.id for gr in user.groups]
         )
         )
-        query = query.filter(self._ziggurat_models.GroupResourcePermission.resource_id ==
-                             self.resource_id)
+        query = query.filter(cls.models_proxy.GroupResourcePermission.resource_id ==
+                             instance.resource_id)
 
         query2 = db_session.query(
-            self._ziggurat_models.UserResourcePermission.user_id.label('owner_id'),
-            self._ziggurat_models.UserResourcePermission.perm_name,
+            cls.models_proxy.UserResourcePermission.user_id.label('owner_id'),
+            cls.models_proxy.UserResourcePermission.perm_name,
             sa.literal('user').label('type'))
-        query2 = query2.filter(self._ziggurat_models.UserResourcePermission.user_id ==
+        query2 = query2.filter(cls.models_proxy.UserResourcePermission.user_id ==
                                user.id)
-        query2 = query2.filter(self._ziggurat_models.UserResourcePermission.resource_id ==
-                               self.resource_id)
+        query2 = query2.filter(cls.models_proxy.UserResourcePermission.resource_id ==
+                               instance.resource_id)
         query = query.union(query2)
 
         groups_dict = dict([(g.id, g) for g in user.groups])
@@ -39,61 +42,64 @@ class ResourceManager(ModelManager):
                                  row.type,
                                  groups_dict.get(row.owner_id) if
                                  row.type == 'group' else None,
-                                 self, False, True) for row in query]
+                                 instance, False, True) for row in query]
 
         # include all perms if user is the owner of this resource
-        if self.owner_user_id == user.id:
+        if instance.owner_user_id == user.id:
             perms.append(PermissionTuple(user, ALL_PERMISSIONS, 'user',
-                                         None, self, True, True))
+                                         None, instance, True, True))
         groups_dict = dict([(g.id, g) for g in user.groups])
-        if self.owner_group_id in groups_dict:
+        if instance.owner_group_id in groups_dict:
             perms.append(PermissionTuple(user, ALL_PERMISSIONS, 'group',
-                                         groups_dict.get(self.owner_group_id),
-                                         self, True, True))
+                                         groups_dict.get(instance.owner_group_id),
+                                         instance, True, True))
 
         return perms
 
-    def direct_perms_for_user(self, user, db_session=None):
+    @classmethod
+    def direct_perms_for_user(cls, instance, user, db_session=None):
         """ returns permissions that given user has for this resource
             without ones inherited from groups that user belongs to"""
-        db_session = get_db_session(db_session, self)
-        query = db_session.query(self._ziggurat_models.UserResourcePermission.user_id,
-                                 self._ziggurat_models.UserResourcePermission.perm_name)
-        query = query.filter(self._ziggurat_models.UserResourcePermission.user_id ==
+        db_session = get_db_session(db_session, instance)
+        query = db_session.query(cls.models_proxy.UserResourcePermission.user_id,
+                                 cls.models_proxy.UserResourcePermission.perm_name)
+        query = query.filter(cls.models_proxy.UserResourcePermission.user_id ==
                              user.id)
-        query = query.filter(self._ziggurat_models.UserResourcePermission.resource_id ==
-                             self.resource_id)
+        query = query.filter(cls.models_proxy.UserResourcePermission.resource_id ==
+                             instance.resource_id)
 
         perms = [PermissionTuple(user,
                                  row.perm_name,
                                  'user',
                                  None,
-                                 self, False, True) for row in query]
+                                 instance, False, True) for row in query]
 
         # include all perms if user is the owner of this resource
-        if self.owner_user_id == user.id:
+        if instance.owner_user_id == user.id:
             perms.append(PermissionTuple(user, ALL_PERMISSIONS, 'user',
-                                         None, self, True))
+                                         None, instance, True))
         return perms
 
-    def group_perms_for_user(self, user, db_session=None):
+    @classmethod
+    def group_perms_for_user(cls, instance, user, db_session=None):
         """ returns permissions that given user has for this resource
             that are inherited from groups """
-        db_session = get_db_session(db_session, self)
-        perms = resource_permissions_for_users(self, ANY_PERMISSION,
-                                               resource_ids=[self.resource_id],
+        db_session = get_db_session(db_session, instance)
+        perms = resource_permissions_for_users(instance, ANY_PERMISSION,
+                                               resource_ids=[instance.resource_id],
                                                user_ids=[user.id],
                                                db_session=None)
         perms = [p for p in perms if p.type == 'group']
         # include all perms if user is the owner of this resource
         groups_dict = dict([(g.id, g) for g in user.groups])
-        if self.owner_group_id in groups_dict:
+        if instance.owner_group_id in groups_dict:
             perms.append(PermissionTuple(user, ALL_PERMISSIONS, 'group',
-                                         groups_dict.get(self.owner_group_id),
-                                         self, True, True))
+                                         groups_dict.get(instance.owner_group_id),
+                                         instance, True, True))
         return perms
 
-    def users_for_perm(self, perm_name, user_ids=None, group_ids=None,
+    @classmethod
+    def users_for_perm(cls, instance, perm_name, user_ids=None, group_ids=None,
                        limit_group_permissions=False, skip_group_perms=False,
                        db_session=None):
         """ return PermissionTuples for users AND groups that have given
@@ -102,24 +108,24 @@ class ResourceManager(ModelManager):
         user_ids - limits the permissions to specific user ids,
         group_ids - limits the permissions to specific group ids,
         """
-        db_session = get_db_session(db_session, self)
-        users_perms = resource_permissions_for_users(self, [perm_name],
-                                                     [self.resource_id],
+        db_session = get_db_session(db_session, instance)
+        users_perms = resource_permissions_for_users(instance, [perm_name],
+                                                     [instance.resource_id],
                                                      user_ids=user_ids,
                                                      group_ids=group_ids,
                                                      limit_group_permissions=limit_group_permissions,
                                                      skip_group_perms=skip_group_perms,
                                                      db_session=db_session)
-        if self.owner_user_id:
+        if instance.owner_user_id:
             users_perms.append(
-                PermissionTuple(self.owner,
-                                ALL_PERMISSIONS, 'user', None, self, True,
+                PermissionTuple(instance.owner,
+                                ALL_PERMISSIONS, 'user', None, instance, True,
                                 True))
-        if self.owner_group_id and not skip_group_perms:
-            for user in self.owner_group.users:
+        if instance.owner_group_id and not skip_group_perms:
+            for user in instance.owner_group.users:
                 users_perms.append(
                     PermissionTuple(user, ALL_PERMISSIONS, 'group',
-                                    self.owner_group, self, True, True))
+                                    instance.owner_group, instance, True, True))
 
         return users_perms
 
@@ -127,30 +133,31 @@ class ResourceManager(ModelManager):
     def by_resource_id(cls, resource_id, db_session=None):
         """ fetch the resouce by id """
         db_session = get_db_session(db_session)
-        query = db_session.query(cls).filter(cls.resource_id ==
-                                             int(resource_id))
+        query = db_session.query(cls.model).filter(cls.model.resource_id ==
+                                                   int(resource_id))
         return query.first()
 
     @classmethod
     def all(cls, db_session=None):
         """ fetch all permissions"""
-        query = get_db_session(db_session).query(cls)
+        query = get_db_session(db_session).query(cls.model)
         return query
 
     @classmethod
-    def perm_by_group_and_perm_name(cls, res_id, group_id, perm_name,
+    def perm_by_group_and_perm_name(cls, resource_id, group_id, perm_name,
                                     db_session=None):
         """ fetch permissions by group and permission name"""
         db_session = get_db_session(db_session)
-        query = db_session.query(cls._ziggurat_models.GroupResourcePermission)
+        query = db_session.query(cls.models_proxy.GroupResourcePermission)
         query = query.filter(
-            cls._ziggurat_models.GroupResourcePermission.group_id == group_id)
+            cls.models_proxy.GroupResourcePermission.group_id == group_id)
         query = query.filter(
-            cls._ziggurat_models.GroupResourcePermission.perm_id == perm_name)
-        query = query.filter(cls._ziggurat_models.GroupResourcePermission.resource_id == res_id)
+            cls.models_proxy.GroupResourcePermission.perm_id == perm_name)
+        query = query.filter(cls.models_proxy.GroupResourcePermission.resource_id == resource_id)
         return query.first()
 
-    def groups_for_perm(self, perm_name, group_ids=None,
+    @classmethod
+    def groups_for_perm(cls, instance, perm_name, group_ids=None,
                         limit_group_permissions=False,
                         db_session=None):
         """ return PermissionTuples for groups that have given
@@ -159,18 +166,18 @@ class ResourceManager(ModelManager):
         user_ids - limits the permissions to specific user ids,
         group_ids - limits the permissions to specific group ids,
         """
-        db_session = get_db_session(db_session, self)
-        group_perms = resource_permissions_for_users(self, [perm_name],
-                                                     [self.resource_id],
+        db_session = get_db_session(db_session, instance)
+        group_perms = resource_permissions_for_users(instance, [perm_name],
+                                                     [instance.resource_id],
                                                      group_ids=group_ids,
                                                      limit_group_permissions=limit_group_permissions,
                                                      skip_user_perms=True,
                                                      db_session=db_session)
-        if self.owner_group_id:
-            for user in self.owner_group.users:
+        if instance.owner_group_id:
+            for user in instance.owner_group.users:
                 group_perms.append(
                     PermissionTuple(user, ALL_PERMISSIONS, 'group',
-                                    self.owner_group, self, True, True))
+                                    instance.owner_group, instance, True, True))
 
         return group_perms
 
