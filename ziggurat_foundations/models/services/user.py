@@ -110,7 +110,7 @@ class UserService(ModelManager):
                                       db_session=None):
         """ returns list of permissions and resources for this user,
             resource_ids restricts the search to specific resources"""
-        perms = resource_permissions_for_users(instance, ANY_PERMISSION,
+        perms = resource_permissions_for_users(cls.models_proxy, ANY_PERMISSION,
                                                resource_ids=resource_ids,
                                                user_ids=[instance.id],
                                                db_session=db_session)

@@ -85,7 +85,7 @@ class ResourceService(ModelManager):
         """ returns permissions that given user has for this resource
             that are inherited from groups """
         db_session = get_db_session(db_session, instance)
-        perms = resource_permissions_for_users(instance, ANY_PERMISSION,
+        perms = resource_permissions_for_users(cls.models_proxy, ANY_PERMISSION,
                                                resource_ids=[instance.resource_id],
                                                user_ids=[user.id],
                                                db_session=db_session)
@@ -113,7 +113,7 @@ class ResourceService(ModelManager):
         skip_group_perms - do not attach group permissions to the resultset
         """
         db_session = get_db_session(db_session, instance)
-        users_perms = resource_permissions_for_users(instance, [perm_name],
+        users_perms = resource_permissions_for_users(cls.models_proxy, [perm_name],
                                                      [instance.resource_id],
                                                      user_ids=user_ids,
                                                      group_ids=group_ids,
@@ -171,7 +171,7 @@ class ResourceService(ModelManager):
         group_ids - limits the permissions to specific group ids,
         """
         db_session = get_db_session(db_session, instance)
-        group_perms = resource_permissions_for_users(instance, [perm_name],
+        group_perms = resource_permissions_for_users(cls.models_proxy, [perm_name],
                                                      [instance.resource_id],
                                                      group_ids=group_ids,
                                                      limit_group_permissions=limit_group_permissions,

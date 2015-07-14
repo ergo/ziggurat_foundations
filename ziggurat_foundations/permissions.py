@@ -43,7 +43,7 @@ PermissionTuple = namedtuple('PermissionTuple',
                               'owner', 'allowed'])
 
 
-def resource_permissions_for_users(model, perm_names, resource_ids=None,
+def resource_permissions_for_users(models_proxy, perm_names, resource_ids=None,
                                    user_ids=None, group_ids=None,
                                    resource_types=None,
                                    limit_group_permissions=False,
@@ -60,60 +60,60 @@ def resource_permissions_for_users(model, perm_names, resource_ids=None,
     user objects returned for group permissions, this might cause performance
     issues for big groups
     """
-    db_session = get_db_session(db_session, model)
-    query = db_session.query(model._ziggurat_models.GroupResourcePermission.perm_name,
-                             model._ziggurat_models.User,
-                             model._ziggurat_models.Group,
+    db_session = get_db_session(db_session)
+    query = db_session.query(models_proxy.GroupResourcePermission.perm_name,
+                             models_proxy.User,
+                             models_proxy.Group,
                              sa.literal('group').label('type'),
-                             model._ziggurat_models.Resource
+                             models_proxy.Resource
     )
     if limit_group_permissions:
-        query = query.outerjoin(model._ziggurat_models.User, model._ziggurat_models.User.id == None)
+        query = query.outerjoin(models_proxy.User, models_proxy.User.id == None)
     else:
-        query = query.filter(model._ziggurat_models.User.id == model._ziggurat_models.UserGroup.user_id)
+        query = query.filter(models_proxy.User.id == models_proxy.UserGroup.user_id)
 
     query = query.filter(
-        model._ziggurat_models.Resource.resource_id == model._ziggurat_models.GroupResourcePermission.resource_id)
+        models_proxy.Resource.resource_id == models_proxy.GroupResourcePermission.resource_id)
     query = query.filter(
-        model._ziggurat_models.Group.id == model._ziggurat_models.GroupResourcePermission.group_id)
+        models_proxy.Group.id == models_proxy.GroupResourcePermission.group_id)
     if resource_ids:
         query = query.filter(
-            model._ziggurat_models.GroupResourcePermission.resource_id.in_(resource_ids))
+            models_proxy.GroupResourcePermission.resource_id.in_(resource_ids))
     if resource_types:
-        query = query.filter(model._ziggurat_models.Resource.resource_type.in_(resource_types))
-    query = query.filter(model._ziggurat_models.UserGroup.group_id ==
-                         model._ziggurat_models.GroupResourcePermission.group_id)
+        query = query.filter(models_proxy.Resource.resource_type.in_(resource_types))
+    query = query.filter(models_proxy.UserGroup.group_id ==
+                         models_proxy.GroupResourcePermission.group_id)
     if (perm_names not in ([ANY_PERMISSION], ANY_PERMISSION) and perm_names):
         query = query.filter(
-            model._ziggurat_models.GroupResourcePermission.perm_name.in_(perm_names))
+            models_proxy.GroupResourcePermission.perm_name.in_(perm_names))
     if group_ids:
         query = query.filter(
-            model._ziggurat_models.GroupResourcePermission.group_id.in_(group_ids))
+            models_proxy.GroupResourcePermission.group_id.in_(group_ids))
     if user_ids:
         query = query.filter(
-            model._ziggurat_models.UserGroup.user_id.in_(user_ids))
-    query2 = db_session.query(model._ziggurat_models.UserResourcePermission.perm_name,
-                              model._ziggurat_models.User,
-                              model._ziggurat_models.Group,
+            models_proxy.UserGroup.user_id.in_(user_ids))
+    query2 = db_session.query(models_proxy.UserResourcePermission.perm_name,
+                              models_proxy.User,
+                              models_proxy.Group,
                               sa.literal('user').label('type'),
-                              model._ziggurat_models.Resource)
+                              models_proxy.Resource)
     # group needs to be present to work for union, but never actually matched
-    query2 = query2.outerjoin(model._ziggurat_models.Group, model._ziggurat_models.Group.id == None)
-    query2 = query2.filter(model._ziggurat_models.User.id ==
-                           model._ziggurat_models.UserResourcePermission.user_id)
+    query2 = query2.outerjoin(models_proxy.Group, models_proxy.Group.id == None)
+    query2 = query2.filter(models_proxy.User.id ==
+                           models_proxy.UserResourcePermission.user_id)
     query2 = query2.filter(
-        model._ziggurat_models.Resource.resource_id == model._ziggurat_models.UserResourcePermission.resource_id)
+        models_proxy.Resource.resource_id == models_proxy.UserResourcePermission.resource_id)
     if (perm_names not in ([ANY_PERMISSION], ANY_PERMISSION) and perm_names):
         query2 = query2.filter(
-            model._ziggurat_models.UserResourcePermission.perm_name.in_(perm_names))
+            models_proxy.UserResourcePermission.perm_name.in_(perm_names))
     if resource_ids:
         query2 = query2.filter(
-            model._ziggurat_models.UserResourcePermission.resource_id.in_(resource_ids))
+            models_proxy.UserResourcePermission.resource_id.in_(resource_ids))
     if resource_types:
-        query2 = query2.filter(model._ziggurat_models.Resource.resource_type.in_(resource_types))
+        query2 = query2.filter(models_proxy.Resource.resource_type.in_(resource_types))
     if user_ids:
         query2 = query2.filter(
-            model._ziggurat_models.UserResourcePermission.user_id.in_(user_ids))
+            models_proxy.UserResourcePermission.user_id.in_(user_ids))
 
     if not skip_group_perms and not skip_user_perms:
         query = query.union(query2)
