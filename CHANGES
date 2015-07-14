@@ -1,7 +1,17 @@
 Changelog
 =========
 
-2015-05-XX
+2015-07-X
+* Release: 0.6.0
+* models are decoupled from services that interact with models
+  (all model methods now live in services)
+
+2015-06-15
+* Release: 0.5.6
+* user model gains security date column
+* minor bugfixes
+
+2015-06-07
 ----------
 * Release: 0.5.5
 * added persist(), delete(), base_query() methods to Base model
