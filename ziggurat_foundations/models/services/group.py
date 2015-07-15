@@ -8,8 +8,6 @@ from ...permissions import (ANY_PERMISSION,
 
 
 class GroupService(ModelManager):
-    model = None
-    model_proxy = None
 
     @classmethod
     def all(cls, db_session=None):
