@@ -464,7 +464,7 @@ class TestUser(BaseTestCase):
         self._addUser()
         queried_user = User.by_email(None, db_session=self.session)
 
-        assert None == queried_user
+        assert queried_user is None
 
     def test_by_email_wrong_email(self):
         self._addUser()
@@ -1245,13 +1245,13 @@ class TestGroupPermission(BaseTestCase):
         self._addGroup()
         queried = GroupPermission.by_group_and_perm(2,
                                                     u'manage_apps', db_session=self.session)
-        assert queried == None
+        assert queried is None
 
     def test_by_group_and_perm_wrong_perm(self):
         self._addGroup()
         queried = GroupPermission.by_group_and_perm(1, u'wrong_perm',
                                                     db_session=self.session)
-        assert queried == None
+        assert queried is None
 
     def test_resources_with_possible_perms(self):
         self.set_up_user_group_and_perms()
