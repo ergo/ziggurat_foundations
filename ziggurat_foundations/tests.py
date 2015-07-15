@@ -1133,11 +1133,6 @@ class UserTestCase(BaseTestCase):
         first = self.resource.users_for_perm(
             '__any_permission__', limit_group_permissions=True, db_session=self.session)
 
-        print self.session.query(GroupResourcePermission).all()
-        for r in first:
-            print r.group, '   ',r
-
-
         second = [
             PermissionTuple(None, u'group_perm', 'group', self.group, self.resource, False, True),
             PermissionTuple(None, u'group_perm2', 'group', self.group, self.resource, False, True),
