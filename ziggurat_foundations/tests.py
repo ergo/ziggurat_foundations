@@ -547,6 +547,9 @@ class UserTestCase(BaseTestCase):
         self.assertNotEqual(old_code, new_code)
         self.assertEqual(len(new_code), 64)
 
+
+class UserPermissionsTestCase(BaseTestCase):
+
     def test_user_permissions(self):
         created_user = self._addUser()
         permissions = created_user.permissions
@@ -1145,6 +1148,7 @@ class UserTestCase(BaseTestCase):
             return self.assertItemsEqual(first, second)
         return self.assertCountEqual(first, second)
 
+
 class GroupTestCase(BaseTestCase):
 
     def test_add_group(self):
@@ -1310,6 +1314,7 @@ class GroupPermissionTestCase(BaseTestCase):
         if six.PY2:
             return self.assertItemsEqual(first, second)
         return self.assertCountEqual(first, second)
+
 
 class UserPermissionTestCase(BaseTestCase):
 
