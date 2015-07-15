@@ -1,2 +1,4 @@
 class ModelManager(object):
-    pass
+    model = None
+    model_proxy = None
+
