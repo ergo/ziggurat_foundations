@@ -20,7 +20,7 @@ python:
   - "pypy3"
 
 script:
-  - python setup.py nosetests
+  - py.test ziggurat_foundations/tests.py
 
 after_success:
   - pip install coveralls

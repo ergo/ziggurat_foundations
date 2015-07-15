@@ -5,7 +5,6 @@ from .utils import get_db_session
 try:
     from pyramid.security import Allow, Deny, ALL_PERMISSIONS
 
-
 except ImportError as e:
     Allow = 'Allow'
     Deny = 'Deny'
