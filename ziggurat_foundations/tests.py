@@ -1280,7 +1280,7 @@ class TestGroupPermission(BaseTestCase):
         check_one_in_other(perms, second)
 
 
-class UserPermissionTestCase(BaseTestCase):
+class TestUserPermission(BaseTestCase):
 
     def test_repr(self):
         user_permission = UserPermission(user_id=1, perm_name=u'perm')
@@ -1309,7 +1309,7 @@ class UserPermissionTestCase(BaseTestCase):
         assert user_permission is None
 
 
-class UserGroupTestCase(BaseTestCase):
+class TestUserGroup(BaseTestCase):
 
     def test_repr(self):
         user_group = UserGroup(user_id=1, group_id=1)
@@ -1317,7 +1317,7 @@ class UserGroupTestCase(BaseTestCase):
         assert repr(user_group) == '<UserGroup: g:1, u:1>'
 
 
-class GroupResourcePermissionTestCase(BaseTestCase):
+class TestGroupResourcePermission(BaseTestCase):
 
     def test_repr(self):
         group_resource_perm = GroupResourcePermission(group_id=1,
@@ -1326,7 +1326,7 @@ class GroupResourcePermissionTestCase(BaseTestCase):
         assert repr(group_resource_perm) == '<GroupResourcePermission: g:1, perm, r:1>'
 
 
-class AddResourceTestCase(BaseTestCase):
+class TestAddResource(BaseTestCase):
 
     def test_pkey(self):
         resource = self._addResource(99, 'some random name')
@@ -1337,7 +1337,7 @@ class AddResourceTestCase(BaseTestCase):
         assert resource.resource_id == 1
 
 
-class ExternalIdentityTestCase(BaseTestCase):
+class TestExternalIdentity(BaseTestCase):
 
     def test_by_external_id_and_provider(self):
         user = self._addUser()
