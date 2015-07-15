@@ -391,7 +391,7 @@ class TestUser(BaseTestCase):
             db_session=self.session
         )
 
-        assert queried_user == None
+        assert queried_user is None
 
     def test_by_username_andsecurity_code_wrong_code(self):
         self._addUser()
@@ -401,7 +401,7 @@ class TestUser(BaseTestCase):
             db_session=self.session
         )
 
-        assert queried_user == None
+        assert queried_user is None
 
     def test_by_username_andsecurity_code_none(self):
         created_user = self._addUser()
@@ -412,7 +412,7 @@ class TestUser(BaseTestCase):
             db_session=self.session
         )
 
-        assert found == None
+        assert found is None
 
     def test_by_user_names(self):
         user1 = self._addUser(u'user1', u'email1')
