@@ -1284,7 +1284,7 @@ class UserPermissionTestCase(BaseTestCase):
 
     def test_repr(self):
         user_permission = UserPermission(user_id=1, perm_name=u'perm')
-        assert repr(user_permission), '<UserPermission: perm>'
+        assert repr(user_permission) == '<UserPermission: perm>'
 
     def test_by_user_and_perm(self):
         self._addUser()
