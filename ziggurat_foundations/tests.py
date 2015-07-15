@@ -544,7 +544,7 @@ class TestUserPermissionse(BaseTestCase):
         permissions = created_user.permissions
         expected = [PermissionTuple(created_user, u'alter_users', 'user', None, None, False, True),
                     PermissionTuple(created_user, u'root', 'user', None, None, False, True)]
-        assert permissions == expected
+        check_one_in_other(permissions, expected)
 
     def test_owned_permissions(self):
         created_user = self._addUser()
@@ -1142,7 +1142,7 @@ class TestGroup(BaseTestCase):
         queried_group = Group.by_group_name(u'group',
                                             db_session=self.session)
 
-        assert added_group, queried_group
+        assert added_group == queried_group
 
     def test_by_group_name_wrong_groupname(self):
         self._addGroup()
