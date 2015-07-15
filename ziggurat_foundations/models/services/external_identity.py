@@ -18,6 +18,6 @@ class ExternalIdentityService(ModelManager):
         db_session = get_db_session(db_session)
         query = db_session.query(cls.models_proxy.User)
         query = query.filter(cls.model.external_id == external_id)
-        query = query.filter(cls.model.models_proxy.User.user_name == cls.local_user_name)
+        query = query.filter(cls.model.models_proxy.User.user_name == cls.model.local_user_name)
         query = query.filter(cls.model.provider_name == provider_name)
         return query.first()
