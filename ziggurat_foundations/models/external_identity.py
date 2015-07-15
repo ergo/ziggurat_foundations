@@ -7,7 +7,7 @@ from ..utils import get_db_session
 
 class ExternalIdentityMixin(BaseModel):
 
-    ziggurat_service = ExternalIdentityService
+    _ziggurat_service = ExternalIdentityService
 
     @declared_attr
     def __tablename__(self):

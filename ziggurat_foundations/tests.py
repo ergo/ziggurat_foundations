@@ -18,6 +18,8 @@ from ziggurat_foundations.models import GroupResourcePermissionMixin
 from ziggurat_foundations.models import ResourceMixin, ExternalIdentityMixin
 from ziggurat_foundations import ziggurat_model_init
 from ziggurat_foundations.models import ALL_PERMISSIONS, Allow
+from ziggurat_foundations.models.services.external_identity import ExternalIdentityService
+
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 
@@ -1371,6 +1373,30 @@ class AddResourceTestCase(BaseTestCase):
     def test_nopkey(self):
         resource = self._addResource(None, 'some random name')
         self.assertEqual(resource.resource_id, 1)
+
+
+class ExternalIdentityTestCase(BaseTestCase):
+
+    def test_by_external_id_and_provider(self):
+        user = self._addUser()
+        identity = ExternalIdentity(external_user_name='foo', external_id='foo', provider_name='facebook')
+        user.external_identities.append(identity)
+        # self.session.flush()
+        found = ExternalIdentityService.by_external_id_and_provider(provider_name='facebook',
+                                                                    external_id='foo',
+                                                                    db_session=self.session)
+        assert identity == found
+
+    def test_user_by_external_id_and_provider(self):
+        user = self._addUser()
+        identity = ExternalIdentity(external_user_name='foo', external_id='foo', provider_name='facebook')
+        user.external_identities.append(identity)
+        # self.session.flush()
+        found = ExternalIdentityService.user_by_external_id_and_provider(provider_name='facebook',
+                                                                    external_id='foo',
+                                                                    db_session=self.session)
+        assert user == found
+
 
 if __name__ == '__main__':
     unittest.main()  # pragma: nocover
