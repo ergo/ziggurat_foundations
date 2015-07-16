@@ -8,6 +8,47 @@ Changelog
     from this point onwards you will be able to update schemas automaticly.
     Alembic 0.3.3+ (or current trunk for 2012-05-27) is required for this to function properly
 
+
+2015-07-X
+* Release: 0.6.0
+* models are decoupled from services that interact with models
+  (all model querying methods now live in services)
+* BACKWARDS INCOMPATIBLE CHANGES
+  * import related changes:
+      * ziggurat_foundations.models doesn't import all the models anymore
+        every model now lives in separate file,
+      * permission related functions now live in permissions module
+
+
+2015-06-15
+* Release: 0.5.6
+* user model gains security date column
+* minor bugfixes
+
+2015-06-07
+----------
+* Release: 0.5.5
+* added persist(), delete(), base_query() methods to Base model
+
+2015-04-27
+----------
+* Release: 0.5.3
+* resource.groups_for_perm() returns groups/permissions for single resource
+
+2015-04-24
+----------
+* Release: 0.5.2
+* resource.users_for_perm() now accepts `limit_group_permissions` param that
+  that makes it return just group with perm name instead tuples including every
+  user/perm pairs
+
+
+2015-04-23
+----------
+* Release: 0.5.1
+* Group.resources_with_possible_perms() added
+
+
 2015-04-17 Release: 0.5
 -----------------------
 * Now uses detailed permissions
