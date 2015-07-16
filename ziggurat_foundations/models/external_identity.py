@@ -47,6 +47,15 @@ class ExternalIdentityMixin(BaseModel):
     @classmethod
     def by_external_id_and_provider(cls, external_id, provider_name,
                                     db_session=None):
+        """
+        Backwards compatible alias to
+        :class:`ziggurat_foundations.models.services.external_identity.ExternalIdentityService.by_external_id_and_provider`
+
+        :param external_id:
+        :param provider_name:
+        :param db_session:
+        :return: ExternalIdentity
+        """
         db_session = get_db_session(db_session)
         return ExternalIdentityService.by_external_id_and_provider(
             external_id=external_id, provider_name=provider_name,
@@ -55,6 +64,15 @@ class ExternalIdentityMixin(BaseModel):
     @classmethod
     def user_by_external_id_and_provider(cls, external_id, provider_name,
                                          db_session=None):
+        """
+        Backwards compatible alias to
+        :class:`ziggurat_foundations.models.services.external_identity.ExternalIdentityService.user_by_external_id_and_provider`
+
+        :param external_id:
+        :param provider_name:
+        :param db_session:
+        :return: User
+        """
         db_session = get_db_session(db_session)
         return ExternalIdentityService.user_by_external_id_and_provider(
             external_id=external_id, provider_name=provider_name,

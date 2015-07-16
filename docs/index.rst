@@ -33,8 +33,10 @@ Contents:
    overview
    tutorial
    extensions/pyramid
-   api
+   api/index
+
    changelog
+
 
 .. note::
 
