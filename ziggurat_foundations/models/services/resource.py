@@ -1,5 +1,5 @@
 import sqlalchemy as sa
-from . import ModelManager
+from . import BaseService
 from ...utils import get_db_session
 from ...permissions import (ANY_PERMISSION,
                             ALL_PERMISSIONS,
@@ -7,7 +7,7 @@ from ...permissions import (ANY_PERMISSION,
                             resource_permissions_for_users)
 
 
-class ResourceService(ModelManager):
+class ResourceService(BaseService):
 
 
     @classmethod
@@ -141,11 +141,6 @@ class ResourceService(ModelManager):
                                                    int(resource_id))
         return query.first()
 
-    @classmethod
-    def all(cls, db_session=None):
-        """ fetch all permissions"""
-        query = get_db_session(db_session).query(cls.model)
-        return query
 
     @classmethod
     def perm_by_group_and_perm_name(cls, resource_id, group_id, perm_name,

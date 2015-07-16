@@ -3,7 +3,7 @@ import random
 import six
 import sqlalchemy as sa
 import string
-from . import ModelManager
+from . import BaseService
 from ...utils import get_db_session
 from ...permissions import (ANY_PERMISSION,
                             ALL_PERMISSIONS,
@@ -11,7 +11,7 @@ from ...permissions import (ANY_PERMISSION,
                             resource_permissions_for_users)
 
 
-class UserService(ModelManager):
+class UserService(BaseService):
 
     @classmethod
     def permissions(cls, instance, db_session=None):

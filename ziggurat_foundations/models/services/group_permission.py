@@ -1,8 +1,8 @@
-from . import ModelManager
+from . import BaseService
 from ...utils import get_db_session
 
 
-class GroupPermissionService(ModelManager):
+class GroupPermissionService(BaseService):
 
     @classmethod
     def by_group_and_perm(cls, group_id, perm_name, db_session=None):

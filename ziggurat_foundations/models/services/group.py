@@ -1,19 +1,13 @@
 import sqlalchemy as sa
 from paginate_sqlalchemy import SqlalchemyOrmPage
-from . import ModelManager
+from . import BaseService
 from ...utils import get_db_session
 from ...permissions import (ANY_PERMISSION,
                             ALL_PERMISSIONS,
                             PermissionTuple)
 
 
-class GroupService(ModelManager):
-
-    @classmethod
-    def all(cls, db_session=None):
-        """ return all groups"""
-        query = get_db_session(db_session).query(cls.model)
-        return query
+class GroupService(BaseService):
 
     @classmethod
     def by_group_name(cls, group_name, db_session=None):

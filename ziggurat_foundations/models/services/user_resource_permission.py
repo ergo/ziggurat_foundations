@@ -1,8 +1,8 @@
-from . import ModelManager
+from . import BaseService
 from ...utils import get_db_session
 
 
-class UserResourcePermissionService(ModelManager):
+class UserResourcePermissionService(BaseService):
     @classmethod
     def by_resource_user_and_perm(cls, user_id, perm_name, resource_id,
                                   db_session=None):
