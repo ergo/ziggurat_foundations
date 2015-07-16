@@ -1,6 +1,6 @@
 import sqlalchemy as sa
 from . import BaseService
-from ...utils import get_db_session
+from ..base import get_db_session
 from ...permissions import (ANY_PERMISSION,
                             ALL_PERMISSIONS,
                             PermissionTuple,

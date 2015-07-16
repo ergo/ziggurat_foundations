@@ -2,7 +2,7 @@ import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
 from .base import BaseModel
 from .services.resource import ResourceService
-from ..utils import get_db_session
+from .base import get_db_session
 
 class ResourceMixin(BaseModel):
     __possible_permissions__ = ()

@@ -1,5 +1,5 @@
 from . import BaseService
-from ...utils import get_db_session
+from ..base import get_db_session
 
 
 class GroupPermissionService(BaseService):

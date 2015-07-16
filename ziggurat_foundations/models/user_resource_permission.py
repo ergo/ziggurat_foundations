@@ -2,7 +2,7 @@ import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
 from .base import BaseModel
 from .services.user_resource_permission import UserResourcePermissionService
-from ..utils import get_db_session
+from .base import get_db_session
 
 class UserResourcePermissionMixin(BaseModel):
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}

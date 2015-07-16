@@ -1,6 +1,6 @@
 import sqlalchemy as sa
 from collections import namedtuple
-from .utils import get_db_session
+from .models.base import get_db_session
 
 try:
     from pyramid.security import Allow, Deny, ALL_PERMISSIONS
@@ -130,3 +130,23 @@ def resource_permissions_for_users(models_proxy, perm_names, resource_ids=None,
                              row.Group or None, row.Resource, False, True)
              for row in query]
     return users
+
+
+def permission_to_04_acls(permissions):
+    acls = []
+    for perm in permissions:
+        if perm.type == 'user':
+            acls.append((perm.user.id, perm.perm_name))
+        elif perm.type == 'group':
+            acls.append(('group:%s' % perm.group.id, perm.perm_name))
+    return acls
+
+
+def permission_to_pyramid_acls(permissions):
+    acls = []
+    for perm in permissions:
+        if perm.type == 'user':
+            acls.append((Allow, perm.user.id, perm.perm_name))
+        elif perm.type == 'group':
+            acls.append((Allow, 'group:%s' % perm.group.id, perm.perm_name))
+    return acls

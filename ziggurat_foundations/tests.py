@@ -6,18 +6,21 @@ import six
 import pytest
 
 from sqlalchemy.ext.declarative import declarative_base
-from ziggurat_foundations.models import PermissionTuple
-from ziggurat_foundations.models import UserMixin
-from ziggurat_foundations.models import GroupMixin
-from ziggurat_foundations.models import GroupPermissionMixin
-from ziggurat_foundations.models import UserPermissionMixin
-from ziggurat_foundations.models import UserGroupMixin
-from ziggurat_foundations.models import UserResourcePermissionMixin
-from ziggurat_foundations.models import GroupResourcePermissionMixin
-from ziggurat_foundations.models import ResourceMixin, ExternalIdentityMixin
-from ziggurat_foundations import ziggurat_model_init
-from ziggurat_foundations.models import ALL_PERMISSIONS, Allow
-from ziggurat_foundations.models.services.external_identity import ExternalIdentityService
+from . import ziggurat_model_init
+from .permissions import PermissionTuple, ALL_PERMISSIONS, Allow
+from .models.user import UserMixin
+from .models.group import GroupMixin
+from .models.group_permission import GroupPermissionMixin
+from .models.user_permission import UserPermissionMixin
+from .models.user_group import UserGroupMixin
+from .models.user_resource_permission import UserResourcePermissionMixin
+from .models.group_resource_permission import GroupResourcePermissionMixin
+from .models.resource import ResourceMixin
+from .models.external_identity import ExternalIdentityMixin
+from .models.services.external_identity import ExternalIdentityService
+from .models.base import get_db_session
+
+# from .utils import permission_to_04_acls, permission_to_pyramid_acls
 
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
@@ -294,7 +297,6 @@ class TestModel(BaseTestCase):
         assert created_user.user_name == u'new_name'
 
     def test_session(self):
-        from ziggurat_foundations.models import get_db_session
         from sqlalchemy.orm.session import Session
         session = get_db_session(None, self._addUser())
         assert isinstance(session, Session)
@@ -1359,6 +1361,11 @@ class TestExternalIdentity(BaseTestCase):
                                                                     db_session=self.session)
         assert user == found
 
+
+class TestUtils(BaseTestCase):
+    
+    def test_permission_to_04_acls(self):
+        pass
 
 if __name__ == '__main__':
     pass

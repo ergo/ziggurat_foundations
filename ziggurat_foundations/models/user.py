@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy.ext.declarative import declared_attr
 from .base import BaseModel
 from .services.user import UserService
-from ..utils import get_db_session
+from .base import get_db_session
 
 class UserMixin(BaseModel):
     """ Base mixin for user object representation.
