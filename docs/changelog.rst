@@ -10,17 +10,18 @@ Changelog
 
 
 2015-07-X
+----------
 * Release: 0.6.0
 * models are decoupled from services that interact with models
   (all model querying methods now live in services)
-* BACKWARDS INCOMPATIBLE CHANGES
-  * import related changes:
-      * ziggurat_foundations.models doesn't import all the models anymore
-        every model now lives in separate file,
-      * permission related functions now live in permissions module
+* **BACKWARDS INCOMPATIBLE CHANGES**
+    * import related changes:
+        * ziggurat_foundations.models doesn't import all the models anymore every model now lives in separate file
+        * permission related functions now live in permissions module
 
 
 2015-06-15
+----------
 * Release: 0.5.6
 * user model gains security date column
 * minor bugfixes

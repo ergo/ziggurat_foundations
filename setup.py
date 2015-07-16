@@ -1,8 +1,13 @@
 from setuptools import setup, find_packages
+from ziggurat_foundations import __version__
+
+version = '{}.{}.{}'.format(__version__['major'],
+                            __version__['minor'],
+                            __version__['patch'])
 
 setup(
     name='ziggurat_foundations',
-    version='0.5.6',
+    version=version,
     description=""" Set of classes that are reusable across various types of
     web apps, base user object, auth relationships + structured resource tree
     """,

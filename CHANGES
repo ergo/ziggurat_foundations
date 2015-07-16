@@ -8,7 +8,7 @@ Changelog
 * BACKWARDS INCOMPATIBLE CHANGES
   * import related changes:
       * ziggurat_foundations.models doesn't import all the models anymore
-        every model now lives in separate file,
+        every model now lives in separate file
       * permission related functions now live in permissions module
 
 
