@@ -80,6 +80,16 @@ class BaseModel(object):
         """
         return get_db_session(db_session).query(cls)
 
+    @classmethod
+    def all(cls, db_session=None):
+        """
+        Alias for base_query()
+        :param db_session:
+        :return:
+        """
+        db_session = get_db_session(db_session)
+        return cls.base_query(db_session)
+
 
 def get_db_session(session=None, obj=None):
     """ utility function that attempts to return sqlalchemy session that could

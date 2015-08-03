@@ -108,12 +108,6 @@ class GroupMixin(BaseModel):
 
 
     @classmethod
-    def all(cls, db_session=None):
-        db_session = get_db_session(db_session)
-        return cls.base_query(db_session)
-
-
-    @classmethod
     def by_group_name(cls, group_name, db_session=None):
         """ fetch group by name"""
         db_session = get_db_session(db_session)

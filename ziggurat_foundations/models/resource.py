@@ -129,10 +129,6 @@ class ResourceMixin(BaseModel):
         return ResourceService.by_resource_id(resource_id=resource_id,
                                               db_session=db_session)
 
-    @classmethod
-    def all(cls, db_session=None):
-        db_session = get_db_session(db_session)
-        return cls.base_query(db_session)
 
     @classmethod
     def perm_by_group_and_perm_name(cls, res_id, group_id, perm_name,
