@@ -4,5 +4,4 @@ class BaseService(object):
 
     @classmethod
     def all(cls, db_session=None):
-        """ return all groups"""
         return cls.model.base_query(db_session)
