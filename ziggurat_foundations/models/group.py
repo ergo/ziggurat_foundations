@@ -110,7 +110,7 @@ class GroupMixin(BaseModel):
     @classmethod
     def all(cls, db_session=None):
         db_session = get_db_session(db_session)
-        return GroupService.all(cls, db_session=db_session)
+        return cls.base_query(db_session)
 
 
     @classmethod
