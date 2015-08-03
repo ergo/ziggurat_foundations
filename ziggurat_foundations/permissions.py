@@ -69,17 +69,24 @@ def resource_permissions_for_users(models_proxy, perm_names, resource_ids=None,
                              sa.literal('group').label('type'),
                              models_proxy.Resource)
 
+    query = query.join(models_proxy.Group,
+                       models_proxy.Group.id ==
+                       models_proxy.GroupResourcePermission.group_id)
+    query = query.join(models_proxy.Resource,
+                       models_proxy.Resource.resource_id ==
+                       models_proxy.GroupResourcePermission.resource_id)
     if limit_group_permissions:
-        query = query.outerjoin(models_proxy.User, models_proxy.User.id == None)
+        query = query.outerjoin(models_proxy.User,
+                                models_proxy.User.id == None)
     else:
-        query = query.outerjoin(models_proxy.User, models_proxy.User.id == models_proxy.UserGroup.user_id)
-        query = query.filter(models_proxy.UserGroup.group_id ==
-                             models_proxy.GroupResourcePermission.group_id)
+        query = query.join(models_proxy.UserGroup,
+                                models_proxy.UserGroup.group_id ==
+                                models_proxy.GroupResourcePermission.group_id)
 
-    query = query.filter(
-        models_proxy.Resource.resource_id == models_proxy.GroupResourcePermission.resource_id)
-    query = query.filter(
-        models_proxy.Group.id == models_proxy.GroupResourcePermission.group_id)
+        query = query.outerjoin(models_proxy.User,
+                                models_proxy.User.id ==
+                                models_proxy.UserGroup.user_id)
+
     if resource_ids:
         query = query.filter(
             models_proxy.GroupResourcePermission.resource_id.in_(resource_ids))
@@ -103,12 +110,15 @@ def resource_permissions_for_users(models_proxy, perm_names, resource_ids=None,
                               models_proxy.Group,
                               sa.literal('user').label('type'),
                               models_proxy.Resource)
+    query2 = query2.join(models_proxy.User,
+                        models_proxy.User.id ==
+                        models_proxy.UserResourcePermission.user_id)
+    query2 = query2.join(models_proxy.Resource,
+                         models_proxy.Resource.resource_id ==
+                         models_proxy.UserResourcePermission.resource_id)
+
     # group needs to be present to work for union, but never actually matched
     query2 = query2.outerjoin(models_proxy.Group, models_proxy.Group.id == None)
-    query2 = query2.filter(models_proxy.User.id ==
-                           models_proxy.UserResourcePermission.user_id)
-    query2 = query2.filter(
-        models_proxy.Resource.resource_id == models_proxy.UserResourcePermission.resource_id)
     if (perm_names not in ([ANY_PERMISSION], ANY_PERMISSION) and perm_names):
         query2 = query2.filter(
             models_proxy.UserResourcePermission.perm_name.in_(perm_names))
