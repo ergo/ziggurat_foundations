@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2015-07-X
+2015-08-03
 * Release: 0.6.0
 * models are decoupled from services that interact with models
   (all model querying methods now live in services)
