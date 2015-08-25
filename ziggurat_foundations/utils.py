@@ -15,5 +15,3 @@ class PlaceholderPasswordChecker(PasswordChecker):
 
     def check(self, encoded, password):
         return False
-
-

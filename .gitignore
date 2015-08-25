@@ -7,6 +7,8 @@
 ^test\.py$
 ^docs/_build$
 ^dist$
+build/
+dist/
 ziggurat_foundations.egg-info
 venv*
 *.pyc

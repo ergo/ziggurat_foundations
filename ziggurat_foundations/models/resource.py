@@ -163,4 +163,3 @@ class ResourceMixin(BaseModel):
         return ResourceService.path_upper(
             object_id=object_id, limit_depth=limit_depth, flat=flat,
             db_session=db_session)
-
