@@ -5,8 +5,7 @@
 ^\.settings$
 ^alembic\.ini$
 ^test\.py$
-^docs/_build$
-^dist$
+docs/_build
 build/
 dist/
 ziggurat_foundations.egg-info

@@ -3,13 +3,13 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to ziggurat_foundations's documentation!
-================================================
+ziggurat_foundations
+====================
 
-.. image:: https://errormator.com/static/images/logos/pyramid_small.png
+.. image:: /_static/pyramid_small.png
    :alt: Pyramid Logo
   
-.. image:: https://errormator.com/static/images/logos/flask_small.png
+.. image:: /_static/flask_small.png
    :alt: Flask Logo
 
 Framework agnostic set of sqlalchemy classes that make building applications 
