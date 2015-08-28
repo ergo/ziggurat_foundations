@@ -114,7 +114,7 @@ How to use the mixins inside your application:
 
     # Base is sqlalchemy's Base = declarative_base() from your project
     class Group(GroupMixin, Base):
-    pass
+       pass
 
     class GroupPermission(GroupPermissionMixin, Base):
         pass
@@ -126,7 +126,7 @@ How to use the mixins inside your application:
         pass
 
     class Resource(ResourceMixin, Base):
-        ... your own properties....
+        # ... your own properties....
         pass
 
     class UserPermission(UserPermissionMixin, Base):
@@ -136,7 +136,7 @@ How to use the mixins inside your application:
         pass
 
     class User(UserMixin, Base):
-        ... your own properties....
+        # ... your own properties....
         pass
 
     class ExternalIdentity(ExternalIdentityMixin, Base):
