@@ -13,15 +13,25 @@ notifications:
     on_failure: always
 
 python:
-  - "2.7"
   - "3.3"
   - "3.4"
   - "pypy"
   - "pypy3"
 
+matrix:
+  include:
+    - python: "2.7"
+      env: RSTCHECK=1
+
+install:
+ - pip install flake8 rstcheck
+
 script:
   - python setup.py develop
   - py.test ziggurat_foundations/tests.py
+
+  # flake8 and rstcheck
+  - if [ -n "$RSTCHECK" ]; then ./test.sh; fi
 
 after_success:
   - pip install coveralls

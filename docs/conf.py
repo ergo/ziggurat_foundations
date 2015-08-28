@@ -11,8 +11,6 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys, os
-
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -25,7 +23,12 @@ import sys, os
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.coverage', 'sphinx.ext.ifconfig']
+extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.todo',
+    'sphinx.ext.coverage',
+    'sphinx.ext.ifconfig'
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -95,18 +98,23 @@ pygments_style = 'sphinx'
 
 
 # -- Options for HTML output ---------------------------------------------------
+import itcase_sphinx_theme
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+html_theme = 'itcase'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-#html_theme_options = {}
+html_theme_options = {
+    'github_button': True,
+    'github_user': 'Ergo',
+    'github_repo': 'ziggurat_foundations',
+}
 
 # Add any paths that contain custom themes here, relative to this directory.
-#html_theme_path = []
+html_theme_path = [itcase_sphinx_theme.get_html_themes_path()]
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".

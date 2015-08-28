@@ -14,17 +14,12 @@ def make_passwordmanager():
         fallbacks=(PlaceholderPasswordChecker(),)
     )
 
-# this maps models together during runtime so we can access them in methods:
-#
-# def foo(self):
-#     query(self, self.OtherModel)
-#
-
 
 def ziggurat_model_init(*k, **kw):
     """
-    This function handles attaching model to service if model has one specified as `_ziggurat_service`,
-    Also attached a proxy object holding all model definitions that services might use
+    This function handles attaching model to service if model has one specified
+    as `_ziggurat_service`, Also attached a proxy object holding all model
+    definitions that services might use
 
     :param k:
     :param kw:
