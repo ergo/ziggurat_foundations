@@ -50,13 +50,16 @@ application for example::
 
 Additional config options for extensions include:
 
-* ziggurat_foundations.sign_in.username_key = login *(name of POST key that will
+* **ziggurat_foundations.sign_in.username_key** = login *(name of POST key that will
   be used to supply user name )*
-* ziggurat_foundations.sign_in.password_key = password *(name of POST key that
+* **ziggurat_foundations.sign_in.password_key** = password *(name of POST key that
   will be used to supply user password)*
-* ziggurat_foundations.sign_in.came_from_key = came_from *(name of POST key that
+* **ziggurat_foundations.sign_in.came_from_key** = came_from *(name of POST key that
   will be used to provide additional value that can be used to redirect user back
   to area that required authentication/authorization)*
+* **ziggurat_foundations.session_provider_callable** = yourapp.model.meta:get_session_callable
+  (the extension will use a callable `get_session_callable`  that expects a single argument `request` and is
+  supposed to return SQLAlchemy - handy for people who do not rely on ScopedSession but bind session to request object)
 
 Configuring your application views
 -----------------------------------

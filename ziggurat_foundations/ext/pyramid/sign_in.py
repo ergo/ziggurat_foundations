@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 import pyramid.security
 import logging
+from ziggurat_foundations.models.base import get_db_session
 
 CONFIG_KEY = 'ziggurat_foundations'
 log = logging.getLogger(__name__)
@@ -40,6 +42,7 @@ def includeme(config):
     sign_out_path = settings.get('%s.sign_in.sign_out_pattern' % CONFIG_KEY,
                                  '/sign_out')
     user_model_location = settings.get('%s.model_locations.User' % CONFIG_KEY)
+    session_provider_callable = settings.get('%s.session_provider_callable' % CONFIG_KEY)
     signin_came_from_key = settings.get('%s.sign_in.came_from_key' %
                                         CONFIG_KEY, 'came_from')
     signin_username_key = settings.get('%s.sign_in.username_key' %
@@ -53,12 +56,22 @@ def includeme(config):
         ziggurat_foundations.user_model_location = youappname.models:User
         ''')
 
+    print(session_provider_callable)
+    if not session_provider_callable:
+        def session_provider_callable(request):
+            return get_db_session()
+    else:
+        parts = session_provider_callable.split(':')
+        _tmp = __import__(parts[0], globals(), locals(), [parts[1], ], 0)
+        session_provider_callable = getattr(_tmp, parts[1])
+
     parts = user_model_location.split(':')
     _tmp = __import__(parts[0], globals(), locals(), [parts[1], ], 0)
     UserModel = getattr(_tmp, parts[1])
 
     endpoint = ZigguratSignInProvider(settings=settings,
                                       UserModel=UserModel,
+                                      session_getter=session_provider_callable,
                                       signin_came_from_key=signin_came_from_key,
                                       signin_username_key=signin_username_key,
                                       signin_password_key=signin_password_key)
@@ -79,8 +92,11 @@ class ZigguratSignInProvider(object):
 
     def sign_in(self, request):
         came_from = request.params.get(self.signin_came_from_key, '/')
+        db_session = self.session_getter(request)
+
         user = self.UserModel.by_user_name(
-            request.params.get(self.signin_username_key))
+            request.params.get(self.signin_username_key),
+            db_session=db_session)
         if user is None:
             # if no result, test to see if email exists
             user = self.UserModel.by_email(
