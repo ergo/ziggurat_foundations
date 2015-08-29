@@ -56,7 +56,6 @@ def includeme(config):
         ziggurat_foundations.user_model_location = youappname.models:User
         ''')
 
-    print(session_provider_callable)
     if not session_provider_callable:
         def session_provider_callable(request):
             return get_db_session()
