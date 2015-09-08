@@ -57,9 +57,14 @@ Additional config options for extensions include:
 * **ziggurat_foundations.sign_in.came_from_key** = came_from *(name of POST key that
   will be used to provide additional value that can be used to redirect user back
   to area that required authentication/authorization)*
-* **ziggurat_foundations.session_provider_callable** = yourapp.model.meta:get_session_callable
+* **ziggurat_foundations.session_provider_callable** = yourapp.model:get_session_callable
   (the extension will use a callable `get_session_callable`  that expects a single argument `request` and is
   supposed to return SQLAlchemy - handy for people who do not rely on ScopedSession but bind session to request object)
+
+Then for example inside your models (if you are using a db_session inse the request), you can do::
+
+    def get_session_callable(request):
+        return request.db_session
 
 Configuring your application views
 -----------------------------------
