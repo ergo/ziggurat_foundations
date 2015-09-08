@@ -61,7 +61,7 @@ Additional config options for extensions include:
   (the extension will use a callable `get_session_callable`  that expects a single argument `request` and is
   supposed to return SQLAlchemy - handy for people who do not rely on ScopedSession but bind session to request object)
 
-Then for example inside your models (if you are using a db_session inse the request), you can do:
+Then for example inside your models (if you are using a db_session inse the request), you can do::
 
     def get_session_callable(request):
         return request.db_session
