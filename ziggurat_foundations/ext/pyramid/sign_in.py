@@ -99,7 +99,8 @@ class ZigguratSignInProvider(object):
         if user is None:
             # if no result, test to see if email exists
             user = self.UserModel.by_email(
-                request.params.get(self.signin_username_key))
+                request.params.get(self.signin_username_key),
+                db_session=db_session)
         if user:
             password = request.params.get(self.signin_password_key)
             if user.check_password(password):
