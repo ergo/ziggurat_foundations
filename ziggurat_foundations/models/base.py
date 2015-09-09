@@ -56,7 +56,7 @@ class BaseModel(object):
         persist the object in the storage on commit
 
         :param flush: boolean - if true then the session will be flushed
-        instantly
+            instantly
         :param db_session:
         :return:
         """
