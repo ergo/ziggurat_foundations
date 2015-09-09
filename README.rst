@@ -34,8 +34,7 @@ Zigg supplies extendable, robust and well tested models that include:
 
 - User - base for user accounts
 - Group - container for many users
-- Resource - Arbitrary database entity that can represent various object hierarchies - blogs, 
-forums, cms documents, pages etc.
+- Resource - Arbitrary database entity that can represent various object hierarchies - blogs, forums, cms documents, pages etc.
 
 Zigg provides standard functions that let you:
 

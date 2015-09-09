@@ -12,14 +12,19 @@ ziggurat_foundations
 .. image:: /_static/flask_small.png
    :alt: Flask Logo
 
-Framework agnostic set of sqlalchemy classes that make building applications 
-that require permissions (ACL's) an easy task.
+Top layer to make authentication, resource ownership and permission management
+fast, simple and easy. In summary, Ziggurat Foundations (Zigg), is a set of framework agnostic 
+set of sqlalchemy classes, but most of the documentation refers to using it
+within pyramid. It is the perfect solution for handling complex login and user
+management systems, from e-commerce systems, to private intranets or large (and small)
+CMS systems.  It can easily be extended to support any additional features you may need (explained
+further in the documentation)
 
 .. hint::
 
-    By default ziggurat_foundations expose some properties and functionalities that 
-    will make building apps with pyramid/flask/(your-favourite-framework-here) 
-    an easier task.   
+    Ziggurat Foundations aims to simplify user, permission and resource management,
+    allowing you to concentrate on application development, as opposed to developing
+    your own user and permission based models/code.   
 
 **DOCUMENTATION**: http://readthedocs.org/docs/ziggurat-foundations/en/latest/
 
@@ -30,10 +35,11 @@ Contents:
 .. toctree::
    :maxdepth: 2
    
-   overview
-   tutorial
+   configuration
+   usage_examples
    extensions/pyramid
    api/index
+
 
    changelog
 
