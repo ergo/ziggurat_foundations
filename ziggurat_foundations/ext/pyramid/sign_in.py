@@ -3,6 +3,7 @@ from __future__ import print_function
 import pyramid.security
 import logging
 from ziggurat_foundations.models.base import get_db_session
+from pyramid.security import unauthenticated_userid
 
 CONFIG_KEY = 'ziggurat_foundations'
 log = logging.getLogger(__name__)
@@ -64,9 +65,11 @@ def includeme(config):
         _tmp = __import__(parts[0], globals(), locals(), [parts[1], ], 0)
         session_provider_callable = getattr(_tmp, parts[1])
 
+
     parts = user_model_location.split(':')
     _tmp = __import__(parts[0], globals(), locals(), [parts[1], ], 0)
     UserModel = getattr(_tmp, parts[1])
+
 
     endpoint = ZigguratSignInProvider(settings=settings,
                                       UserModel=UserModel,
