@@ -67,7 +67,7 @@ def includeme(config):
         parts = session_provider_callable.split(':')
         _tmp = __import__(parts[0], globals(), locals(), [parts[1], ], 0)
         session_provider_callable = getattr(_tmp, parts[1])
-        test_session = "session exists"
+        test_session_callable = "session exists"
 
 
     parts = user_model_location.split(':')
@@ -78,7 +78,7 @@ def includeme(config):
     # do request.user
     def get_user(request):
         userid = unauthenticated_userid(request)
-        if test_session == None:
+        if test_session_callable == None:
             # set db_session to none to pass to the UserModel.by_id
             db_session = None
         else:
