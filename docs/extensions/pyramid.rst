@@ -2,7 +2,7 @@
 Pyramid Extensions
 ==================
 
-ziggurat_foundations can provide some shortcuts that help build pyramid
+Ziggurat Foundations can provide some shortcuts that help build pyramid
 applications faster.
 
 -------------------------------
@@ -19,14 +19,17 @@ Extension setup
 ---------------
 
 To enable this extension it needs to be included via pyramid include mechanism
-for example:
+for example in your ini configuration file:
 
 .. code-block:: ini
 
     pyramid.includes = pyramid_tm
                        ziggurat_foundations.ext.pyramid.sign_in
 
-or using configurator directives ::
+or by adding the following to your applications __init__.py configurator file
+(both methods yeild the same result):
+
+.. code-block:: python
 
     config.include('ziggurat_foundations.ext.pyramid.sign_in')
 
@@ -154,3 +157,43 @@ ZigguratSignOut context view example
     def sign_out(request):
         return HTTPFound(location=request.route_url('/'),
                          headers=request.context.headers)
+
+-----------------------------------------------
+Modify request to return Ziggurat User() Object
+-----------------------------------------------
+
+We provide a method to modify the pyramid request and return a Ziggurat User()
+object (if present) in each request. E.g. once a user is logged in, their details
+are held in the request (in the form of a userid), if we enable the below function,
+we can easily access all user attributes in our code, to include this feature, 
+enable it by adding the following to your applications __init__.py configurator file:
+
+.. code-block:: python
+
+    config.include('ziggurat_foundations.ext.pyramid.get_user')
+
+Or in your ini configuration file (both methods yeild the same result):
+
+.. code-block:: ini
+
+    pyramid.includes = pyramid_tm
+                       ziggurat_foundations.ext.pyramid.get_user
+
+Then inside each pyramid view that contains a request, you can access user information
+with:
+
+.. code-block:: python
+
+    @view_config(route_name='edit_note', renderer='templates/edit_note.jinja2', 
+        permission='edit')
+    def edit_note(request): 
+        user = request.user
+        # user is now a Ziggurat/SQLAlchemy object that you can access
+        # Example for user Joe
+        print (user.user_name)
+        "Joe"
+
+.. tip::
+
+    The code behind this is as described in the offical pyramid cookbook, but 
+    we include in within Ziggurat to make your life easier.
