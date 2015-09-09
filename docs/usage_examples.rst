@@ -33,11 +33,11 @@ Ziggurat provides standard functions that let you:
 
 
 Functions that we supply between those patterns allow for complex and flexible permission
-systems that are easly understandable for non-technical users, whilst at the same time 
+systems that are easly understandable for non-technical users, whilst at the same time
 providing a stable base for systems coping with millions of users.
 
 Due to the fact that we supply all models as mixins, the base of Ziggurat can be very easily
-extended, for example if you wanted to extend the user model to include a column such as 
+extended, for example if you wanted to extend the user model to include a column such as
 "customer_number", you can simply do the following:
 
 .. code-block:: python
@@ -89,19 +89,19 @@ only be accessible to users (and groups) who had the permission "delete":
 
 .. code-block:: python
 
-    @view_config(route_name='delete_users', 
-        renderer='templates/delete_users.jinja2', 
+    @view_config(route_name='delete_users',
+        renderer='templates/delete_users.jinja2',
         permission='delete')
     def delete_users(request):
         # do some stuff
-        return 
+        return
 
 So we can do this one of two ways, we can either add the "delete" permission
 directly to the user, or assign the delete permission to a group (that the user
 is part of)
 
 .. code-block:: python
-    
+
     # assign the permission to a group
     new_group_permission = GroupPermission(perm_name="delete", group_id=group.id)
     DBSession.add(new_group_permission)
@@ -121,7 +121,7 @@ Now we move on to resource permissions, adding a resource that the user will own
 Here we show a demo fo how to add a custom "read" permission for user "foo" for a given resource:
 
 .. code-block:: python
-    
+
     permission = UserResourcePermission()
     permission.perm_name = "read"
     permission.user_name = "foo"
@@ -130,7 +130,7 @@ Here we show a demo fo how to add a custom "read" permission for user "foo" for 
 We can now fetch all resources with permissions "edit", "vote":
 
 .. code-block:: python
-    
+
     # assuming "user" is a User() object as described as above
     user.resources_with_perms(["edit","vote"])
 
@@ -153,15 +153,15 @@ Checking "resourceless" permission like "user can access admin panel:
 
     request.user.permissions
     for perm_user, perm_name in request.user.permissions:
-        print perm_user, perm_name
+        print(perm_user, perm_name)
 
 Checking all permissions user has to specific resource:
 
-.. code-block:: python
+.. no-code-block:: python
 
     resource = Resource.by_resource_id(rid)
     for perm in resource.perms_for_user(user):
-        print perm.user, perm.perm_name, perm.type, perm.group, perm.resource, perm.owner
+        print(perm.user, perm.perm_name, perm.type, perm.group, perm.resource, perm.owner)
         .... list acls ....
 
 
