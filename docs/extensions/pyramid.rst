@@ -44,24 +44,36 @@ this will register 2 routes:
     * ziggurat_foundations.sign_in.sign_out_pattern = /custom_pattern
 
 It is also required to tell the extension where User model is located in your
-application for example::
+application for example in your ini file:
+
+.. code-block:: ini
 
     ziggurat_foundations.model_locations.User = yourapp.models:User
 
-Additional config options for extensions include:
+Additional config options for extensions include in your ini file:
 
-* **ziggurat_foundations.sign_in.username_key** = login *(name of POST key that will
-  be used to supply user name )*
-* **ziggurat_foundations.sign_in.password_key** = password *(name of POST key that
-  will be used to supply user password)*
-* **ziggurat_foundations.sign_in.came_from_key** = came_from *(name of POST key that
-  will be used to provide additional value that can be used to redirect user back
-  to area that required authentication/authorization)*
-* **ziggurat_foundations.session_provider_callable** = yourapp.model:get_session_callable
-  (the extension will use a callable `get_session_callable`  that expects a single argument `request` and is
-  supposed to return SQLAlchemy - handy for people who do not rely on ScopedSession but bind session to request object)
+.. code-block:: ini
 
-Then for example inside your models (if you are using a db_session inse the request), you can do::
+    # name of POST key that will be used to supply user name
+    ziggurat_foundations.sign_in.username_key = username
+
+    # name of POST key that will be used to supply user password
+    ziggurat_foundations.sign_in.password_key = password
+
+    # name of POST key that will be used to provide additional value that can be used to redirect 
+    # user back to area that required authentication/authorization)
+    ziggurat_foundations.sign_in.came_from_key = came_from
+
+    # If you do not use a global DBSession variable, and you bundle DBSession insde the request
+    # you need to tell Zigg its naming convention, do this by providing a function that
+    # returns the correct request variable
+    ziggurat_foundations.session_provider_callable = yourapp.model:get_session_callable
+
+
+Then for example inside your models (if you are using a db_session inse the request),
+you can do:
+
+.. code-block:: python
 
     def get_session_callable(request):
         return request.db_session

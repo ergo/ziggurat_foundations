@@ -1,38 +1,53 @@
 |Build Status| |Coverage Status| |PyPI|
 
-ziggurat_foundations
+Ziggurat Foundations
 =====================
-
-Framework agnostic set of sqlalchemy
-classes that make building applications that require permissions an easy task.
-
-ziggurat_foundations supplies a set of *sqlalchemy mixins* that can be used to extend
-models in your application built in pyramid/flask/(your-favourite-framework-here).
-The aim of this project is to supply set of generic models that cover the most
-common needs in application development when it comes to authorization - using
-flat and tree like data structures.
-
 
 **DOCUMENTATION**: http://readthedocs.org/docs/ziggurat-foundations/en/latest/
 
 **BUG TRACKER**: https://github.com/ergo/ziggurat_foundations
 
-So far following basics are supplied:
+Top layer to make authentication, resource ownership and permission management
+fast, simple and easy. In summary, Ziggurat Foundations (Zigg), is a set of framework agnostic 
+set of sqlalchemy classes, but most of the documentation refers to using it
+within pyramid. It is the perfect solution for handling complex login and user
+management systems, from e-commerce systems, to private intranets or large (and small)
+CMS systems.  It can easily be extended to support any additional features you may need (explained
+further in the documentation)
+
+Zigg has been used (at scale) for very large implementations (millions of real users) and
+has been extended for custom applications such as geo-location applications that rely
+on pin-point accuracy for a users location. Zigg has been designed to work for
+high end environments, where the user(s) are at the main focus of the application 
+(for example Zigg could become the backbone for a social media style application).
+
+Zigg supplies a set of *sqlalchemy mixins* that can be used to extend
+models in your application built in pyramid/flask/(your-favourite-framework-here).
+The aim of this project is to supply set of generic models that cover the most
+common needs in application development when it comes to authorization - using
+flat and tree like data structures. We provide nearly every feature you will need in
+a standard application, but provide the mixins as we understand that every implementation
+has its own use case and in doing so, extending the base models is very easy.
+
+
+Zigg supplies extendable, robust and well tested models that include:
 
 - User - base for user accounts
 - Group - container for many users
 - Resource - Arbitrary database entity that can represent various object hierarchies - blogs, forums, cms documents, pages etc.
 
-Currently following information and data manipulation is supported:
+Zigg provides standard functions that let you:
 
-- assigning arbitrary permissions directly to users (ie. access admin panel)
-- assigning users to groups
-- assigning arbitrary permissions to groups
-- assigning arbitrary resource permissions to users (ie. only user X can access  private forum)
-- assigning arbitrary resource permissions to groups
+- Assign arbitrary permissions directly to users (ie. access certain views)
+- Assign users to groups
+- Assign arbitrary permissions to groups
+- Assign arbitrary resource permissions to users (ie. only user X can access private forum)
+- Assign arbitrary resource permissions to groups
+- Assign a user o an external identity (such as facebook/twitter)
+- Manage the sign in/sign out process
+- Change users password and generate security codes
+- Example root factory for assiginging permissions per request
 
-The sqlalchemy mixins make all the interactions easy to use in your application
-and save development time.
 
 Ziggurat Foundations is BSD Licensed
 
