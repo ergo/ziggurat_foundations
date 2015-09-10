@@ -22,11 +22,6 @@ Services
 .. autoclass:: ziggurat_foundations.models.services.user_permission.UserPermissionService
     :members:
    
-   
-.. autoclass:: ziggurat_foundations.models.services.user_group.UserGroupService
-    :members:
-
-
 
 .. autoclass:: ziggurat_foundations.models.services.user_resource_permission.UserResourcePermissionService
     :members:

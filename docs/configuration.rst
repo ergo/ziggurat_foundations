@@ -319,7 +319,7 @@ context objects that extension can return upon form submission/ logout request:
 
 
 Required imports for all 3 views
-................................
+-----------------------------------
 
 ::
 
@@ -330,7 +330,7 @@ Required imports for all 3 views
 
 
 ZigguratSignInSuccess context view example
-..........................................
+------------------------------------------
 
 ::
 
@@ -347,7 +347,7 @@ ZigguratSignInSuccess context view example
                              headers=request.context.headers)
 
 ZigguratSignInBadAuth context view example
-..........................................
+------------------------------------------
 
 ::
 
@@ -359,7 +359,7 @@ ZigguratSignInBadAuth context view example
 
 
 ZigguratSignOut context view example
-..........................................
+------------------------------------
 
 ::
 
