@@ -440,5 +440,3 @@ we include in within Ziggurat to make your life easier):
     Congratulations, your application is now fully configured to use Ziggurat
     Foundations, take a look at the Usage Examples for a guide (next page) on how to start taking
     advantage of all the features that Ziggurat has to offer!
-
-
