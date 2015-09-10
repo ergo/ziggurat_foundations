@@ -1,6 +1,6 @@
-=================
+========
 Services
-=================
+========
 
 
 .. autoclass:: ziggurat_foundations.models.services.user.UserService

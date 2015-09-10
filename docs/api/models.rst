@@ -1,6 +1,6 @@
-=================
+======
 Models
-=================
+======
 
   
 .. autoclass:: ziggurat_foundations.models.user.UserMixin
