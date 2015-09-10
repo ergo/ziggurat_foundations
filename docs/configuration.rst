@@ -1,6 +1,6 @@
-================================
+################################
 Configuring Ziggurat Foundations
-================================
+################################
 
 Installation and initial migration
 ==================================
@@ -117,7 +117,7 @@ file to extend your existing models (if following the basic pyramid tutorial):
 
     # Base is sqlalchemy's Base = declarative_base() from your project
     class Group(GroupMixin, Base):
-       pass
+        pass
 
     class GroupPermission(GroupPermissionMixin, Base):
         pass
@@ -155,11 +155,6 @@ file to extend your existing models (if following the basic pyramid tutorial):
     cryptacular compatible password manager to ziggurat_model_init, it will be used
     instead of creating default one.
 
-
-
-
-
-
 Configure Ziggurat with Pyramid Framework
 =========================================
 
@@ -167,8 +162,8 @@ Examples of permission system building
 ---------------------------------------
 
 Root context factories for pyramid provide customizable permissions for specific views
-inside your appplication. It is a good idea to keep the root factory inside your models 
-file (if following the basic pyramid tutorial). This root factory can be used to allow 
+inside your appplication. It is a good idea to keep the root factory inside your models
+file (if following the basic pyramid tutorial). This root factory can be used to allow
 only authenticated users to view:
 
 .. code-block:: python
@@ -215,7 +210,6 @@ resources, you can configure your view to expect "edit" or "delete" permissions:
 Ziggurat Foundations can provide some shortcuts that help build pyramid
 applications faster.
 
--------------------------------
 Automatic user sign in/sign out
 -------------------------------
 
@@ -226,7 +220,7 @@ This extension registers basic views for user authentication using
 against supplied password.
 
 Extension setup
----------------
+~~~~~~~~~~~~~~~
 
 To enable this extension it needs to be included via pyramid include mechanism
 for example in your ini configuration file:
@@ -273,7 +267,7 @@ Additional config options for extensions include in your ini file:
     # name of POST key that will be used to supply user password
     ziggurat_foundations.sign_in.password_key = password
 
-    # name of POST key that will be used to provide additional value that can be used to redirect 
+    # name of POST key that will be used to provide additional value that can be used to redirect
     # user back to area that required authentication/authorization)
     ziggurat_foundations.sign_in.came_from_key = came_from
 
@@ -292,7 +286,7 @@ you can do:
         return request.db_session
 
 Configuring your application views
------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 First you need to make a form used for user authentication and send info to one
 of views registered by extension:
@@ -319,7 +313,7 @@ context objects that extension can return upon form submission/ logout request:
 
 
 Required imports for all 3 views
-................................
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ::
 
@@ -330,7 +324,7 @@ Required imports for all 3 views
 
 
 ZigguratSignInSuccess context view example
-..........................................
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ::
 
@@ -347,7 +341,7 @@ ZigguratSignInSuccess context view example
                              headers=request.context.headers)
 
 ZigguratSignInBadAuth context view example
-..........................................
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ::
 
@@ -359,7 +353,7 @@ ZigguratSignInBadAuth context view example
 
 
 ZigguratSignOut context view example
-..........................................
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ::
 
@@ -369,20 +363,19 @@ ZigguratSignOut context view example
                          headers=request.context.headers)
 
 
---------------------------------------------
-Configuring groupfinder and session factorys
---------------------------------------------
+Cofiguring groupfinder and session factorys
+-------------------------------------------
 
-Now, next up we need to import and include the groupfinder and session factory 
-inside ourapplication configuration, first off in our ini file we need to add 
+Now, next up we need to import and include the groupfinder and session factory
+inside ourapplication configuration, first off in our ini file we need to add
 a session secret:
 
 .. code-block:: ini
-    
+
     # replace "sUpersecret" with  a secure secret
     session.secret = sUpersecret
 
-Now, we need to configure the groupdiner and authn and authz policy inside the 
+Now, we need to configure the groupdiner and authn and authz policy inside the
 main __init__.py file of our application, like so:
 
 .. code-block:: python
@@ -396,25 +389,24 @@ main __init__.py file of our application, like so:
             settings['session.secret'],
         )
 
-        authn_policy = AuthTktAuthenticationPolicy(settings['session.secret'], 
+        authn_policy = AuthTktAuthenticationPolicy(settings['session.secret'],
             callback=groupfinder)
         authz_policy = ACLAuthorizationPolicy()
 
-        # Tie it all together 
+        # Tie it all together
         config = Configurator(settings=settings,
                   root_factory='intranet.models.RootFactory',
                               authentication_policy=authn_policy,
                               authorization_policy=authz_policy)
 
 
------------------------------------------------
 Modify request to return Ziggurat User() Object
 -----------------------------------------------
 
 We provide a method to modify the pyramid request and return a Ziggurat User()
 object (if present) in each request. E.g. once a user is logged in, their details
 are held in the request (in the form of a userid), if we enable the below function,
-we can easily access all user attributes in our code, to include this feature, 
+we can easily access all user attributes in our code, to include this feature,
 enable it by adding the following to your applications __init__.py configurator file:
 
 .. code-block:: python
@@ -429,14 +421,14 @@ Or in your ini configuration file (both methods yeild the same result):
                        ziggurat_foundations.ext.pyramid.get_user
 
 Then inside each pyramid view that contains a request, you can access user information
-with (the code behind this is as described in the offical pyramid cookbook, but 
+with (the code behind this is as described in the offical pyramid cookbook, but
 we include in within Ziggurat to make your life easier):
 
 .. code-block:: python
 
-    @view_config(route_name='edit_note', renderer='templates/edit_note.jinja2', 
+    @view_config(route_name='edit_note', renderer='templates/edit_note.jinja2',
         permission='edit')
-    def edit_note(request): 
+    def edit_note(request):
         user = request.user
         # user is now a Ziggurat/SQLAlchemy object that you can access
         # Example for user Joe
@@ -445,8 +437,6 @@ we include in within Ziggurat to make your life easier):
 
 .. tip::
 
-    Congratulations, your application is now fully configured to use Ziggurat 
-    Foundations, take a look at the Usage Examples for a guide (next page) on how to start taking 
+    Congratulations, your application is now fully configured to use Ziggurat
+    Foundations, take a look at the Usage Examples for a guide (next page) on how to start taking
     advantage of all the features that Ziggurat has to offer!
-
-
