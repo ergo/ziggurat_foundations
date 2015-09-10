@@ -103,7 +103,7 @@ is part of)
 .. code-block:: python
     
     # assign the permission to a group
-    new_group_permission = GroupPermission(perm_name="delete", group_id=group.id)
+    new_group_permission = GroupPermission(perm_name="delete", group_id=new_group.id)
     DBSession.add(new_group_permission)
     # or assign the permssion directly to a user
     new_user_permission = UserPermission(perm_name="delete", user_id=new_user.id)
