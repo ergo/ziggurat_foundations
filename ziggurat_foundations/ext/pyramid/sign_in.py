@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
 import pyramid.security
 import logging
 from ziggurat_foundations.models.base import get_db_session

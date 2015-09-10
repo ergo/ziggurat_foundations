@@ -1,4 +1,3 @@
-from __future__ import print_function
 import pyramid.security
 import logging
 from ziggurat_foundations.models.base import get_db_session
@@ -30,7 +29,6 @@ def includeme(config):
         session_provider_callable = getattr(_tmp, parts[1])
         test_session_callable = "session exists"
 
-
     parts = user_model_location.split(':')
     _tmp = __import__(parts[0], globals(), locals(), [parts[1], ], 0)
     UserModel = getattr(_tmp, parts[1])
@@ -47,7 +45,6 @@ def includeme(config):
             db_session = session_provider_callable(request)
         if userid is not None:
             return UserModel.by_id(userid, db_session=db_session)
-
 
     # add in request.user function
     config.set_request_property(get_user, 'user', reify=True)

@@ -37,7 +37,6 @@ Contents:
    
    configuration
    usage_examples
-   extensions/pyramid
    api/index
 
 
