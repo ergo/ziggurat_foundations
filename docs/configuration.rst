@@ -91,8 +91,8 @@ Implementing ziggurat_foundations within your application
 We need to *include ALL mixins inside our application*
 and map classes together so internal methods can function properly.
 
-How to use the mixins inside your application, put the follwing code inside your models
-file to extend your existing models (if following the basic pyramid tutorial):
+In order to use the mixins inside your application, you need to include the follwing code 
+inside your models file, to extend your existing models (if following the basic pyramid tutorial):
 
 .. code-block:: python
 
@@ -250,58 +250,66 @@ this will register 2 routes:
     * ziggurat_foundations.sign_in.sign_in_pattern = /custom_pattern
     * ziggurat_foundations.sign_in.sign_out_pattern = /custom_pattern
 
-It is also required to tell the extension where User model is located in your
-application for example in your ini file:
+In order to use this extension we need to tell the Ziggurat where User model 
+is located in your application for example in your ini file:
 
 .. code-block:: ini
 
     ziggurat_foundations.model_locations.User = yourapp.models:User
 
-Additional config options for extensions include in your ini file:
+Additional config options for extensions to include in your ini configuration file:
 
 .. code-block:: ini
 
-    # name of POST key that will be used to supply user name
+    # name of the POST key that will be used to supply user name
     ziggurat_foundations.sign_in.username_key = username
 
-    # name of POST key that will be used to supply user password
+    # name of the POST key that will be used to supply user password
     ziggurat_foundations.sign_in.password_key = password
 
-    # name of POST key that will be used to provide additional value that can be used to redirect
+    # name of the POST key that will be used to provide additional value that can be used to redirect
     # user back to area that required authentication/authorization)
     ziggurat_foundations.sign_in.came_from_key = came_from
 
     # If you do not use a global DBSession variable, and you bundle DBSession insde the request
-    # you need to tell Zigg its naming convention, do this by providing a function that
+    # you need to tell Ziggurat its naming convention, do this by providing a function that
     # returns the correct request variable
     ziggurat_foundations.session_provider_callable = yourapp.model:get_session_callable
 
 
-Then for example inside your models (if you are using a db_session inse the request),
-you can do:
+If you are using a db_session inside the request, you need to provide a basic function
+to tell Ziggurat where DBSession is inside the request, you can add the following to your 
+models file (yourapp.model):
 
 .. code-block:: python
 
     def get_session_callable(request):
+        # if DBSession is located at "request.db_session"
         return request.db_session
+        # or if DBSession was located at "request.db"
+        # return request.db
 
 Configuring your application views
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-First you need to make a form used for user authentication and send info to one
-of views registered by extension:
+Here would be a working form/template used for user authentication and to send 
+info to one of the new views registered by extension (sign_in), you can put
+this code inside any template, as the action is posted directly to pre-registered
+Ziggurat views/contexts:
 
 .. code-block:: html+jinja
-
+    
     <form action="{{request.route_url('ziggurat.routes.sign_in')}}" method="post">
+        <!-- "came_from", "password" and "login" can all be overwritten -->
         <input type="hidden" value="OPTIONAL" name="came_from" id="came_from">
-        <input type="text" value="" name="login">
+        <!-- in the example above we changed the value of "login" to "username" -->
+        <input type="text" value="" name="login" <!-- change to name="username" if required --> >
         <input type="password" value="" name="password">
         <input type="submit" value="Sign In" name="submit" id="submit">
     </form>
 
 In next step it is required to register 3 views that will listen for specific
-context objects that extension can return upon form submission/ logout request:
+context objects that the extension can return upon form sign_in/sign_out requests:
 
 * **ZigguratSignInSuccess** - user and password were matched
     * contains headers that set cookie to persist user identity,
@@ -315,7 +323,10 @@ context objects that extension can return upon form submission/ logout request:
 Required imports for all 3 views
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-::
+So inside the file you will be using for your Ziggurat views, we need to perform 
+some base imports:
+
+.. code-block:: python
 
     from pyramid.security import NO_PERMISSION_REQUIRED
     from ziggurat_foundations.ext.pyramid.sign_in import ZigguratSignInSuccess
@@ -326,10 +337,13 @@ Required imports for all 3 views
 ZigguratSignInSuccess context view example
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-::
+Now we can provide a fuction, based off of the ZigguratSignInSuccess context
+
+.. code-block:: python
 
     @view_config(context=ZigguratSignInSuccess, permission=NO_PERMISSION_REQUIRED)
     def sign_in(request):
+        # get the user
         user = request.context.user
         # actions performed on sucessful logon, flash message/new csrf token
         # user status validation etc.
@@ -343,19 +357,29 @@ ZigguratSignInSuccess context view example
 ZigguratSignInBadAuth context view example
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-::
+The view below would deal with handling a failed login
+
+.. code-block:: python
 
     @view_config(context=ZigguratSignInBadAuth, permission=NO_PERMISSION_REQUIRED)
     def bad_auth(request):
-        # action like a warning flash message on bad logon
+        # The user is here if they have failed login, this example
+        # would return the user back to "/" (site root)
         return HTTPFound(location=request.route_url('/'),
                          headers=request.context.headers)
+        # This view would return the user back to a custom view
+        return HTTPFound(location=request.route_url('declined_view'),
+                     headers=request.context.headers)
 
 
 ZigguratSignOut context view example
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-::
+This is a basic view that performs X task once the user has navigated to
+"/sign_out" (if using the default location provided by Ziggurat), like the view
+above it can be overwritten/modified to do what ever else you would like.
+
+.. code-block:: python
 
     @view_config(context=ZigguratSignOut, permission=NO_PERMISSION_REQUIRED)
     def sign_out(request):
@@ -366,9 +390,9 @@ ZigguratSignOut context view example
 Cofiguring groupfinder and session factorys
 -------------------------------------------
 
-Now, next up we need to import and include the groupfinder and session factory
-inside ourapplication configuration, first off in our ini file we need to add
-a session secret:
+Now before we can actually use the login system, we need to import and include 
+the groupfinder and session factory inside our application configuration, first 
+off in our ini file we need to add a session secret:
 
 .. code-block:: ini
 
