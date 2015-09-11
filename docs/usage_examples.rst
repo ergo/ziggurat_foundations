@@ -46,6 +46,7 @@ extended, for example if you wanted to extend the user model to include a column
         customer_number = Column(Integer)
 
 .. warning::
+
    Be cautious about creating your database models directly without the use of alembic.
    we provide alembic migrations for all models supplied (and will continue to do so for future
    releases). This ensures a smooth and documented upgrade of the database design, that can be
