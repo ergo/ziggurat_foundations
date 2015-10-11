@@ -28,7 +28,7 @@ setup(
     install_requires=[
         "sqlalchemy",
         "passlib>=1.6.1",
-        "bcrypt"
+        "bcrypt",
         "paginate",
         "paginate_sqlalchemy",
         "alembic",
