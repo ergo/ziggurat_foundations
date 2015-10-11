@@ -1,6 +1,15 @@
 Changelog
 =========
 
+2015-10-XX
+* Release: 0.6.2
+* replace cryptacular with passlib
+
+
+2015-09-19
+* Release: 0.6.1
+* some fixes for ext.pyramid not-working completly with service related changes
+
 2015-08-03
 * Release: 0.6.0
 * models are decoupled from services that interact with models

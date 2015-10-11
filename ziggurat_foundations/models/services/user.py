@@ -125,7 +125,6 @@ class UserService(BaseService):
 
         return perms
 
-
     @classmethod
     def gravatar_url(cls, instance, default='mm', **kwargs):
         """ returns user gravatar url """
@@ -141,15 +140,13 @@ class UserService(BaseService):
     @classmethod
     def set_password(cls, instance, raw_password):
         """ sets new password """
-        instance.user_password = instance.passwordmanager.encode(raw_password)
+        instance.user_password = instance.passwordmanager.encrypt(raw_password)
         cls.regenerate_security_code(instance)
 
     @classmethod
     def check_password(cls, instance, raw_password):
         """ checks string with users password hash"""
-        return instance.passwordmanager.check(instance.user_password,
-                                              raw_password,
-                                              setter=instance.set_password)
+        return instance.passwordmanager.verify(raw_password, instance.user_password)
 
     @classmethod
     def generate_random_pass(cls, chars=7):

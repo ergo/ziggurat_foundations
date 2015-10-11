@@ -129,7 +129,7 @@ class UserMixin(BaseModel):
                                    passive_deletes=True,
                                    passive_updates=True,
                                    backref='owner')
-#
+
     @property
     def permissions(self):
         db_session = get_db_session(None, self)
@@ -154,7 +154,6 @@ class UserMixin(BaseModel):
             self, resource_ids=resource_ids, resource_types=resource_ids,
             db_session=db_session)
 
-
     def gravatar_url(self, default='mm', **kwargs):
         return UserService.gravatar_url(self, default, **kwargs)
 
@@ -163,6 +162,10 @@ class UserMixin(BaseModel):
 
     def check_password(self, raw_password):
         return UserService.check_password(self, raw_password=raw_password)
+
+    @classmethod
+    def migrate_password(self, raw_password):
+        pass
 
     @classmethod
     def generate_random_pass(cls, chars=7):

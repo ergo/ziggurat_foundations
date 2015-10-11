@@ -6,13 +6,15 @@ class ModelProxy(object):
 
 
 def make_passwordmanager():
-    from cryptacular.bcrypt import BCRYPTPasswordManager
-    from cryptacular.core import DelegatingPasswordManager
-    from ziggurat_foundations.utils import PlaceholderPasswordChecker
-    return DelegatingPasswordManager(
-        preferred=BCRYPTPasswordManager(),
-        fallbacks=(PlaceholderPasswordChecker(),)
+    from passlib.context import CryptContext
+    pwd_context = CryptContext(
+        # replace this list with the hash(es) you wish to support.
+        # this example sets pbkdf2_sha256 as the default,
+        # with support for legacy des_crypt hashes.
+        schemes=["bcrypt"],
+        default="bcrypt"
     )
+    return pwd_context
 
 
 def ziggurat_model_init(*k, **kw):
