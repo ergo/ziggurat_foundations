@@ -21,7 +21,13 @@ python:
 matrix:
   include:
     - python: "2.7"
-      env: RSTCHECK=1 PASSLIB_BUILTIN_BCRYPT="enabled"
+      env: RSTCHECK=1
+
+    - python: "pypy"
+      env: PASSLIB_BUILTIN_BCRYPT="enabled"
+
+    - python: "pypy3"
+      env: PASSLIB_BUILTIN_BCRYPT="enabled"
 
 install:
  - pip install flake8 rstcheck
