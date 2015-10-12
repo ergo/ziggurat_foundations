@@ -15,6 +15,7 @@ notifications:
 python:
   - "3.3"
   - "3.4"
+  - "3.5"
 
 matrix:
   include:
@@ -22,16 +23,18 @@ matrix:
       env: RSTCHECK=1
 
     - python: "pypy"
-      env: PASSLIB_BUILTIN_BCRYPT="enabled"
+      env: BCRYPT="enabled"
 
     - python: "pypy3"
-      env: PASSLIB_BUILTIN_BCRYPT="enabled"
+      env: BCRYPT="enabled"
 
 install:
  - pip install flake8 rstcheck
 
 script:
   - python setup.py develop
+  - if [ -n "$BCRYPT" ]; then pip uninstall bcrypt -y; fi
+  - if [ -n "$BCRYPT" ]; then pip install py-bcrypt; fi
   - py.test ziggurat_foundations/tests.py
 
   # flake8 and rstcheck
