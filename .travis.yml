@@ -42,7 +42,7 @@ install:
 
 script:
   - python setup.py develop
-  - if [ -n "$BCRYPT" ]; then pip install bcrypt -y; fi
+  - if [ -n "$BCRYPT" ]; then pip install bcrypt; fi
   - if [ -n "$PYBCRYPT" ]; then pip install py-bcrypt; fi
   - py.test ziggurat_foundations/tests.py
 
