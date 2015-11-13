@@ -12,11 +12,6 @@ notifications:
     on_success: change
     on_failure: always
 
-python:
-  - "3.3"
-  - "3.4"
-  - "3.5"
-
 matrix:
   include:
     - python: "2.7"
