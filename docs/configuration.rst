@@ -11,13 +11,21 @@ Install the package:
 
     $ pip install ziggurat_foundations
 
-Now it's time to initialize your model structure with alembic.
-
-You will first need to install alembic version **0.3.4** or above:
+You will also need to install one of supported bcrypt backends
+like `bcrypt` or `py-bcrypt` (this is default solution ziggurat_foundations
+expects).
 
 .. code-block:: bash
 
-    $ pip install alembic>=0.3.4
+    $ pip install bcrypt
+
+Now it's time to initialize your model structure with alembic.
+
+You will first need to install alembic:
+
+.. code-block:: bash
+
+    $ pip install alembic>=0.7.0
 
 After you obtain recent alembic you can now run your migrations against
 database of your choice.
