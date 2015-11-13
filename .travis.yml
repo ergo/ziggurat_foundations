@@ -20,7 +20,16 @@ python:
 matrix:
   include:
     - python: "2.7"
-      env: RSTCHECK=1
+      env: RSTCHECK=1 BCRYPT="enabled"
+
+    - python: "3.3"
+      env: BCRYPT="enabled"
+
+    - python: "3.4"
+      env: BCRYPT="enabled"
+
+    - python: "3.5"
+      env: BCRYPT="enabled"
 
     - python: "pypy"
       env: BCRYPT="enabled"
