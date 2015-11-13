@@ -7,6 +7,8 @@ from .base import get_db_session
 
 class ExternalIdentityMixin(BaseModel):
 
+    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
+
     _ziggurat_service = ExternalIdentityService
 
     @declared_attr
