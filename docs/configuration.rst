@@ -270,7 +270,7 @@ Additional config options for extensions to include in your ini configuration fi
 .. code-block:: ini
 
     # name of the POST key that will be used to supply user name
-    ziggurat_foundations.sign_in.username_key = username
+    ziggurat_foundations.sign_in.username_key = login
 
     # name of the POST key that will be used to supply user password
     ziggurat_foundations.sign_in.password_key = password
