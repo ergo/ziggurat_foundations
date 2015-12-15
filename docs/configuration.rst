@@ -176,14 +176,25 @@ only authenticated users to view:
 
 .. code-block:: python
 
+    from ziggurat_foundations.permissions import permission_to_pyramid_acls
+
     class RootFactory(object):
         def __init__(self, request):
             self.__acl__ = [(Allow, Authenticated, u'view'), ]
             # general page factory - append custom non resource permissions
             # request.user object from cookbook recipie
             if request.user:
-                for perm in request.user.permissions:
-                    self.__acl__.append((Allow, perm.user.user_name, perm.perm_name,))
+                # for most trivial implementation
+
+                # for perm in request.user.permissions:
+                #     self.__acl__.append((Allow, perm.user.id, perm.perm_name,))
+
+                # or alternatively a better way that handles both user
+                # and group inherited permissions via `permission_to_pyramid_acls`
+
+                for outcome, perm_user, perm_name in permission_to_pyramid_acls(
+                        request.user.permissions):
+                    self.__acl__.append((outcome, perm_user, perm_name))
 
 This example covers the case where every view is secured with a default "view" permission,
 and some pages require other permissions like "view_admin_panel", "create_objects" etc.
@@ -197,6 +208,8 @@ This example shows how to protect and authorize users to perform actions on
 resources, you can configure your view to expect "edit" or "delete" permissions:
 
 .. code-block:: python
+
+    from ziggurat_foundations.permissions import permission_to_pyramid_acls
 
     class ResourceFactory(object):
         def __init__(self, request):
@@ -212,8 +225,10 @@ resources, you can configure your view to expect "edit" or "delete" permissions:
                 # append basic resource acl that gives all permissions to owner
                 self.__acl__ = self.resource.__acl__
                 # append permissions that current user may have for this context resource
-                for perm in self.resource.perms_for_user(request.user):
-                    self.__acl__.append((Allow, perm.user.user_name, perm.perm_name,))
+                permissions = self.resource.perms_for_user(request.user):
+                for outcome, perm_user, perm_name in permission_to_pyramid_acls(
+                        permissions):
+                    self.__acl__.append((outcome, perm_user, perm_name,))
 
 Ziggurat Foundations can provide some shortcuts that help build pyramid
 applications faster.
