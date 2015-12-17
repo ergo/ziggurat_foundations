@@ -442,7 +442,7 @@ main __init__.py file of our application, like so:
 
         # Tie it all together
         config = Configurator(settings=settings,
-                  root_factory='intranet.models.RootFactory',
+                  root_factory='yourapp.models.RootFactory',
                               authentication_policy=authn_policy,
                               authorization_policy=authz_policy)
 
