@@ -153,6 +153,25 @@ inside your models file, to extend your existing models (if following the basic 
     class ExternalIdentity(ExternalIdentityMixin, Base):
         pass
 
+    # you can define multiple resource derived models to build a complex
+    # application like CMS, forum or other permission based solution
+    class ResourceDerivedModel(Resource):
+        """
+        Resource of `entry` type
+        """
+
+        __tablename__ = 'entries'
+        __mapper_args__ = {'polymorphic_identity': 'entry'}
+
+        resource_id = sa.Column(sa.Integer(),
+                                sa.ForeignKey('resources.resource_id',
+                                              onupdate='CASCADE',
+                                              ondelete='CASCADE', ),
+                                primary_key=True, )
+
+        some_property = sa.Column(sa.UnicodeText())
+
+
     ziggurat_model_init(User, Group, UserGroup, GroupPermission, UserPermission,
                    UserResourcePermission, GroupResourcePermission, Resource,
                    ExternalIdentity, passwordmanager=None)
@@ -160,7 +179,7 @@ inside your models file, to extend your existing models (if following the basic 
 .. hint::
 
     Because some systems can't utilize bcypt password manager you can pass your own
-    cryptacular compatible password manager to ziggurat_model_init, it will be used
+    passlib compatible password manager to ziggurat_model_init, it will be used
     instead of creating default one.
 
 Configure Ziggurat with Pyramid Framework
@@ -232,6 +251,11 @@ resources, you can configure your view to expect "edit" or "delete" permissions:
 
 Ziggurat Foundations can provide some shortcuts that help build pyramid
 applications faster.
+
+.. hint::
+
+    This approach will also work properly for all models inheriting
+    from `Resource` class.
 
 Automatic user sign in/sign out
 -------------------------------
