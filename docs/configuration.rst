@@ -155,7 +155,8 @@ inside your models file, to extend your existing models (if following the basic 
 
     # you can define multiple resource derived models to build a complex
     # application like CMS, forum or other permission based solution
-    class ResourceDerivedModel(Resource):
+
+    class Entry(Resource):
         """
         Resource of `entry` type
         """
@@ -168,7 +169,7 @@ inside your models file, to extend your existing models (if following the basic 
                                               onupdate='CASCADE',
                                               ondelete='CASCADE', ),
                                 primary_key=True, )
-
+        # ... your own properties....
         some_property = sa.Column(sa.UnicodeText())
 
 
