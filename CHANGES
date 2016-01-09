@@ -1,7 +1,12 @@
 Changelog
 =========
 
-2015-10-XX
+2016-01-XX
+* Release: 0.6.3
+* extended functionality of `populate_obj` function of Base class
+* minor bugfix for mysql
+
+2015-11-13
 * Release: 0.6.2
 * replace cryptacular with passlib
 

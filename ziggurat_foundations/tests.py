@@ -257,6 +257,13 @@ class BaseTestCase():
         self.group2 = group2
 
 
+class DummyUserObj(object):
+
+    def __init__(self):
+        self.user_name = u'new_name'
+        self.user_password = u'foo'
+        self.email = u'change@email.com'
+
 class TestModel(BaseTestCase):
 
     def test_get_keys(self):
@@ -292,9 +299,73 @@ class TestModel(BaseTestCase):
 
     def test_populate_obj_appstruct(self):
         created_user = self._addUser()
-        app_struct = {'user_name': u'new_name'}
+        # reset password
+        created_user.user_password = None
+        app_struct = {'user_name': u'new_name',
+                      'user_password': u'foo',
+                      'email': u'change@email.com'}
         created_user.populate_obj(app_struct)
-        assert created_user.user_name == u'new_name'
+        assert created_user.user_name == app_struct['user_name']
+        assert created_user.user_password == app_struct['user_password']
+        assert created_user.email == app_struct['email']
+
+    def test_populate_obj_appstruct_exclude(self):
+        created_user = self._addUser()
+        # reset password
+        created_user.user_password = None
+        app_struct = {'user_name': u'new_name',
+                      'user_password': u'foo',
+                      'email': u'change@email.com'}
+        created_user.populate_obj(app_struct,
+                                  exclude_keys=['user_password'])
+        assert created_user.user_name == app_struct['user_name']
+        assert created_user.user_password == None
+        assert created_user.email == app_struct['email']
+
+    def test_populate_obj_appstruct_include(self):
+        created_user = self._addUser()
+        # reset password
+        created_user.user_password = None
+        app_struct = {'user_name': u'new_name',
+                      'user_password': u'foo',
+                      'email': u'change@email.com'}
+        created_user.populate_obj(app_struct,
+                                  include_keys=['user_password'])
+        assert created_user.user_name != app_struct['user_name']
+        assert created_user.user_password == app_struct['user_password']
+        assert created_user.email != app_struct['email']
+
+    def test_populate_obj_obj(self):
+        created_user = self._addUser()
+        # reset password
+        created_user.user_password = None
+        test_obj = DummyUserObj()
+        created_user.populate_obj_from_obj(test_obj)
+        assert created_user.user_name == test_obj.user_name
+        assert created_user.user_password == test_obj.user_password
+        assert created_user.email == test_obj.email
+
+    def test_populate_obj_obj_exclude(self):
+        created_user = self._addUser()
+        # reset password
+        created_user.user_password = None
+        test_obj = DummyUserObj()
+        created_user.populate_obj_from_obj(test_obj,
+                                  exclude_keys=['user_password'])
+        assert created_user.user_name == test_obj.user_name
+        assert created_user.user_password == None
+        assert created_user.email == test_obj.email
+
+    def test_populate_obj_obj_include(self):
+        created_user = self._addUser()
+        # reset password
+        created_user.user_password = None
+        test_obj = DummyUserObj()
+        created_user.populate_obj_from_obj(test_obj,
+                                  include_keys=['user_password'])
+        assert created_user.user_name != test_obj.user_name
+        assert created_user.user_password == test_obj.user_password
+        assert created_user.email != test_obj.email
 
     def test_session(self):
         from sqlalchemy.orm.session import Session

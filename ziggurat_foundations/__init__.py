@@ -1,4 +1,4 @@
-__version__ = {'major': 0, 'minor': 6, 'patch': 2}
+__version__ = {'major': 0, 'minor': 6, 'patch': 3}
 
 
 class ModelProxy(object):
