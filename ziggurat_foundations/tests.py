@@ -394,6 +394,11 @@ class TestModel(BaseTestCase):
         user.delete()
         assert User.by_id(uid, db_session=self.session) is None
 
+class TestMigrations(BaseTestCase):
+
+    def test_migrations(self):
+        pass
+
 
 class TestUser(BaseTestCase):
 
