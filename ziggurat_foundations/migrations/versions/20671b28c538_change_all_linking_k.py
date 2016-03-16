@@ -78,18 +78,32 @@ def upgrade():
     op.execute('''update resources set owner_group_id = 
                 (select id from users where users.user_name=owner_group_name)''')
 
-    op.add_column('groups_permissions', sa.Column('group_id', sa.Integer(),
+    # mysql is stupid as usual so we cant create FKEY and add PKEY later,
+    # need to set PKEY first and then set FKEY
+    if isinstance(c.connection.engine.dialect, MySQLDialect):
+        op.add_column('groups_permissions', sa.Column('group_id', sa.Integer()))
+    else:
+        op.add_column('groups_permissions', sa.Column('group_id', sa.Integer(),
                     sa.ForeignKey('groups.id', onupdate='CASCADE',
                                   ondelete='CASCADE')))
+
     op.execute('''update groups_permissions set group_id = 
     (select id from groups where groups.group_name=groups_permissions.group_name)''')
 
     op.drop_constraint(groups_permissions_pkey, 'groups_permissions', type_='primary')
     op.create_primary_key(groups_permissions_pkey, 'groups_permissions',
                           cols=['group_id', 'perm_name'])
+    if isinstance(c.connection.engine.dialect, MySQLDialect):
+        op.create_foreign_key(None, 'groups_permissions', 'groups',
+                              remote_cols=['id'],
+                              local_cols=['group_id'], onupdate='CASCADE',
+                              ondelete='CASCADE')
 
-
-    op.add_column('groups_resources_permissions', sa.Column('group_id', sa.Integer(),
+    if isinstance(c.connection.engine.dialect, MySQLDialect):
+        op.add_column('groups_resources_permissions',
+                      sa.Column('group_id', sa.Integer()))
+    else:
+        op.add_column('groups_resources_permissions', sa.Column('group_id', sa.Integer(),
                     sa.ForeignKey('groups.id', onupdate='CASCADE',
                                   ondelete='CASCADE')))
 
@@ -100,41 +114,78 @@ def upgrade():
     op.create_primary_key(groups_resources_permissions_pkey, 'groups_resources_permissions',
                           cols=['group_id', 'resource_id' , 'perm_name'])
 
-    op.add_column('users_groups', sa.Column('group_id', sa.Integer(),
-                                sa.ForeignKey('groups.id', onupdate='CASCADE',
-                                              ondelete='CASCADE')))
+    if isinstance(c.connection.engine.dialect, MySQLDialect):
+        op.create_foreign_key(None, 'groups_resources_permissions', 'groups',
+                              remote_cols=['id'],
+                              local_cols=['group_id'], onupdate='CASCADE',
+                              ondelete='CASCADE')
+
+    if isinstance(c.connection.engine.dialect, MySQLDialect):
+        op.add_column('users_groups', sa.Column('group_id', sa.Integer()))
+    else:
+        op.add_column('users_groups', sa.Column('group_id', sa.Integer(),
+                                    sa.ForeignKey('groups.id', onupdate='CASCADE',
+                                                  ondelete='CASCADE')))
     op.execute('''update users_groups set group_id = 
     (select id from groups where groups.group_name=users_groups.group_name)''')
 
 
-    op.add_column('users_groups', sa.Column('user_id', sa.Integer(),
-                                sa.ForeignKey('users.id', onupdate='CASCADE',
-                                              ondelete='CASCADE')))
+    if isinstance(c.connection.engine.dialect, MySQLDialect):
+        op.add_column('users_groups', sa.Column('user_id', sa.Integer()))
+    else:
+        op.add_column('users_groups', sa.Column('user_id', sa.Integer(),
+                                    sa.ForeignKey('users.id', onupdate='CASCADE',
+                                                  ondelete='CASCADE')))
     op.execute('''update users_groups set user_id = 
     (select id from users where users.user_name=users_groups.user_name)''')
     op.drop_constraint(users_groups_pkey, 'users_groups', type='primary')
     op.create_primary_key(users_groups_pkey, 'users_groups',
                           cols=['user_id', 'group_id'])
+    if isinstance(c.connection.engine.dialect, MySQLDialect):
+        op.create_foreign_key(None, 'users_groups', 'groups',
+                              remote_cols=['id'],
+                              local_cols=['group_id'], onupdate='CASCADE',
+                              ondelete='CASCADE')
+        op.create_foreign_key(None, 'users_groups', 'users',
+                              remote_cols=['id'],
+                              local_cols=['user_id'], onupdate='CASCADE',
+                              ondelete='CASCADE')
 
-    op.add_column('users_permissions', sa.Column('user_id', sa.Integer(),
-                                sa.ForeignKey('users.id', onupdate='CASCADE',
-                                              ondelete='CASCADE')))
+    if isinstance(c.connection.engine.dialect, MySQLDialect):
+        op.add_column('users_permissions', sa.Column('user_id', sa.Integer()))
+    else:
+        op.add_column('users_permissions', sa.Column('user_id', sa.Integer(),
+                                    sa.ForeignKey('users.id', onupdate='CASCADE',
+                                                  ondelete='CASCADE')))
     op.execute('''update users_permissions set user_id = 
     (select id from groups where groups.group_name=users_permissions.user_name)''')
     op.drop_constraint(users_permissions_pkey, 'users_permissions', type='primary')
     op.create_primary_key(users_permissions_pkey, 'users_permissions',
                           cols=['user_id', 'perm_name'])
+    if isinstance(c.connection.engine.dialect, MySQLDialect):
+        op.create_foreign_key(None, 'users_permissions', 'users',
+                              remote_cols=['id'],
+                              local_cols=['user_id'], onupdate='CASCADE',
+                              ondelete='CASCADE')
 
-    op.add_column('users_resources_permissions', sa.Column('user_id', sa.Integer(),
-                                sa.ForeignKey('users.id', onupdate='CASCADE',
-                                              ondelete='CASCADE')))
+    if isinstance(c.connection.engine.dialect, MySQLDialect):
+        op.add_column('users_resources_permissions', sa.Column('user_id', sa.Integer()))
+    else:
+        op.add_column('users_resources_permissions', sa.Column('user_id', sa.Integer(),
+                                    sa.ForeignKey('users.id', onupdate='CASCADE',
+                                                  ondelete='CASCADE')))
+
     op.execute('''update users_resources_permissions set user_id = 
     (select id from users where users.user_name=users_resources_permissions.user_name)''')
     op.drop_constraint(users_resources_permissions_pkey, 'users_resources_permissions',
                        type='primary')
     op.create_primary_key(users_resources_permissions_pkey, 'users_resources_permissions',
                           cols=['user_id', 'resource_id', 'perm_name'])
-
+    if isinstance(c.connection.engine.dialect, MySQLDialect):
+        op.create_foreign_key(None, 'users_resources_permissions', 'users',
+                              remote_cols=['id'],
+                              local_cols=['user_id'], onupdate='CASCADE',
+                              ondelete='CASCADE')
 
     op.drop_column('resources', 'owner_user_name')
     op.drop_column('resources', 'owner_group_name')
