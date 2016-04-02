@@ -6,7 +6,6 @@ from .base import get_db_session
 
 
 class ExternalIdentityMixin(BaseModel):
-
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
 
     _ziggurat_service = ExternalIdentityService
@@ -24,10 +23,10 @@ class ExternalIdentityMixin(BaseModel):
         return sa.Column(sa.Unicode(255), default=u'')
 
     @declared_attr
-    def local_user_name(self):
-        return sa.Column(sa.Unicode(50), sa.ForeignKey('users.user_name',
-                                                       onupdate='CASCADE',
-                                                       ondelete='CASCADE'),
+    def local_user_id(self):
+        return sa.Column(sa.Integer, sa.ForeignKey('users.id',
+                                                   onupdate='CASCADE',
+                                                   ondelete='CASCADE'),
                          primary_key=True)
 
     @declared_attr
