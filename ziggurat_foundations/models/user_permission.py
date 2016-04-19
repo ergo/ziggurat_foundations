@@ -1,8 +1,9 @@
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
-from .base import BaseModel
+from sqlalchemy.orm import validates
+from .base import BaseModel, get_db_session
 from .services.user_permission import UserPermissionService
-from .base import get_db_session
+
 
 class UserPermissionMixin(BaseModel):
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
@@ -22,6 +23,12 @@ class UserPermissionMixin(BaseModel):
     @declared_attr
     def perm_name(self):
         return sa.Column(sa.Unicode(30), primary_key=True)
+
+    @validates('perm_name')
+    def validate_perm_name(self, key, data):
+        if data != data.lower():
+            raise AssertionError("permission names should be lowercase")
+        return data
 
     def __repr__(self):
         return '<UserPermission: %s>' % self.perm_name

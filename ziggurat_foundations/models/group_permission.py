@@ -1,8 +1,8 @@
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
-from .base import BaseModel
+from sqlalchemy.orm import validates
+from .base import BaseModel, get_db_session
 from .services.group_permission import GroupPermissionService
-from .base import get_db_session
 
 
 class GroupPermissionMixin(BaseModel):
@@ -25,6 +25,12 @@ class GroupPermissionMixin(BaseModel):
     @declared_attr
     def perm_name(self):
         return sa.Column(sa.Unicode(30), primary_key=True)
+
+    @validates('perm_name')
+    def validate_perm_name(self, key, data):
+        if data != data.lower():
+            raise AssertionError("permission names should be lowercase")
+        return data
 
     def __repr__(self):
         return '<GroupPermission: %s>' % self.perm_name

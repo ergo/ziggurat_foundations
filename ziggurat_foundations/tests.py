@@ -721,7 +721,7 @@ class TestUserPermissionse(BaseTestCase):
         created_user = self._addUser()
         resource = self._addResource(1, u'test_resource')
         permission = UserResourcePermission(
-            perm_name=u'test_perm_BAD',
+            perm_name=u'test_perm_bad',
             user_id=created_user.id,
             resource_id=resource.resource_id
         )
@@ -779,7 +779,7 @@ class TestUserPermissionse(BaseTestCase):
         group = self._addGroup()
         group.users.append(created_user)
         group_permission = GroupResourcePermission(
-            perm_name=u'test_perm_BAD',
+            perm_name=u'test_perm_bad',
             group_id=group.id,
             resource_id=resource.resource_id
         )
@@ -1143,7 +1143,7 @@ class TestUserPermissionse(BaseTestCase):
 
         group3 = self._addGroup('Empty group')
         perm3 = GroupResourcePermission(
-            perm_name='group_permX',
+            perm_name='group_permx',
             resource_id=self.resource.resource_id
         )
         group3.resource_permissions.append(perm3)
@@ -1154,7 +1154,7 @@ class TestUserPermissionse(BaseTestCase):
             PermissionTuple(None, u'group_perm', 'group', self.group, self.resource, False, True),
             PermissionTuple(None, u'group_perm2', 'group', self.group, self.resource, False, True),
             PermissionTuple(None, u'group_perm', 'group', self.group2, self.resource, False, True),
-            PermissionTuple(None, u'group_permX', 'group', group3, self.resource, False, True)
+            PermissionTuple(None, u'group_permx', 'group', group3, self.resource, False, True)
             ]
 
         check_one_in_other(perms, second)
@@ -1174,7 +1174,7 @@ class TestUserPermissionse(BaseTestCase):
         self.group.users.append(user7)
         group3 = self._addGroup('Empty group')
         perm3 = GroupResourcePermission(
-            perm_name='group_permX',
+            perm_name='group_permx',
             resource_id=self.resource.resource_id
         )
         group3.resource_permissions.append(perm3)
@@ -1188,7 +1188,7 @@ class TestUserPermissionse(BaseTestCase):
             PermissionTuple(self.user, u'test_perm2', 'user', None, self.resource, False, True),
             PermissionTuple(self.user, u'foo_perm', 'user', None, self.resource, False, True),
             PermissionTuple(None, u'group_perm', 'group', self.group2, self.resource, False, True),
-            PermissionTuple(None, u'group_permX', 'group', group3, self.resource, False, True),
+            PermissionTuple(None, u'group_permx', 'group', group3, self.resource, False, True),
             ]
 
         check_one_in_other(perms, second)

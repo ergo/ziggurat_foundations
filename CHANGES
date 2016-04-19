@@ -2,6 +2,12 @@ Changelog
 =========
 
 2016-04-19
+* Release: 0.6.4
+  * fixed a bug with migrations fail to work on mysql 5.7.x
+  * ensure assigned permission names are all lowercase on python level
+    (in addition to postgresql checks)
+
+2016-04-19
 * Release: 0.6.3
 * extended functionality of `populate_obj` function of Base class
 * minor bugfix for mysql
