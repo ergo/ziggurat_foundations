@@ -29,13 +29,13 @@ def upgrade():
 
     op.alter_column('resources', 'resource_id',
                     type_=sa.Integer(), existing_type=sa.BigInteger(),
-                    autoincrement=True)
+                    autoincrement=True, nullable=False)
     op.alter_column('resources', 'parent_id',
                     type_=sa.Integer(), existing_type=sa.BigInteger())
     op.alter_column('users_resources_permissions', 'resource_id',
-                    type_=sa.Integer(), existing_type=sa.BigInteger())
+                    type_=sa.Integer(), existing_type=sa.BigInteger(), nullable=False)
     op.alter_column('groups_resources_permissions', 'resource_id',
-                    type_=sa.Integer(), existing_type=sa.BigInteger())
+                    type_=sa.Integer(), existing_type=sa.BigInteger(), nullable=False)
 
     # recreate foreign keys for mysql
     if isinstance(c.connection.engine.dialect, MySQLDialect):

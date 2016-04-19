@@ -46,7 +46,7 @@ def upgrade():
         op.add_column('groups', sa.Column('id', sa.Integer, primary_key=True, autoincrement=False))
         op.create_primary_key(groups_pkey, 'groups', cols=['id'])
         op.alter_column('groups', 'id', type_=sa.Integer, existing_type=sa.Integer, autoincrement=True,
-                        existing_autoincrement=False)
+                        existing_autoincrement=False, nullable=False)
     else:
         op.add_column('groups', sa.Column('id', sa.Integer, primary_key=True, autoincrement=True))
         op.create_primary_key(groups_pkey, 'groups', cols=['id'])
