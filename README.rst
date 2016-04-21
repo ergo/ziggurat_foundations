@@ -3,6 +3,10 @@
 Ziggurat Foundations
 =====================
 
+.. image:: https://badges.gitter.im/ergo/ziggurat_foundations.svg
+   :alt: Join the chat at https://gitter.im/ergo/ziggurat_foundations
+   :target: https://gitter.im/ergo/ziggurat_foundations?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
 **DOCUMENTATION**: http://readthedocs.org/docs/ziggurat-foundations/en/latest/
 
 **BUG TRACKER**: https://github.com/ergo/ziggurat_foundations
