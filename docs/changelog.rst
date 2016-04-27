@@ -23,8 +23,8 @@ Changelog
 * extended functionality of `populate_obj` function of Base class
 * minor bugfix for mysql
 * BACKWARDS INCOMPATIBLE CHANGES
-  * external_identities.local_user_name column is dropped and replaced with
-    local_user_id
+* external_identities.local_user_name column is dropped and replaced with
+  local_user_id
 
 
 2015-11-13
