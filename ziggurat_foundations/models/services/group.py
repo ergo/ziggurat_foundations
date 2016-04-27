@@ -47,9 +47,11 @@ class GroupService(BaseService):
             cls.models_proxy.Resource
             )
         query = query.filter(
-            cls.models_proxy.Resource.resource_id == cls.models_proxy.GroupResourcePermission.resource_id)
+            cls.models_proxy.Resource.resource_id ==
+            cls.models_proxy.GroupResourcePermission.resource_id)
         query = query.filter(
-            cls.models_proxy.Group.id == cls.models_proxy.GroupResourcePermission.group_id)
+            cls.models_proxy.Group.id ==
+            cls.models_proxy.GroupResourcePermission.group_id)
         if resource_ids:
             query = query.filter(
                 cls.models_proxy.GroupResourcePermission.resource_id.in_(
