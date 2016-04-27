@@ -151,7 +151,10 @@ class UserService(BaseService):
     def set_password(cls, instance, raw_password):
         """ sets new password """
         password = instance.passwordmanager.encrypt(raw_password)
-        instance.user_password = password.decode('utf8')
+        if six.PY2:
+            instance.user_password = password.decode('utf8')
+        else:
+            instance.user_password = password
         cls.regenerate_security_code(instance)
 
     @classmethod
