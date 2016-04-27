@@ -27,7 +27,7 @@ class BaseModel(object):
         include_keys_list = include_keys or []
         for k in self._get_keys():
             if k not in exclude_keys_list and \
-                    (k in include_keys_list or not include_keys):
+                (k in include_keys_list or not include_keys):
                 d[k] = getattr(self, k)
         return d
 
@@ -55,7 +55,7 @@ class BaseModel(object):
         include_keys_list = include_keys or []
         for k in self._get_keys():
             if k in appstruct and k not in exclude_keys_list and \
-                    (k in include_keys_list or not include_keys):
+                (k in include_keys_list or not include_keys):
                 setattr(self, k, appstruct[k])
 
     def populate_obj_from_obj(self, instance, exclude_keys=None,
@@ -75,7 +75,7 @@ class BaseModel(object):
         include_keys_list = include_keys or []
         for k in self._get_keys():
             if hasattr(instance, k) and k not in exclude_keys_list and \
-                    (k in include_keys_list or not include_keys):
+                (k in include_keys_list or not include_keys):
                 setattr(self, k, getattr(instance, k))
 
     def get_db_session(self, session=None):

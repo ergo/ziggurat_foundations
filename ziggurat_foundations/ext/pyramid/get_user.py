@@ -3,7 +3,6 @@ import logging
 from ziggurat_foundations.models.base import get_db_session
 from pyramid.security import unauthenticated_userid
 
-
 CONFIG_KEY = 'ziggurat_foundations'
 log = logging.getLogger(__name__)
 
@@ -12,7 +11,8 @@ def includeme(config):
     settings = config.registry.settings
 
     user_model_location = settings.get('%s.model_locations.User' % CONFIG_KEY)
-    session_provider_callable = settings.get('%s.session_provider_callable' % CONFIG_KEY)
+    session_provider_callable = settings.get(
+        '%s.session_provider_callable' % CONFIG_KEY)
 
     if not user_model_location:
         raise Exception('''You need to pass location of user model
@@ -23,6 +23,7 @@ def includeme(config):
     if not session_provider_callable:
         def session_provider_callable(request):
             return get_db_session()
+
         test_session_callable = None
     else:
         parts = session_provider_callable.split(':')

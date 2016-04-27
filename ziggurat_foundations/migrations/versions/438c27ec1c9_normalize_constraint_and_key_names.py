@@ -6,6 +6,7 @@ Revises: 439766f6104d
 Create Date: 2015-06-13 21:16:32.358778
 
 """
+from __future__ import unicode_literals
 
 # revision identifiers, used by Alembic.
 revision = '438c27ec1c9'
@@ -18,6 +19,7 @@ from sqlalchemy.dialects.postgresql.base import PGDialect
 from sqlalchemy.engine.reflection import Inspector
 
 # correct keys for pre 0.5.6 naming convention
+
 
 def upgrade():
     c = get_context()

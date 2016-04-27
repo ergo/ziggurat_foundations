@@ -24,7 +24,8 @@ class ResourceMixin(BaseModel):
     def parent_id(self):
         return sa.Column(sa.Integer(),
                          sa.ForeignKey('resources.resource_id',
-                                       onupdate='CASCADE', ondelete='SET NULL'))
+                                       onupdate='CASCADE',
+                                       ondelete='SET NULL'))
 
     @declared_attr
     def ordering(self):
@@ -94,7 +95,6 @@ class ResourceMixin(BaseModel):
     def __acl__(self):
         raise Exception("The model should have implemented __acl__")
 
-
     @sa.orm.validates('user_permissions', 'group_permissions')
     def validate_permission(self, key, permission):
         """ validate if resouce can have specific permission """
@@ -131,7 +131,6 @@ class ResourceMixin(BaseModel):
         return ResourceService.by_resource_id(resource_id=resource_id,
                                               db_session=db_session)
 
-
     @classmethod
     def perm_by_group_and_perm_name(cls, res_id, group_id, perm_name,
                                     db_session=None):
@@ -148,7 +147,6 @@ class ResourceMixin(BaseModel):
             self, perm_name=perm_name, group_ids=group_ids,
             limit_group_permissions=limit_group_permissions,
             db_session=db_session)
-
 
     @classmethod
     def subtree_deeper(cls, object_id, limit_depth=1000000, flat=True,

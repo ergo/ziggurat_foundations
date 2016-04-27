@@ -13,7 +13,6 @@ from ...permissions import (ANY_PERMISSION,
 
 
 class UserService(BaseService):
-
     @classmethod
     def permissions(cls, instance, db_session=None):
         """ returns all non-resource permissions based on what groups user
@@ -25,14 +24,16 @@ class UserService(BaseService):
             sa.literal('group').label('type'))
         query = query.filter(cls.models_proxy.GroupPermission.group_id ==
                              cls.models_proxy.UserGroup.group_id)
-        query = query.filter(cls.models_proxy.User.id == cls.models_proxy.UserGroup.user_id)
+        query = query.filter(
+            cls.models_proxy.User.id == cls.models_proxy.UserGroup.user_id)
         query = query.filter(cls.models_proxy.User.id == instance.id)
 
         query2 = db_session.query(
             cls.models_proxy.UserPermission.user_id.label('owner_id'),
             cls.models_proxy.UserPermission.perm_name.label('perm_name'),
             sa.literal('user').label('type'))
-        query2 = query2.filter(cls.models_proxy.UserPermission.user_id == instance.id)
+        query2 = query2.filter(
+            cls.models_proxy.UserPermission.user_id == instance.id)
         query = query.union(query2)
         groups_dict = dict([(g.id, g) for g in instance.groups])
         return [PermissionTuple(instance,
@@ -58,7 +59,8 @@ class UserService(BaseService):
         # if user has some groups lets try to join based on their permissions
         if group_ids:
             join_conditions = (
-                cls.models_proxy.GroupResourcePermission.group_id.in_(group_ids),
+                cls.models_proxy.GroupResourcePermission.group_id.in_(
+                    group_ids),
                 cls.models_proxy.Resource.resource_id == cls.models_proxy.GroupResourcePermission.resource_id,
                 cls.models_proxy.GroupResourcePermission.perm_name.in_(perms),)
             query = query.outerjoin(
@@ -72,28 +74,32 @@ class UserService(BaseService):
             query = query.filter(sa.or_(
                 cls.models_proxy.Resource.owner_user_id == instance.id,
                 cls.models_proxy.Resource.owner_group_id.in_(group_ids),
-                cls.models_proxy.GroupResourcePermission.perm_name != None ))
+                cls.models_proxy.GroupResourcePermission.perm_name != None))
         else:
             # filter just by username
             query = query.filter(cls.models_proxy.Resource.owner_user_id ==
                                  instance.id)
         # lets try by custom user permissions for resource
         query2 = db_session.query(cls.models_proxy.Resource).distinct()
-        query2 = query2.filter(cls.models_proxy.UserResourcePermission.user_id ==
-                               instance.id)
+        query2 = query2.filter(
+            cls.models_proxy.UserResourcePermission.user_id ==
+            instance.id)
         query2 = query2.filter(cls.models_proxy.Resource.resource_id ==
                                cls.models_proxy.UserResourcePermission.resource_id)
         query2 = query2.filter(
             cls.models_proxy.UserResourcePermission.perm_name.in_(perms))
         if resource_ids:
-            query = query.filter(cls.models_proxy.Resource.resource_id.in_(resource_ids))
-            query2 = query2.filter(cls.models_proxy.Resource.resource_id.in_(resource_ids))
+            query = query.filter(
+                cls.models_proxy.Resource.resource_id.in_(resource_ids))
+            query2 = query2.filter(
+                cls.models_proxy.Resource.resource_id.in_(resource_ids))
 
         if resource_types:
             query = query.filter(
                 cls.models_proxy.Resource.resource_type.in_(resource_types))
             query2 \
-                = query2.filter(cls.models_proxy.Resource.resource_type.in_(resource_types))
+                = query2.filter(
+                cls.models_proxy.Resource.resource_type.in_(resource_types))
         query = query.union(query2)
         query = query.order_by(cls.models_proxy.Resource.resource_name)
         return query
@@ -111,13 +117,16 @@ class UserService(BaseService):
                                       db_session=None):
         """ returns list of permissions and resources for this user,
             resource_ids restricts the search to specific resources"""
-        perms = resource_permissions_for_users(cls.models_proxy, ANY_PERMISSION,
+        perms = resource_permissions_for_users(cls.models_proxy,
+                                               ANY_PERMISSION,
                                                resource_ids=resource_ids,
+                                               resource_types=resource_types,
                                                user_ids=[instance.id],
                                                db_session=db_session)
         for resource in instance.resources:
-            perms.append(PermissionTuple(instance, ALL_PERMISSIONS, 'user', None,
-                                         resource, True, True))
+            perms.append(
+                PermissionTuple(instance, ALL_PERMISSIONS, 'user', None,
+                                resource, True, True))
         for group in instance.groups_with_resources():
             for resource in group.resources:
                 perms.append(
@@ -148,7 +157,8 @@ class UserService(BaseService):
     @classmethod
     def check_password(cls, instance, raw_password):
         """ checks string with users password hash"""
-        return instance.passwordmanager.verify(raw_password, instance.user_password)
+        return instance.passwordmanager.verify(raw_password,
+                                               instance.user_password)
 
     @classmethod
     def generate_random_pass(cls, chars=7):
@@ -201,7 +211,8 @@ class UserService(BaseService):
         user_names = [(name or '').lower() for name in user_names]
         db_session = get_db_session(db_session)
         query = db_session.query(cls.model)
-        query = query.filter(sa.func.lower(cls.model.user_name).in_(user_names))
+        query = query.filter(
+            sa.func.lower(cls.model.user_name).in_(user_names))
         # q = q.options(sa.orm.eagerload(cls.groups))
         return query
 
@@ -245,7 +256,8 @@ class UserService(BaseService):
         """ return users hat have one of given permissions """
         db_session = get_db_session(db_session)
         query = db_session.query(cls.model)
-        query = query.filter(cls.models_proxy.User.id == cls.models_proxy.UserGroup.user_id)
+        query = query.filter(
+            cls.models_proxy.User.id == cls.models_proxy.UserGroup.user_id)
         query = query.filter(cls.models_proxy.UserGroup.group_id ==
                              cls.models_proxy.GroupPermission.group_id)
         query = query.filter(
@@ -254,6 +266,7 @@ class UserService(BaseService):
         query2 = db_session.query(cls.model)
         query2 = query2.filter(cls.models_proxy.User.id ==
                                cls.models_proxy.UserPermission.user_id)
-        query2 = query2.filter(cls.models_proxy.UserPermission.perm_name.in_(perm_names))
+        query2 = query2.filter(
+            cls.models_proxy.UserPermission.perm_name.in_(perm_names))
         users = query.union(query2).order_by(cls.model.id)
         return users

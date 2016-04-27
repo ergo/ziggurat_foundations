@@ -6,6 +6,7 @@ from .base import BaseModel
 from .services.user import UserService
 from .base import get_db_session
 
+
 class UserMixin(BaseModel):
     """ Base mixin for user object representation.
         It supplies all the basic functionality from password hash generation
@@ -152,7 +153,7 @@ class UserMixin(BaseModel):
                                       db_session=None):
         db_session = get_db_session(db_session, self)
         return UserService.resources_with_possible_perms(
-            self, resource_ids=resource_ids, resource_types=resource_ids,
+            self, resource_ids=resource_ids, resource_types=resource_types,
             db_session=db_session)
 
     def gravatar_url(self, default='mm', **kwargs):

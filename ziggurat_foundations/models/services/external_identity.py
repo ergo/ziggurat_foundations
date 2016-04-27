@@ -27,6 +27,7 @@ class ExternalIdentityService(BaseService):
         """
         Returns User instance based on search params
 
+        :param external_id:
         :param provider_name:
         :param db_session:
         :return: User

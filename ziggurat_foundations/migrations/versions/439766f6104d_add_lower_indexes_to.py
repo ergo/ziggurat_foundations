@@ -5,6 +5,7 @@ Revises: 20671b28c538
 Create Date: 2012-07-09 21:33:28.404627
 
 """
+from __future__ import unicode_literals
 
 # revision identifiers, used by Alembic.
 revision = '439766f6104d'
@@ -15,10 +16,10 @@ import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql.base import PGDialect
 from alembic.context import get_context
 
+
 def upgrade():
     c = get_context()
     if isinstance(c.connection.engine.dialect, PGDialect):
-
         op.execute('''
         CREATE UNIQUE INDEX groups_unique_group_name_key
           ON groups
@@ -41,7 +42,6 @@ def upgrade():
           ADD CONSTRAINT user_permissions_perm_name_check CHECK (perm_name::text = lower(perm_name::text));
         ''')
 
-
         op.execute('''
         ALTER TABLE users_resources_permissions
           ADD CONSTRAINT users_resources_permissions_perm_name_check CHECK (perm_name::text = lower(perm_name::text));
@@ -54,6 +54,7 @@ def upgrade():
         op.execute('''
         CREATE INDEX users_username_uq2 ON users (lower(user_name::text));
         ''')
+
 
 def downgrade():
     pass

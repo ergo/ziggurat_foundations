@@ -107,21 +107,19 @@ class GroupMixin(BaseModel):
     def __repr__(self):
         return '<Group: %s, %s>' % (self.group_name, self.id)
 
-
     @classmethod
     def by_group_name(cls, group_name, db_session=None):
         """ fetch group by name"""
         db_session = get_db_session(db_session)
-        return GroupService.by_group_name(group_name=group_name, db_session=db_session)
-
+        return GroupService.by_group_name(group_name=group_name,
+                                          db_session=db_session)
 
     def get_user_paginator(self, page=1, item_count=None, items_per_page=50,
                            user_ids=None, GET_params=None, db_session=None):
-        db_session = get_db_session(db_session, self)
         return GroupService.get_user_paginator(
-            self, page=page, item_count=item_count, items_per_page=items_per_page,
+            self, page=page, item_count=item_count,
+            items_per_page=items_per_page,
             user_ids=user_ids, GET_params=GET_params)
-
 
     def resources_with_possible_perms(self, perm_names=None, resource_ids=None,
                                       resource_types=None,

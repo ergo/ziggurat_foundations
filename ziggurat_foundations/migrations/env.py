@@ -1,4 +1,4 @@
-from __future__ import with_statement
+from __future__ import with_statement, unicode_literals
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 from sqlalchemy.schema import MetaData
@@ -25,6 +25,8 @@ target_metadata = MetaData(naming_convention={
     "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
     "pk": "pk_%(table_name)s"
 })
+
+
 # target_metadata = None
 
 # other values from the config, defined by the needs of env.py,
@@ -53,6 +55,7 @@ def run_migrations_offline():
     with context.begin_transaction():
         context.run_migrations()
 
+
 def run_migrations_online():
     """Run migrations in 'online' mode.
 
@@ -61,23 +64,24 @@ def run_migrations_online():
     
     """
     engine = engine_from_config(
-                config.get_section(config.config_ini_section), 
-                prefix='sqlalchemy.', 
-                poolclass=pool.NullPool)
+        config.get_section(config.config_ini_section),
+        prefix='sqlalchemy.',
+        poolclass=pool.NullPool)
 
     connection = engine.connect()
     context.configure(
-                connection=connection, 
-                target_metadata=target_metadata,
-                version_table='alembic_ziggurat_foundations_version',
-                transaction_per_migration=True
-                )
+        connection=connection,
+        target_metadata=target_metadata,
+        version_table='alembic_ziggurat_foundations_version',
+        transaction_per_migration=True
+    )
 
     try:
         with context.begin_transaction():
             context.run_migrations()
     finally:
         connection.close()
+
 
 if context.is_offline_mode():
     run_migrations_offline()

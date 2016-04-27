@@ -5,6 +5,7 @@ from .base import BaseModel
 from .services.user_permission import UserPermissionService
 from .base import get_db_session
 
+
 class UserPermissionMixin(BaseModel):
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
 

@@ -5,6 +5,7 @@ Revises: 13391c68750
 Create Date: 2016-04-02 09:54:09.643644
 
 """
+from __future__ import unicode_literals
 
 # revision identifiers, used by Alembic.
 revision = '57bbf0c387c'
@@ -21,8 +22,8 @@ def upgrade():
                                                    sa.Integer()))
 
     external_identities_t = table('external_identities',
-                             sa.Column('local_user_name', sa.Unicode(50)),
-                             sa.Column('local_user_id', sa.Integer))
+                                  sa.Column('local_user_name', sa.Unicode(50)),
+                                  sa.Column('local_user_id', sa.Integer))
     users_t = table('users',
                     sa.Column('user_name', sa.Unicode(50)),
                     sa.Column('id', sa.Integer))
@@ -36,7 +37,8 @@ def upgrade():
                        'external_identities', type='foreignkey')
     op.drop_column('external_identities', 'local_user_name')
     op.create_primary_key('pk_external_identities', 'external_identities',
-                          cols=['external_id', 'local_user_id', 'provider_name'])
+                          cols=['external_id', 'local_user_id',
+                                'provider_name'])
     op.create_foreign_key(None, 'external_identities', 'users',
                           remote_cols=['id'],
                           local_cols=['local_user_id'], onupdate='CASCADE',

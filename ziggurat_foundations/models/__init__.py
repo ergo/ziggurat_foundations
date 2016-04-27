@@ -1,6 +1,8 @@
 from __future__ import unicode_literals
+
 # should hold global scoped session
 DBSession = None
+
 
 def groupfinder(userid, request):
     if userid and hasattr(request, 'user') and request.user:

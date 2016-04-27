@@ -5,6 +5,7 @@ Revises: 53927300c277
 Create Date: 2012-06-27 02:15:58.776223
 
 """
+from __future__ import unicode_literals
 
 # revision identifiers, used by Alembic.
 revision = '3cfc41c4a5f0'
@@ -50,7 +51,8 @@ def upgrade():
                               ondelete='CASCADE')
         op.create_foreign_key(None, 'resources', 'groups',
                               remote_cols=['group_name'],
-                              local_cols=['owner_group_name'], onupdate='CASCADE',
+                              local_cols=['owner_group_name'],
+                              onupdate='CASCADE',
                               ondelete='SET NULL')
 
 

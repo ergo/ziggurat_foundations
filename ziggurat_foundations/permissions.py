@@ -8,6 +8,8 @@ try:
 except ImportError as e:
     Allow = 'Allow'
     Deny = 'Deny'
+
+
     # borrowed directly from pyramid - to avoid dependency on pyramid itself
     # source https://github.com/Pylons/pyramid/blob/master/pyramid/security.py
 
@@ -24,7 +26,9 @@ except ImportError as e:
         def __eq__(self, other):
             return isinstance(other, self.__class__)
 
+
     ALL_PERMISSIONS = AllPermissionsList()
+
 
 class ANY_PERMISSION_CLS(object):
     def __eq__(self, other):
@@ -35,7 +39,6 @@ class ANY_PERMISSION_CLS(object):
 
 
 ANY_PERMISSION = ANY_PERMISSION_CLS()
-
 
 PermissionTuple = namedtuple('PermissionTuple',
                              ['user', 'perm_name', 'type', 'group', 'resource',
@@ -80,8 +83,8 @@ def resource_permissions_for_users(models_proxy, perm_names, resource_ids=None,
                                 models_proxy.User.id == None)
     else:
         query = query.join(models_proxy.UserGroup,
-                                models_proxy.UserGroup.group_id ==
-                                models_proxy.GroupResourcePermission.group_id)
+                           models_proxy.UserGroup.group_id ==
+                           models_proxy.GroupResourcePermission.group_id)
 
         query = query.outerjoin(models_proxy.User,
                                 models_proxy.User.id ==
@@ -91,7 +94,8 @@ def resource_permissions_for_users(models_proxy, perm_names, resource_ids=None,
         query = query.filter(
             models_proxy.GroupResourcePermission.resource_id.in_(resource_ids))
     if resource_types:
-        query = query.filter(models_proxy.Resource.resource_type.in_(resource_types))
+        query = query.filter(
+            models_proxy.Resource.resource_type.in_(resource_types))
 
     if (perm_names not in ([ANY_PERMISSION], ANY_PERMISSION) and perm_names):
         query = query.filter(
@@ -111,14 +115,15 @@ def resource_permissions_for_users(models_proxy, perm_names, resource_ids=None,
                               sa.literal('user').label('type'),
                               models_proxy.Resource)
     query2 = query2.join(models_proxy.User,
-                        models_proxy.User.id ==
-                        models_proxy.UserResourcePermission.user_id)
+                         models_proxy.User.id ==
+                         models_proxy.UserResourcePermission.user_id)
     query2 = query2.join(models_proxy.Resource,
                          models_proxy.Resource.resource_id ==
                          models_proxy.UserResourcePermission.resource_id)
 
     # group needs to be present to work for union, but never actually matched
-    query2 = query2.outerjoin(models_proxy.Group, models_proxy.Group.id == None)
+    query2 = query2.outerjoin(models_proxy.Group,
+                              models_proxy.Group.id == None)
     if (perm_names not in ([ANY_PERMISSION], ANY_PERMISSION) and perm_names):
         query2 = query2.filter(
             models_proxy.UserResourcePermission.perm_name.in_(perm_names))
@@ -126,7 +131,8 @@ def resource_permissions_for_users(models_proxy, perm_names, resource_ids=None,
         query2 = query2.filter(
             models_proxy.UserResourcePermission.resource_id.in_(resource_ids))
     if resource_types:
-        query2 = query2.filter(models_proxy.Resource.resource_type.in_(resource_types))
+        query2 = query2.filter(
+            models_proxy.Resource.resource_type.in_(resource_types))
     if user_ids:
         query2 = query2.filter(
             models_proxy.UserResourcePermission.user_id.in_(user_ids))
