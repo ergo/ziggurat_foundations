@@ -1,4 +1,4 @@
-import sqlalchemy as sa
+from __future__ import unicode_literals
 from paginate_sqlalchemy import SqlalchemyOrmPage
 from . import BaseService
 from ..base import get_db_session

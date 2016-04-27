@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 import sqlalchemy as sa
 from datetime import datetime
 from sqlalchemy.ext.declarative import declared_attr
@@ -35,7 +36,7 @@ class UserMixin(BaseModel):
     @declared_attr
     def user_password(self):
         """ Password hash for user object """
-        return sa.Column(sa.String(256))
+        return sa.Column(sa.Unicode(256))
 
     @declared_attr
     def email(self):
@@ -50,7 +51,7 @@ class UserMixin(BaseModel):
     @declared_attr
     def security_code(self):
         """ Security code user object (can be used for password reset etc. """
-        return sa.Column(sa.String(256), default='default')
+        return sa.Column(sa.Unicode(256), default='default')
 
     @declared_attr
     def last_login_date(self):

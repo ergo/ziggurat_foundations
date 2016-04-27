@@ -15,9 +15,9 @@ import sqlalchemy as sa
 
 def upgrade():
     alter_column('users', 'user_password',
-                 type_=sa.String(256), existing_type=sa.String(40))
+                 type_=sa.Unicode(256), existing_type=sa.Unicode(40))
     alter_column('users', 'security_code',
-                 type_=sa.String(256), existing_type=sa.String(40))
+                 type_=sa.Unicode(256), existing_type=sa.Unicode(40))
 
 def downgrade():
     pass

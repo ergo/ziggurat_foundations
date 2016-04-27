@@ -1,4 +1,4 @@
-import pyramid.security
+from __future__ import unicode_literals
 import logging
 from ziggurat_foundations.models.base import get_db_session
 from pyramid.security import unauthenticated_userid
@@ -6,6 +6,7 @@ from pyramid.security import unauthenticated_userid
 
 CONFIG_KEY = 'ziggurat_foundations'
 log = logging.getLogger(__name__)
+
 
 def includeme(config):
     settings = config.registry.settings

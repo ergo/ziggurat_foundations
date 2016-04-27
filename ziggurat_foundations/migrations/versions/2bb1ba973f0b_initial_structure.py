@@ -33,11 +33,11 @@ def upgrade():
                  sa.Column('id', sa.Integer, primary_key=True,
                            autoincrement=True),
                  sa.Column('user_name', sa.Unicode(30), unique=True),
-                 sa.Column('user_password', sa.String(40)),
+                 sa.Column('user_password', sa.Unicode(40)),
                  sa.Column('email', sa.Unicode(100), nullable=False,
                            unique=True),
                  sa.Column('status', sa.SmallInteger(), nullable=False),
-                 sa.Column('security_code', sa.String(40), default='default'),
+                 sa.Column('security_code', sa.Unicode(40), default='default'),
                  sa.Column('last_login_date', sa.TIMESTAMP(timezone=False),
                                 default=sa.sql.func.now(),
                                 server_default=sa.func.now()

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 import pyramid.security
 import logging
 from ziggurat_foundations.models.base import get_db_session
-from pyramid.security import unauthenticated_userid
 
 CONFIG_KEY = 'ziggurat_foundations'
 log = logging.getLogger(__name__)
@@ -42,7 +42,8 @@ def includeme(config):
     sign_out_path = settings.get('%s.sign_in.sign_out_pattern' % CONFIG_KEY,
                                  '/sign_out')
     user_model_location = settings.get('%s.model_locations.User' % CONFIG_KEY)
-    session_provider_callable = settings.get('%s.session_provider_callable' % CONFIG_KEY)
+    session_provider_callable = settings.get(
+        '%s.session_provider_callable' % CONFIG_KEY)
     signin_came_from_key = settings.get('%s.sign_in.came_from_key' %
                                         CONFIG_KEY, 'came_from')
     signin_username_key = settings.get('%s.sign_in.username_key' %
@@ -64,11 +65,9 @@ def includeme(config):
         _tmp = __import__(parts[0], globals(), locals(), [parts[1], ], 0)
         session_provider_callable = getattr(_tmp, parts[1])
 
-
     parts = user_model_location.split(':')
     _tmp = __import__(parts[0], globals(), locals(), [parts[1], ], 0)
     UserModel = getattr(_tmp, parts[1])
-
 
     endpoint = ZigguratSignInProvider(settings=settings,
                                       UserModel=UserModel,
@@ -86,7 +85,6 @@ def includeme(config):
 
 
 class ZigguratSignInProvider(object):
-
     def __init__(self, *args, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)

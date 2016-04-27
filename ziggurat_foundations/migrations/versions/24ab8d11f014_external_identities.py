@@ -22,9 +22,9 @@ def upgrade():
                                       ondelete='CASCADE'), primary_key=True),
                  sa.Column('provider_name', sa.Unicode(50), default=u'',
                            primary_key=True),
-                 sa.Column('access_token', sa.String(255), default=u''),
-                 sa.Column('alt_token', sa.String(255), default=u''),
-                 sa.Column('token_secret', sa.String(255), default=u'')
+                 sa.Column('access_token', sa.Unicode(255), default=u''),
+                 sa.Column('alt_token', sa.Unicode(255), default=u''),
+                 sa.Column('token_secret', sa.Unicode(255), default=u'')
                  )
 
 

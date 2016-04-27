@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 import hashlib
 import random
 import six
@@ -140,7 +141,8 @@ class UserService(BaseService):
     @classmethod
     def set_password(cls, instance, raw_password):
         """ sets new password """
-        instance.user_password = instance.passwordmanager.encrypt(raw_password)
+        password = instance.passwordmanager.encrypt(raw_password)
+        instance.user_password = password.decode('utf8')
         cls.regenerate_security_code(instance)
 
     @classmethod

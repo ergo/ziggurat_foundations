@@ -30,8 +30,8 @@ def upgrade():
 
     op.drop_column('groups', 'id')
     op.alter_column('groups', 'group_name',
-                    type_=sa.String(128),
-                    existing_type=sa.String(50),
+                    type_=sa.Unicode(128),
+                    existing_type=sa.Unicode(50),
                     )
     op.create_primary_key('groups_pkey', 'groups', cols=['group_name'])
 

@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from . import BaseService
 from ..base import get_db_session
 

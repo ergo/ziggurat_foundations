@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
 from .base import BaseModel
@@ -35,15 +36,15 @@ class ExternalIdentityMixin(BaseModel):
 
     @declared_attr
     def access_token(self):
-        return sa.Column(sa.String(255), default=u'')
+        return sa.Column(sa.Unicode(255), default=u'')
 
     @declared_attr
     def alt_token(self):
-        return sa.Column(sa.String(255), default=u'')
+        return sa.Column(sa.Unicode(255), default=u'')
 
     @declared_attr
     def token_secret(self):
-        return sa.Column(sa.String(255), default=u'')
+        return sa.Column(sa.Unicode(255), default=u'')
 
     @classmethod
     def by_external_id_and_provider(cls, external_id, provider_name,

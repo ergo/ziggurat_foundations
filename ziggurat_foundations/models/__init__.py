@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 # should hold global scoped session
 DBSession = None
 
