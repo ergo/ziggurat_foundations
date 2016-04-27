@@ -1,14 +1,6 @@
 Changelog
 =========
 
-.. hint::
-    What "previous revision ID" means? 
-    If you are updating the package that never was stamped with 
-    alembic you may need to stamp the database manually with following revision id, 
-    from this point onwards you will be able to update schemas automaticly.
-    Alembic 0.3.3+ (or current trunk for 2012-05-27) is required for this to function properly
-
-
 2016-04-27
 ----------
 * Release: 0.6.5
@@ -16,13 +8,14 @@ Changelog
   unicode for all strings
 * user.resources_with_possible_perms() passes resource_types properly
 
-
 2016-04-19
 ----------
 * Release: 0.6.3/0.6.4
 * extended functionality of `populate_obj` function of Base class
 * minor bugfix for mysql
-* BACKWARDS INCOMPATIBLE CHANGES
+
+**BACKWARDS INCOMPATIBLE CHANGES**
+
 * external_identities.local_user_name column is dropped and replaced with
   local_user_id
 
@@ -43,11 +36,14 @@ Changelog
 * Release: 0.6.0
 * models are decoupled from services that interact with models
   (all model querying methods now live in services)
-* BACKWARDS INCOMPATIBLE CHANGES
-  * import related changes:
-      * ziggurat_foundations.models doesn't import all the models anymore
-        every model now lives in separate file
-      * permission related functions now live in permissions module
+
+**BACKWARDS INCOMPATIBLE CHANGES**
+
+import related changes:
+
+    * ziggurat_foundations.models doesn't import all the models anymore
+      every model now lives in separate file
+    * permission related functions now live in permissions module
 
 
 2015-06-15

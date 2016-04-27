@@ -12,7 +12,9 @@ Changelog
 * Release: 0.6.3/0.6.4
 * extended functionality of `populate_obj` function of Base class
 * minor bugfix for mysql
-* BACKWARDS INCOMPATIBLE CHANGES
+
+**BACKWARDS INCOMPATIBLE CHANGES**
+
 * external_identities.local_user_name column is dropped and replaced with
   local_user_id
 
@@ -33,11 +35,13 @@ Changelog
 * Release: 0.6.0
 * models are decoupled from services that interact with models
   (all model querying methods now live in services)
-* BACKWARDS INCOMPATIBLE CHANGES
-  * import related changes:
-      * ziggurat_foundations.models doesn't import all the models anymore
-        every model now lives in separate file
-      * permission related functions now live in permissions module
+
+**BACKWARDS INCOMPATIBLE CHANGES**
+
+* import related changes:
+    * ziggurat_foundations.models doesn't import all the models anymore
+      every model now lives in separate file
+    * permission related functions now live in permissions module
 
 
 2015-06-15
