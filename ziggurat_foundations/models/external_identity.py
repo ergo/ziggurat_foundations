@@ -36,15 +36,15 @@ class ExternalIdentityMixin(BaseModel):
 
     @declared_attr
     def access_token(self):
-        return sa.Column(sa.Unicode(255), default=u'')
+        return sa.Column(sa.Unicode(512), default=u'')
 
     @declared_attr
     def alt_token(self):
-        return sa.Column(sa.Unicode(255), default=u'')
+        return sa.Column(sa.Unicode(512), default=u'')
 
     @declared_attr
     def token_secret(self):
-        return sa.Column(sa.Unicode(255), default=u'')
+        return sa.Column(sa.Unicode(512), default=u'')
 
     @classmethod
     def by_external_id_and_provider(cls, external_id, provider_name,

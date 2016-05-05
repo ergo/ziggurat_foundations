@@ -32,7 +32,7 @@ class UserMixin(BaseModel):
     @declared_attr
     def user_name(self):
         """ Unique user name user object"""
-        return sa.Column(sa.Unicode(30), unique=True)
+        return sa.Column(sa.Unicode(128), unique=True)
 
     @declared_attr
     def user_password(self):

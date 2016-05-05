@@ -1,5 +1,14 @@
 Changelog
 =========
+
+2016-05-05
+----------
+* Release: 0.6.6
+* increased field sizes for external identity tokens, permission names
+  and username
+* perm name is checked to be lowercase in all databases, not only
+  for postgresql
+
 2016-04-27
 ----------
 * Release: 0.6.5

@@ -101,7 +101,9 @@ class GroupMixin(BaseModel):
     @sa.orm.validates('permissions')
     def validate_permission(self, key, permission):
         """ validates if group can get assigned with permission"""
-        assert permission.perm_name in self.__possible_permissions__
+        if permission.perm_name not in self.__possible_permissions__:
+            raise AssertionError('perm_name is not one of {}'.format(
+                self.__possible_permissions__))
         return permission
 
     def __repr__(self):

@@ -98,7 +98,9 @@ class ResourceMixin(BaseModel):
     @sa.orm.validates('user_permissions', 'group_permissions')
     def validate_permission(self, key, permission):
         """ validate if resouce can have specific permission """
-        assert permission.perm_name in self.__possible_permissions__
+        if permission.perm_name not in self.__possible_permissions__:
+            raise AssertionError('perm_name is not one of {}'.format(
+                self.__possible_permissions__))
         return permission
 
     def perms_for_user(self, user, db_session=None):

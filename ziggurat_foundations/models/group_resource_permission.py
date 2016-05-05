@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.orm import validates
 from .base import BaseModel
 
 
@@ -30,6 +31,12 @@ class GroupResourcePermissionMixin(BaseModel):
     @declared_attr
     def perm_name(self):
         return sa.Column(sa.Unicode(50), primary_key=True)
+
+    @validates('perm_name')
+    def validate_perm_name(self, key, value):
+        if value != value.lower():
+            raise AssertionError('perm_name needs to be lowercase')
+        return value
 
     def __repr__(self):
         return '<GroupResourcePermission: g:%s, %s, r:%s>' % (self.group_id,

@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.orm import validates
 from .base import BaseModel
 from .services.user_resource_permission import UserResourcePermissionService
 from .base import get_db_session
@@ -33,7 +34,13 @@ class UserResourcePermissionMixin(BaseModel):
 
     @declared_attr
     def perm_name(self):
-        return sa.Column(sa.Unicode(50), primary_key=True)
+        return sa.Column(sa.Unicode(64), primary_key=True)
+
+    @validates('perm_name')
+    def validate_perm_name(self, key, value):
+        if value != value.lower():
+            raise AssertionError('perm_name needs to be lowercase')
+        return value
 
     def __repr__(self):
         return '<UserResourcePermission: %s, %s, %s>' % (self.user_id,

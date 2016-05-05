@@ -724,7 +724,7 @@ class TestUserPermissionse(BaseTestCase):
         created_user = add_user(db_session)
         resource = add_resource(db_session,1, 'test_resource')
         permission = UserResourcePermission(
-            perm_name='test_perm_BAD',
+            perm_name='test_perm_bad',
             user_id=created_user.id,
             resource_id=resource.resource_id
         )
@@ -781,7 +781,7 @@ class TestUserPermissionse(BaseTestCase):
         group = add_group(db_session,)
         group.users.append(created_user)
         group_permission = GroupResourcePermission(
-            perm_name='test_perm_BAD',
+            perm_name='test_perm_bad',
             group_id=group.id,
             resource_id=resource.resource_id
         )
