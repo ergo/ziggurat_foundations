@@ -3,7 +3,7 @@ Changelog
 
 2016-05-05
 ----------
-* Release: 0.6.6
+* Release: 0.6.6/0.6.7
 * increased field sizes for external identity tokens, permission names
   and username
 * perm name is checked to be lowercase in all databases, not only
