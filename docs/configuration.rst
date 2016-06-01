@@ -43,7 +43,7 @@ First you will need to create alembic.ini file with following contents:
 .. code-block:: ini
 
     [alembic]
-    script_location = ziggurat_foundations:migrations
+    script_location = %(here)s/alembic
     sqlalchemy.url = driver://user:pass@host/dbname
 
     [loggers]
