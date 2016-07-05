@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-__version__ = {'major': 0, 'minor': 6, 'patch': 7}
+__version__ = {'major': 0, 'minor': 6, 'patch': 8}
 
 
 class ModelProxy(object):
