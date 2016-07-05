@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 import logging
+import importlib
+
 from ziggurat_foundations.models.base import get_db_session
 from pyramid.security import unauthenticated_userid
 
@@ -27,12 +29,12 @@ def includeme(config):
         test_session_callable = None
     else:
         parts = session_provider_callable.split(':')
-        _tmp = __import__(parts[0], globals(), locals(), [parts[1], ], 0)
+        _tmp = importlib.import_module(parts[0])
         session_provider_callable = getattr(_tmp, parts[1])
         test_session_callable = "session exists"
 
     parts = user_model_location.split(':')
-    _tmp = __import__(parts[0], globals(), locals(), [parts[1], ], 0)
+    _tmp = importlib.import_module(parts[0])
     UserModel = getattr(_tmp, parts[1])
 
     # This function is bundled into the request, so for each request you can 

@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import pyramid.security
+import importlib
 import logging
+import pyramid.security
+
 from ziggurat_foundations.models.base import get_db_session
 
 CONFIG_KEY = 'ziggurat_foundations'
@@ -62,11 +64,11 @@ def includeme(config):
             return get_db_session()
     else:
         parts = session_provider_callable.split(':')
-        _tmp = __import__(parts[0], globals(), locals(), [parts[1], ], 0)
+        _tmp = importlib.import_module(parts[0])
         session_provider_callable = getattr(_tmp, parts[1])
 
     parts = user_model_location.split(':')
-    _tmp = __import__(parts[0], globals(), locals(), [parts[1], ], 0)
+    _tmp = importlib.import_module(parts[0])
     UserModel = getattr(_tmp, parts[1])
 
     endpoint = ZigguratSignInProvider(settings=settings,
