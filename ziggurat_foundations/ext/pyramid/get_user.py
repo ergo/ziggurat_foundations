@@ -3,7 +3,6 @@ import logging
 import importlib
 
 from ziggurat_foundations.models.base import get_db_session
-from pyramid.security import unauthenticated_userid
 
 CONFIG_KEY = 'ziggurat_foundations'
 log = logging.getLogger(__name__)
@@ -40,7 +39,7 @@ def includeme(config):
     # This function is bundled into the request, so for each request you can 
     # do request.user
     def get_user(request):
-        userid = unauthenticated_userid(request)
+        userid = request.unauthenticated_userid
         if test_session_callable == None:
             # set db_session to none to pass to the UserModel.by_id
             db_session = None
