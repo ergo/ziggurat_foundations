@@ -15,7 +15,7 @@ notifications:
 matrix:
   include:
     - python: "2.7"
-      env: RSTCHECK=1 BCRYPT="enabled"
+      env: BCRYPT="enabled"
 
     - python: "3.3"
       env: BCRYPT="enabled"
