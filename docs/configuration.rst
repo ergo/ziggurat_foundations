@@ -457,7 +457,7 @@ main __init__.py file of our application, like so:
     def main(global_config, **settings):
 
         # Set the session secret as per out ini file
-        session_factory = UnencryptedCookieSessionFactoryConfig(
+        session_factory = SignedCookieSessionFactory(
             settings['session.secret'],
         )
 
