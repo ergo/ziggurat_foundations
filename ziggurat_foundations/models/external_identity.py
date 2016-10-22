@@ -1,6 +1,8 @@
 from __future__ import unicode_literals
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
+from zope.deprecation import deprecation
+
 from .base import BaseModel
 from .services.external_identity import ExternalIdentityService
 from .base import get_db_session
@@ -47,11 +49,15 @@ class ExternalIdentityMixin(BaseModel):
         return sa.Column(sa.Unicode(512), default=u'')
 
     @classmethod
+    @deprecation.deprecate("ExternalIdentity.by_external_id_and_provider "
+                           "will be removed in 0.8, use service instead")
     def by_external_id_and_provider(cls, external_id, provider_name,
                                     db_session=None):
         """
         Backwards compatible alias to
         :class:`ziggurat_foundations.models.services.external_identity.ExternalIdentityService.by_external_id_and_provider`
+
+        .. deprecated:: 0.8
 
         :param external_id:
         :param provider_name:
@@ -64,11 +70,15 @@ class ExternalIdentityMixin(BaseModel):
             db_session=db_session)
 
     @classmethod
+    @deprecation.deprecate("ExternalIdentity.user_by_external_id_and_provider "
+                           "will be removed in 0.8, use service instead")
     def user_by_external_id_and_provider(cls, external_id, provider_name,
                                          db_session=None):
         """
         Backwards compatible alias to
         :class:`ziggurat_foundations.models.services.external_identity.ExternalIdentityService.user_by_external_id_and_provider`
+
+        .. deprecated:: 0.8
 
         :param external_id:
         :param provider_name:

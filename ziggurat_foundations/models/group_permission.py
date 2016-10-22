@@ -2,6 +2,8 @@ from __future__ import unicode_literals
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import validates
+from zope.deprecation import deprecation
+
 from .base import BaseModel
 from .services.group_permission import GroupPermissionService
 from .base import get_db_session
@@ -38,7 +40,18 @@ class GroupPermissionMixin(BaseModel):
         return '<GroupPermission: %s>' % self.perm_name
 
     @classmethod
+    @deprecation.deprecate("GroupPermission.by_group_and_perm "
+                           "will be removed in 0.8, use service instead")
     def by_group_and_perm(cls, group_id, perm_name, db_session=None):
+        """
+
+        .. deprecated:: 0.8
+
+        :param group_id:
+        :param perm_name:
+        :param db_session:
+        :return:
+        """
         db_session = get_db_session(db_session)
         return GroupPermissionService.by_group_and_perm(
             group_id=group_id,

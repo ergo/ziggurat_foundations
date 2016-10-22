@@ -39,7 +39,7 @@ script:
   - python setup.py develop
   - if [ -n "$BCRYPT" ]; then pip install bcrypt; fi
   - if [ -n "$PYBCRYPT" ]; then pip install py-bcrypt; fi
-  - py.test ziggurat_foundations/tests.py
+  - py.test ziggurat_foundations/tests/tests.py
 
   # flake8 and rstcheck
   - if [ -n "$RSTCHECK" ]; then ./test.sh; fi

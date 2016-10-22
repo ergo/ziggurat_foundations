@@ -2,6 +2,8 @@ from __future__ import unicode_literals
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import validates
+from zope.deprecation import deprecation
+
 from .base import BaseModel
 from .services.user_resource_permission import UserResourcePermissionService
 from .base import get_db_session
@@ -48,8 +50,20 @@ class UserResourcePermissionMixin(BaseModel):
                                                          self.resource_id,)
 
     @classmethod
+    @deprecation.deprecate("UserResourcePermission.by_resource_user_and_perm "
+                           "will be removed in 0.8, use service instead")
     def by_resource_user_and_perm(cls, user_id, perm_name, resource_id,
                                   db_session=None):
+        """
+
+        .. deprecated:: 0.8
+
+        :param user_id:
+        :param perm_name:
+        :param resource_id:
+        :param db_session:
+        :return:
+        """
         db_session = get_db_session(db_session)
         return UserResourcePermissionService.by_resource_user_and_perm(
             user_id=user_id, perm_name=perm_name, resource_id=resource_id,

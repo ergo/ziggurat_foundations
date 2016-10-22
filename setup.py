@@ -31,5 +31,6 @@ setup(
         "paginate",
         "paginate_sqlalchemy",
         "alembic",
+        'zope.deprecation >= 3.5.0',
         "six"]
 )

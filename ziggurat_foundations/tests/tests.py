@@ -6,19 +6,19 @@ import six
 import pytest
 
 from sqlalchemy.ext.declarative import declarative_base
-from . import ziggurat_model_init
-from .permissions import PermissionTuple, ALL_PERMISSIONS, Allow
-from .models.user import UserMixin
-from .models.group import GroupMixin
-from .models.group_permission import GroupPermissionMixin
-from .models.user_permission import UserPermissionMixin
-from .models.user_group import UserGroupMixin
-from .models.user_resource_permission import UserResourcePermissionMixin
-from .models.group_resource_permission import GroupResourcePermissionMixin
-from .models.resource import ResourceMixin
-from .models.external_identity import ExternalIdentityMixin
-from .models.services.external_identity import ExternalIdentityService
-from .models.base import get_db_session
+from ziggurat_foundations import ziggurat_model_init
+from ziggurat_foundations.permissions import PermissionTuple, ALL_PERMISSIONS, Allow
+from ziggurat_foundations.models.user import UserMixin
+from ziggurat_foundations.models.group import GroupMixin
+from ziggurat_foundations.models.group_permission import GroupPermissionMixin
+from ziggurat_foundations.models.user_permission import UserPermissionMixin
+from ziggurat_foundations.models.user_group import UserGroupMixin
+from ziggurat_foundations.models.user_resource_permission import UserResourcePermissionMixin
+from ziggurat_foundations.models.group_resource_permission import GroupResourcePermissionMixin
+from ziggurat_foundations.models.resource import ResourceMixin
+from ziggurat_foundations.models.external_identity import ExternalIdentityMixin
+from ziggurat_foundations.models.services.external_identity import ExternalIdentityService
+from ziggurat_foundations.models.base import get_db_session
 
 # from .utils import permission_to_04_acls, permission_to_pyramid_acls
 
