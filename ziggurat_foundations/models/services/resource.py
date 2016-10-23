@@ -233,7 +233,7 @@ class ResourceService(BaseService):
         root_elem = {'node': items[0].Resource, 'children': OrderedDict()}
         for i, node in enumerate(items[1:]):
             new_elem = {'node': node.Resource, 'children': OrderedDict()}
-            path = map(int, node.path.split('/'))
+            path = list(map(int, node.path.split('/')))
             parent_node = root_elem
             normalized_path = path[1:-1]
             if normalized_path:
