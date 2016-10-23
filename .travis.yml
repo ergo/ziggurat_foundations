@@ -49,7 +49,7 @@ script:
   - if [ -n "$BCRYPT" ]; then pip install bcrypt; fi
   - if [ -n "$PYBCRYPT" ]; then pip install py-bcrypt; fi
   - pip install psycopg2
-  - py.test
+  - py.test ziggurat_foundations/tests/
 
   # flake8 and rstcheck
   - if [ -n "$RSTCHECK" ]; then ./test.sh; fi
