@@ -23,7 +23,8 @@ setup(
     },
     test_suite='ziggurat_foundations.tests',
     tests_require=[
-        "coverage"
+        "coverage",
+        "pytest"
     ],
     install_requires=[
         "sqlalchemy",
