@@ -26,6 +26,7 @@ setup(
         "coverage",
         "pytest",
         "psycopg2",
+        "pytest-cov"
     ],
     install_requires=[
         "sqlalchemy",

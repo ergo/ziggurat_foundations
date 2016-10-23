@@ -4,12 +4,12 @@ import pytest
 
 from ziggurat_foundations.tests import (
     add_resource, BaseTestCase)
-from ziggurat_foundations.tests.conftest import Resource, is_mysql
+from ziggurat_foundations.tests.conftest import Resource, not_postgres
 from ziggurat_foundations.models.services.resource import ResourceService
 
 
 class TestResources(BaseTestCase):
-    @pytest.mark.skipif(is_mysql, reason="requires postgres")
+    @pytest.mark.skipif(not_postgres, reason="requires postgres")
     def test_nesting(self, db_session):
         root = add_resource(
             db_session, -1, 'root', ordering=1)

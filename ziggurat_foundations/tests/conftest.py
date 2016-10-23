@@ -24,7 +24,7 @@ from ziggurat_foundations.models.group_resource_permission import \
 from ziggurat_foundations.models.resource import ResourceMixin
 from ziggurat_foundations.models.external_identity import ExternalIdentityMixin
 
-is_mysql = 'mysql' in os.environ.get("DB_STRING", '').lower()
+not_postgres = 'postgres' not in os.environ.get("DB_STRING", '').lower()
 
 Base = declarative_base()
 
