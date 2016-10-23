@@ -24,7 +24,8 @@ setup(
     test_suite='ziggurat_foundations.tests',
     tests_require=[
         "coverage",
-        "pytest"
+        "pytest",
+        "psycopg2",
     ],
     install_requires=[
         "sqlalchemy",

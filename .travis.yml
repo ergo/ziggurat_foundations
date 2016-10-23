@@ -48,6 +48,7 @@ script:
   - python setup.py develop
   - if [ -n "$BCRYPT" ]; then pip install bcrypt; fi
   - if [ -n "$PYBCRYPT" ]; then pip install py-bcrypt; fi
+  - pip install psycopg2
   - py.test
 
   # flake8 and rstcheck
