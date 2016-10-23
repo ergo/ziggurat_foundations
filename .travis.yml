@@ -54,7 +54,7 @@ script:
   - if [ -n "$PYBCRYPT" ]; then pip install py-bcrypt; fi
   - if [ -n "$BCRYPT" ]; then pip install psycopg2; fi
   - if [ -n "$PYBCRYPT" ]; then pip install psycopg2cffi; fi
-  - if [ -n "$MYSQL" ]; then pip install mysql-connector-python; fi
+  - if [ -n "$MYSQL" ]; then pip install mysql-connector; fi
   - py.test ziggurat_foundations/tests/
 
   # flake8 and rstcheck
