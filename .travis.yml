@@ -27,10 +27,10 @@ matrix:
       env: BCRYPT="enabled" DB_STRING="postgres://postgres@127.0.0.1:5432/test"
 
     - python: "pypy"
-      env: PYBCRYPT="enabled" DB_STRING="postgresql+pg8000://postgres@127.0.0.1:5432/test"
+      env: PYBCRYPT="enabled" DB_STRING="postgresql+psycopg2cffi://postgres@127.0.0.1:5432/test"
 
     - python: "pypy3"
-      env: PYBCRYPT="enabled" DB_STRING="postgresql+pg8000://postgres@127.0.0.1:5432/test"
+      env: PYBCRYPT="enabled" DB_STRING="postgresql+psycopg2cffi://postgres@127.0.0.1:5432/test"
 
 services:
   - postgresql
@@ -49,7 +49,7 @@ script:
   - if [ -n "$BCRYPT" ]; then pip install bcrypt; fi
   - if [ -n "$PYBCRYPT" ]; then pip install py-bcrypt; fi
   - if [ -n "$BCRYPT" ]; then pip install psycopg2; fi
-  - if [ -n "$PYBCRYPT" ]; then pip install pg8000; fi
+  - if [ -n "$PYBCRYPT" ]; then pip install psycopg2cffi; fi
   - py.test ziggurat_foundations/tests/
 
   # flake8 and rstcheck
