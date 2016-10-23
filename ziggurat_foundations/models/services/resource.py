@@ -1,4 +1,7 @@
 from __future__ import unicode_literals
+
+from collections import OrderedDict
+
 import sqlalchemy as sa
 from . import BaseService
 from ..base import get_db_session
@@ -202,20 +205,42 @@ class ResourceService(BaseService):
         """
         raw_q = """
             WITH RECURSIVE subtree AS (
-                    SELECT res.*, 1 as depth, array[ordering] as sorting FROM
-                    resources res WHERE res.resource_id = :id
+                    SELECT res.*, 1 AS depth, res.ordering::CHARACTER VARYING AS sorting,
+                    res.resource_id::CHARACTER VARYING AS path
+                    FROM resources AS res WHERE res.resource_id = :resource_id
                   UNION ALL
-                    SELECT res_u.*, depth+1 as depth,
-                    (st.sorting || ARRAY[res_u.ordering] ) as sort
+                    SELECT res_u.*, depth+1 AS depth,
+                    (st.sorting::CHARACTER VARYING || '/' || res_u.ordering::CHARACTER VARYING ) AS sorting,
+                    (st.path::CHARACTER VARYING || '/' || res_u.resource_id::CHARACTER VARYING ) AS path
                     FROM resources res_u, subtree st
                     WHERE res_u.parent_id = st.resource_id
             )
             SELECT * FROM subtree WHERE depth<=:depth ORDER BY sorting;
         """
         db_session = get_db_session(db_session)
-        q = db_session.query(cls).from_statement(raw_q).params(id=object_id,
-                                                               depth=limit_depth)
+        text_obj = sa.text(raw_q)
+        q = db_session.query(cls.model, 'depth', 'sorting', 'path').from_statement(
+            text_obj).params(
+            resource_id=object_id, depth=limit_depth)
         return q
+
+    @classmethod
+    def build_subtree_strut(self, result):
+        items = list(result)
+        struct_dict = OrderedDict()
+        if len(items) == 0:
+            return struct_dict[0]
+        root_elem = {'node': items[0].Resource, 'children': OrderedDict()}
+        for i, node in enumerate(items[1:]):
+            new_elem = {'node': node.Resource, 'children': OrderedDict()}
+            path = map(int, node.path.split('/'))
+            parent_node = root_elem
+            normalized_path = path[1:-1]
+            if normalized_path:
+                for path_part in normalized_path:
+                    parent_node = parent_node['children'][path_part]
+            parent_node['children'][new_elem['node'].resource_id] = new_elem
+        return root_elem
 
     @classmethod
     def path_upper(cls, object_id, limit_depth=1000000, flat=True,
@@ -226,7 +251,7 @@ class ResourceService(BaseService):
         raw_q = """
             WITH RECURSIVE subtree AS (
                     SELECT res.*, 1 as depth FROM resources res
-                    WHERE res.resource_id = :id
+                    WHERE res.resource_id = :resource_id
                   UNION ALL
                     SELECT res_u.*, depth+1 as depth
                     FROM resources res_u, subtree st
@@ -235,6 +260,6 @@ class ResourceService(BaseService):
             SELECT * FROM subtree WHERE depth<=:depth;
         """
         db_session = get_db_session(db_session)
-        q = db_session.query(cls).from_statement(raw_q).params(id=object_id,
-                                                               depth=limit_depth)
+        q = db_session.query(cls.model).from_statement(sa.text(raw_q)).params(
+            resource_id=object_id, depth=limit_depth)
         return q

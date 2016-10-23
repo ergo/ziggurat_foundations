@@ -27,13 +27,16 @@ def add_user(db_session, user_name='username', email='email',
     return user
 
 
-def add_resource(db_session, resource_id, resource_name='test_resource'):
+def add_resource(db_session, resource_id, resource_name='test_resource',
+                 parent_id=None, ordering=None):
     Resource.__possible_permissions__ = [
         'test_perm', 'test_perm1',
         'test_perm2', 'foo_perm',
         'group_perm', 'group_perm2']
     resource = TestResource(resource_id=resource_id,
-                            resource_name=resource_name)
+                            resource_name=resource_name,
+                            parent_id=parent_id,
+                            ordering=ordering)
     db_session.add(resource)
     db_session.flush()
     return resource
