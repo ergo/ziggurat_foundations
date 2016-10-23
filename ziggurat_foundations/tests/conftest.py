@@ -23,6 +23,7 @@ from ziggurat_foundations.models.group_resource_permission import \
     GroupResourcePermissionMixin
 from ziggurat_foundations.models.resource import ResourceMixin
 from ziggurat_foundations.models.external_identity import ExternalIdentityMixin
+from ziggurat_foundations.permissions import ALL_PERMISSIONS, Allow
 
 not_postgres = 'postgres' not in os.environ.get("DB_STRING", '').lower()
 
