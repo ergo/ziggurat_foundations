@@ -17,13 +17,17 @@ from ziggurat_foundations.models.group import GroupMixin
 from ziggurat_foundations.models.group_permission import GroupPermissionMixin
 from ziggurat_foundations.models.user_permission import UserPermissionMixin
 from ziggurat_foundations.models.user_group import UserGroupMixin
-from ziggurat_foundations.models.user_resource_permission import UserResourcePermissionMixin
-from ziggurat_foundations.models.group_resource_permission import GroupResourcePermissionMixin
+from ziggurat_foundations.models.user_resource_permission import \
+    UserResourcePermissionMixin
+from ziggurat_foundations.models.group_resource_permission import \
+    GroupResourcePermissionMixin
 from ziggurat_foundations.models.resource import ResourceMixin
 from ziggurat_foundations.models.external_identity import ExternalIdentityMixin
 
+is_mysql = 'mysql' in os.environ.get("DB_STRING", '').lower()
 
 Base = declarative_base()
+
 
 class Group(GroupMixin, Base):
     __possible_permissions__ = ('root_administration',
@@ -84,7 +88,6 @@ class User(UserMixin, Base):
 ziggurat_model_init(User, Group, UserGroup, GroupPermission, UserPermission,
                     UserResourcePermission, GroupResourcePermission, Resource,
                     ExternalIdentity)
-
 
 
 @pytest.fixture

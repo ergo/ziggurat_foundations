@@ -2,16 +2,14 @@
 from __future__ import with_statement, unicode_literals
 import pytest
 
-from ziggurat_foundations.permissions import PermissionTuple, ALL_PERMISSIONS
-
 from ziggurat_foundations.tests import (
-    add_user, check_one_in_other, add_resource, add_resource_b, add_group,
-    BaseTestCase)
-from ziggurat_foundations.tests.conftest import Resource
+    add_resource, BaseTestCase)
+from ziggurat_foundations.tests.conftest import Resource, is_mysql
 from ziggurat_foundations.models.services.resource import ResourceService
 
 
 class TestResources(BaseTestCase):
+    @pytest.mark.skipif(is_mysql, reason="requires postgres")
     def test_nesting(self, db_session):
         root = add_resource(
             db_session, -1, 'root', ordering=1)
