@@ -5,6 +5,13 @@ from ..base import get_db_session
 
 class ExternalIdentityService(BaseService):
     @classmethod
+    def get(cls, external_id, local_user_id, provider_name, db_session=None):
+        db_session = get_db_session(db_session)
+        lvars = locals()
+        pkey = [lvars[c.name] for c in cls.model.get_primary_key()]
+        return db_session.query(cls.model).get(pkey)
+
+    @classmethod
     def by_external_id_and_provider(cls, external_id, provider_name,
                                     db_session=None):
         """

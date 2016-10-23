@@ -12,6 +12,10 @@ class BaseModel(object):
         """ returns column names for this model """
         return sa.orm.class_mapper(cls).c.keys()
 
+    @classmethod
+    def get_primary_key(cls):
+        return sa.orm.class_mapper(cls).primary_key
+
     def get_dict(self, exclude_keys=None, include_keys=None):
         """ return dictionary of keys and values corresponding to this model's
         data

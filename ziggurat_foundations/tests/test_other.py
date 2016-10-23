@@ -51,6 +51,20 @@ class TestExternalIdentity(BaseTestCase):
             db_session=db_session)
         assert identity == found
 
+    def test_get(self, db_session):
+        user = add_user(db_session)
+        identity = ExternalIdentity(external_user_name='foo',
+                                    external_id='foo',
+                                    provider_name='facebook')
+        user.external_identities.append(identity)
+        db_session.flush()
+        found = ExternalIdentityService.get(
+            provider_name='facebook',
+            external_id='foo',
+            local_user_id=user.id,
+            db_session=db_session)
+        assert identity == found
+
     def test_user_by_external_id_and_provider(self, db_session):
         user = add_user(db_session)
         identity = ExternalIdentity(external_user_name='foo',

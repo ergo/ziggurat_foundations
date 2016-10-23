@@ -33,6 +33,12 @@ def create_default_tree(db_session):
 
 
 class TestResources(BaseTestCase):
+    def test_get(self, db_session):
+        add_resource(db_session, 1, 'root')
+        resource = ResourceService.get(resource_id=1, db_session=db_session)
+        assert resource.resource_id == 1
+        assert resource.resource_name == 'root'
+
     @pytest.mark.skipif(not_postgres, reason="requires postgres")
     def test_root_nesting(self, db_session):
         root = create_default_tree(db_session)

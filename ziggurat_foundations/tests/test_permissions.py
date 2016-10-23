@@ -13,6 +13,12 @@ from ziggurat_foundations.tests.conftest import (
     GroupPermission,
     UserResourcePermission,
     GroupResourcePermission, TestResourceB)
+from ziggurat_foundations.models.services.group_permission import \
+    GroupPermissionService
+from ziggurat_foundations.models.services.user_permission import \
+    UserPermissionService
+from ziggurat_foundations.models.services.user_resource_permission import \
+    UserResourcePermissionService
 
 
 class TestUserPermissions(BaseTestCase):
@@ -670,28 +676,55 @@ class TestUserPermissions(BaseTestCase):
 
         check_one_in_other(perms, second)
 
+    def test_get_resource_permission(self, db_session):
+        created_user = add_user(db_session)
+        resource = add_resource(db_session, 1, 'test_resource')
+        permission = UserResourcePermission(
+            perm_name='test_perm', user_id=created_user.id,
+            resource_id=resource.resource_id)
+        resource.user_permissions.append(permission)
+        db_session.flush()
+        perm = UserResourcePermissionService.get(
+            user_id=created_user.id,
+            resource_id=resource.resource_id,
+            perm_name='test_perm',
+            db_session=db_session
+        )
+        assert perm.perm_name == 'test_perm'
+        assert perm.resource_id == resource.resource_id
+        assert perm.user_id == created_user.id
+
+
 class TestGroupPermission(BaseTestCase):
     def test_repr(self, db_session):
         group_permission = GroupPermission(group_id=1,
                                            perm_name='perm')
         assert repr(group_permission) == '<GroupPermission: perm>'
 
+    def test_get(self, db_session):
+        org_group = add_group(db_session, 'group1')
+        group = GroupPermissionService.get(
+            group_id=org_group.id, perm_name='manage_apps',
+            db_session=db_session)
+        assert group.group_id == 1
+        assert group.perm_name == 'manage_apps'
+
     def test_by_group_and_perm(self, db_session):
-        add_group(db_session,)
+        add_group(db_session, )
         queried = GroupPermission.by_group_and_perm(1, 'manage_apps',
                                                     db_session=db_session)
         assert queried.group_id == 1
         assert queried.perm_name == 'manage_apps'
 
     def test_by_group_and_perm_wrong_group(self, db_session):
-        add_group(db_session,)
+        add_group(db_session, )
         queried = GroupPermission.by_group_and_perm(2,
                                                     'manage_apps',
                                                     db_session=db_session)
         assert queried is None
 
     def test_by_group_and_perm_wrong_perm(self, db_session):
-        add_group(db_session,)
+        add_group(db_session, )
         queried = GroupPermission.by_group_and_perm(1, 'wrong_perm',
                                                     db_session=db_session)
         assert queried is None
@@ -707,7 +740,7 @@ class TestGroupPermission(BaseTestCase):
 
     def test_resources_with_possible_perms_group2(self, db_session):
         self.set_up_user_group_and_perms(db_session)
-        resource3 = add_resource_b(db_session,3, 'other resource')
+        resource3 = add_resource_b(db_session, 3, 'other resource')
         self.group2.resources.append(resource3)
         group_permission2 = GroupResourcePermission(
             perm_name='group_perm2',
@@ -731,6 +764,13 @@ class TestUserPermission(BaseTestCase):
     def test_repr(self, db_session):
         user_permission = UserPermission(user_id=1, perm_name='perm')
         assert repr(user_permission) == '<UserPermission: perm>'
+
+    def test_get(self, db_session):
+        user = add_user(db_session)
+        perm = UserPermissionService.get(
+            user_id=user.id, perm_name='root', db_session=db_session)
+        assert perm.user_id == user.id
+        assert perm.perm_name == 'root'
 
     def test_by_user_and_perm(self, db_session):
         add_user(db_session)

@@ -9,6 +9,11 @@ from ...permissions import (ANY_PERMISSION,
 
 class GroupService(BaseService):
     @classmethod
+    def get(cls, group_id, db_session=None):
+        db_session = get_db_session(db_session)
+        return db_session.query(cls.model).get(group_id)
+
+    @classmethod
     def by_group_name(cls, group_name, db_session=None):
         """ fetch group by name"""
         db_session = get_db_session(db_session)
@@ -45,7 +50,7 @@ class GroupService(BaseService):
             cls.models_proxy.GroupResourcePermission.perm_name,
             cls.models_proxy.Group,
             cls.models_proxy.Resource
-            )
+        )
         query = query.filter(
             cls.models_proxy.Resource.resource_id ==
             cls.models_proxy.GroupResourcePermission.resource_id)
@@ -62,7 +67,7 @@ class GroupService(BaseService):
                 cls.models_proxy.Resource.resource_type.in_(resource_types))
 
         if (perm_names not in (
-            [ANY_PERMISSION], ANY_PERMISSION) and perm_names):
+                [ANY_PERMISSION], ANY_PERMISSION) and perm_names):
             query = query.filter(
                 cls.models_proxy.GroupResourcePermission.perm_name.in_(
                     perm_names))

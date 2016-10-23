@@ -14,6 +14,11 @@ from ...permissions import (ANY_PERMISSION,
 
 class UserService(BaseService):
     @classmethod
+    def get(cls, user_id, db_session=None):
+        db_session = get_db_session(db_session)
+        return db_session.query(cls.model).get(user_id)
+
+    @classmethod
     def permissions(cls, instance, db_session=None):
         """ returns all non-resource permissions based on what groups user
             belongs and directly set ones for this user"""

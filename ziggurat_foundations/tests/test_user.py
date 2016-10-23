@@ -4,9 +4,15 @@ import six
 
 from ziggurat_foundations.tests import BaseTestCase, add_user
 from ziggurat_foundations.tests.conftest import (User)
+from ziggurat_foundations.models.services.user import UserService
 
 
 class TestUser(BaseTestCase):
+    def test_get(self, db_session):
+        org_user = add_user(db_session)
+        user = UserService.get(user_id=org_user.id, db_session=db_session)
+        assert org_user.id == user.id
+
     def test_add_user(self, db_session):
         user = User(user_name='username', email='email', status=0)
         db_session.add(user)
@@ -98,9 +104,9 @@ class TestUser(BaseTestCase):
         assert found is None
 
     def test_by_user_names(self, db_session):
-        user1 = add_user(db_session,'user1', 'email1')
-        add_user(db_session,'user2', 'email2')
-        user3 = add_user(db_session,'user3', 'email3')
+        user1 = add_user(db_session, 'user1', 'email1')
+        add_user(db_session, 'user2', 'email2')
+        user3 = add_user(db_session, 'user3', 'email3')
 
         queried_users = User.by_user_names(['user1', 'user3'],
                                            db_session=db_session).all()
@@ -110,9 +116,9 @@ class TestUser(BaseTestCase):
         assert user3 == queried_users[1]
 
     def test_by_user_names_one_none(self, db_session):
-        user1 = add_user(db_session,'user1', 'email1')
-        add_user(db_session,'user2', 'email2')
-        user3 = add_user(db_session,'user3', 'email3')
+        user1 = add_user(db_session, 'user1', 'email1')
+        add_user(db_session, 'user2', 'email2')
+        user3 = add_user(db_session, 'user3', 'email3')
 
         queried_users = User.by_user_names(['user1', None, 'user3'],
                                            db_session=db_session).all()
@@ -122,9 +128,9 @@ class TestUser(BaseTestCase):
         assert user3 == queried_users[1]
 
     def test_by_user_names_like(self, db_session):
-        user1 = add_user(db_session,'user1', 'email1')
-        add_user(db_session,'luser2', 'email2')
-        add_user(db_session,'noname', 'email3')
+        user1 = add_user(db_session, 'user1', 'email1')
+        add_user(db_session, 'luser2', 'email2')
+        add_user(db_session, 'noname', 'email3')
 
         queried_users = User.user_names_like('user%',
                                              db_session=db_session).all()

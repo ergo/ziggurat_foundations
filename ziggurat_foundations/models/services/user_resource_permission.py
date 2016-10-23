@@ -5,6 +5,13 @@ from ..base import get_db_session
 
 class UserResourcePermissionService(BaseService):
     @classmethod
+    def get(cls, user_id, resource_id, perm_name, db_session=None):
+        db_session = get_db_session(db_session)
+        lvars = locals()
+        pkey = [lvars[c.name] for c in cls.model.get_primary_key()]
+        return db_session.query(cls.model).get(pkey)
+
+    @classmethod
     def by_resource_user_and_perm(cls, user_id, perm_name, resource_id,
                                   db_session=None):
         """ return all instances by user name, perm name and resource id """

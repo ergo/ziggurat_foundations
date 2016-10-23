@@ -6,6 +6,7 @@ from ziggurat_foundations.tests import (
     BaseTestCase)
 from ziggurat_foundations.tests.conftest import (
     Group)
+from ziggurat_foundations.models.services.group import GroupService
 
 
 class TestGroup(BaseTestCase):
@@ -64,6 +65,11 @@ class TestGroup(BaseTestCase):
 
         assert group_users[0] == user1
         assert group_users[1] == user2
+
+    def test_get(self, db_session):
+        group1 = add_group(db_session, 'group1')
+        group = GroupService.get(group_id=group1.id, db_session=db_session)
+        assert group.id == group1.id
 
     def test_all(self, db_session):
         group1 = add_group(db_session, 'group1')

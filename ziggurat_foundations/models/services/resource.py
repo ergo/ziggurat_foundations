@@ -13,6 +13,11 @@ from ...permissions import (ANY_PERMISSION,
 
 class ResourceService(BaseService):
     @classmethod
+    def get(cls, resource_id, db_session=None):
+        db_session = get_db_session(db_session)
+        return db_session.query(cls.model).get(resource_id)
+
+    @classmethod
     def perms_for_user(cls, instance, user, db_session=None):
         """ returns all permissions that given user has for this resource
             from groups and directly set ones too"""
@@ -219,7 +224,8 @@ class ResourceService(BaseService):
         """
         db_session = get_db_session(db_session)
         text_obj = sa.text(raw_q)
-        q = db_session.query(cls.model, 'depth', 'sorting', 'path').from_statement(
+        q = db_session.query(cls.model, 'depth', 'sorting',
+                             'path').from_statement(
             text_obj).params(
             resource_id=object_id, depth=limit_depth)
         return q
@@ -263,3 +269,7 @@ class ResourceService(BaseService):
         q = db_session.query(cls.model).from_statement(sa.text(raw_q)).params(
             resource_id=object_id, depth=limit_depth)
         return q
+
+    @classmethod
+    def move_before_position(cls, object_id, parent_id, position):
+        pass
