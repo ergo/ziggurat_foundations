@@ -205,8 +205,15 @@ class ResourceService(BaseService):
     @classmethod
     def subtree_deeper(cls, object_id, limit_depth=1000000, flat=True,
                        db_session=None):
-        """ This returns you subree of ordered objects relative
+        """
+        This returns you subree of ordered objects relative
         to the start object id currently only postgresql
+
+        :param object_id:
+        :param limit_depth:
+        :param flat:
+        :param db_session:
+        :return:
         """
         raw_q = """
             WITH RECURSIVE subtree AS (
@@ -232,6 +239,13 @@ class ResourceService(BaseService):
 
     @classmethod
     def build_subtree_strut(self, result):
+        """
+        Returns a dictionary in form of
+        {node:Resource, children:{node_id: Resource}}
+
+        :param result:
+        :return:
+        """
         items = list(result)
         struct_dict = OrderedDict()
         if len(items) == 0:
@@ -251,8 +265,15 @@ class ResourceService(BaseService):
     @classmethod
     def path_upper(cls, object_id, limit_depth=1000000, flat=True,
                    db_session=None):
-        """ This returns you path to root node starting from object_id
+        """
+        This returns you path to root node starting from object_id
             currently only for postgresql
+
+        :param object_id:
+        :param limit_depth:
+        :param flat:
+        :param db_session:
+        :return:
         """
         raw_q = """
             WITH RECURSIVE subtree AS (
@@ -271,5 +292,15 @@ class ResourceService(BaseService):
         return q
 
     @classmethod
-    def move_before_position(cls, object_id, parent_id, position):
-        pass
+    def move_to_position(cls, resource_id, position, parent_id=None,
+                         db_session=None):
+        """
+        Moves node to new location in the tree
+
+        :param resource_id:
+        :param position:
+        :param parent_id: new parent id
+        :param db_session:
+        :return:
+        """
+        return True

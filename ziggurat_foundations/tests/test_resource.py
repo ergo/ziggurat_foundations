@@ -76,3 +76,16 @@ class TestResources(BaseTestCase):
         root = create_default_tree(db_session=db_session)
         result = ResourceService.path_upper(9, db_session=db_session)
         assert [r.resource_id for r in result] == [9, 7, 1, -1]
+
+    @pytest.mark.skipif(not_postgres, reason="requires postgres")
+    def test_move_up_on_same_branch(self, db_session):
+        import pprint
+        root = create_default_tree(db_session=db_session)
+        ResourceService.move_to_position(3, position=2, db_session=db_session)
+        result = ResourceService.subtree_deeper(
+            root['node'].resource_id, limit_depth=2, db_session=db_session)
+        tree = ResourceService.build_subtree_strut(result)
+        pprint.pprint(tree)
+        assert tree['children'][3]['node'].ordering == 2
+        assert tree['children'][2]['node'].ordering == 4
+        assert 1 == 2
