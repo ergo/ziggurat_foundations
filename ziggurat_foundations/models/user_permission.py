@@ -10,7 +10,9 @@ from .base import get_db_session
 
 
 class UserPermissionMixin(BaseModel):
-    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
+    __table_args__ = (sa.PrimaryKeyConstraint('user_id', 'perm_name',
+                                              name='pk_users_permissions'),
+                      {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'})
 
     _ziggurat_service = UserPermissionService
 

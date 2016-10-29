@@ -12,7 +12,9 @@ from .base import get_db_session
 class GroupPermissionMixin(BaseModel):
     """ group permission mixin """
 
-    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
+    __table_args__ = (sa.PrimaryKeyConstraint('group_id', 'perm_name',
+                                              name='pk_groups_permissions'),
+                      {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'})
 
     _ziggurat_service = GroupPermissionService
 

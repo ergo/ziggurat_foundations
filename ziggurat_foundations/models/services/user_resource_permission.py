@@ -7,9 +7,8 @@ class UserResourcePermissionService(BaseService):
     @classmethod
     def get(cls, user_id, resource_id, perm_name, db_session=None):
         db_session = get_db_session(db_session)
-        lvars = locals()
-        pkey = [lvars[c.name] for c in cls.model.get_primary_key()]
-        return db_session.query(cls.model).get(pkey)
+        return db_session.query(cls.model).get(
+            [user_id, resource_id, perm_name])
 
     @classmethod
     def by_resource_user_and_perm(cls, user_id, perm_name, resource_id,
