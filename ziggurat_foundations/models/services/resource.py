@@ -3,12 +3,18 @@ from __future__ import unicode_literals
 from collections import OrderedDict
 
 import sqlalchemy as sa
-from . import BaseService
-from ..base import get_db_session
-from ...permissions import (ANY_PERMISSION,
-                            ALL_PERMISSIONS,
-                            PermissionTuple,
-                            resource_permissions_for_users)
+from ziggurat_foundations import ZigguratException
+from ziggurat_foundations.models.services import BaseService
+from ziggurat_foundations.models.base import get_db_session
+from ziggurat_foundations.permissions import (
+    ANY_PERMISSION,
+    ALL_PERMISSIONS,
+    PermissionTuple,
+    resource_permissions_for_users)
+
+
+class ResourceTreeException(ZigguratException):
+    pass
 
 
 class ResourceService(BaseService):
@@ -203,15 +209,13 @@ class ResourceService(BaseService):
         return group_perms
 
     @classmethod
-    def subtree_deeper(cls, object_id, limit_depth=1000000, flat=True,
-                       db_session=None):
+    def subtree_deeper(cls, object_id, limit_depth=1000000, db_session=None):
         """
         This returns you subree of ordered objects relative
         to the start object id currently only postgresql
 
         :param object_id:
         :param limit_depth:
-        :param flat:
         :param db_session:
         :return:
         """
@@ -263,15 +267,13 @@ class ResourceService(BaseService):
         return root_elem
 
     @classmethod
-    def path_upper(cls, object_id, limit_depth=1000000, flat=True,
-                   db_session=None):
+    def path_upper(cls, object_id, limit_depth=1000000, db_session=None):
         """
         This returns you path to root node starting from object_id
             currently only for postgresql
 
         :param object_id:
         :param limit_depth:
-        :param flat:
         :param db_session:
         :return:
         """
@@ -291,14 +293,18 @@ class ResourceService(BaseService):
             resource_id=object_id, depth=limit_depth)
         return q
 
+    def lock_resource_for_update(self, resource_id, db_session):
+        db_session = get_db_session(db_session)
+        pass
+
     @classmethod
-    def move_to_position(cls, resource_id, position, parent_id=None,
+    def move_to_position(cls, resource_id, to_position, parent_id=None,
                          db_session=None):
         """
         Moves node to new location in the tree
 
         :param resource_id:
-        :param position:
+        :param to_position:
         :param parent_id: new parent id
         :param db_session:
         :return:

@@ -3,8 +3,9 @@ import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
 from zope.deprecation import deprecation
 
-from .base import BaseModel
-from .services.resource import ResourceService
+from ziggurat_foundations import ZigguratException
+from ziggurat_foundations.models.base import BaseModel
+from ziggurat_foundations.models.services.resource import ResourceService
 from .base import get_db_session
 
 
@@ -95,7 +96,7 @@ class ResourceMixin(BaseModel):
 
     @property
     def __acl__(self):
-        raise Exception("The model should have implemented __acl__")
+        raise ZigguratException("Model should implement __acl__")
 
     @sa.orm.validates('user_permissions', 'group_permissions')
     def validate_permission(self, key, permission):

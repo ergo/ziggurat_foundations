@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 import logging
 import importlib
 
+from ziggurat_foundations import ZigguratException
 from ziggurat_foundations.models.base import get_db_session
 
 CONFIG_KEY = 'ziggurat_foundations'
@@ -16,7 +17,7 @@ def includeme(config):
         '%s.session_provider_callable' % CONFIG_KEY)
 
     if not user_model_location:
-        raise Exception('''You need to pass location of user model
+        raise ZigguratException('''You need to pass location of user model
         inside your application eg.:
         ziggurat_foundations.user_model_location = youappname.models:User
         ''')

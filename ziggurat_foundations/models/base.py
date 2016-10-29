@@ -1,6 +1,12 @@
 from __future__ import unicode_literals
 import sqlalchemy as sa
 
+from ziggurat_foundations import ZigguratException
+
+
+class ZigguratSessionException(ZigguratException):
+    pass
+
 
 class BaseModel(object):
     """ Basic class that all other classes inherit from that supplies some
@@ -150,4 +156,4 @@ def get_db_session(session=None, obj=None):
     # try global pylons-like session then
     elif models.DBSession:
         return models.DBSession
-    raise Exception('No Session found')
+    raise ZigguratSessionException('No Session found')
