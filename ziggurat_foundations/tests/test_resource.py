@@ -136,3 +136,31 @@ class TestResources(BaseTestCase):
         tree = ResourceService.build_subtree_strut(result)
         pprint.pprint(tree)
         assert tree['children'][3]['node'].ordering == 1
+
+    @pytest.mark.skipif(not_postgres, reason="requires postgres")
+    def test_move_inside_itself(self, db_session):
+        from ziggurat_foundations.models.services.resource import \
+            ZigguratResourceTreePathException
+        create_default_tree(db_session=db_session)
+        with pytest.raises(ZigguratResourceTreePathException):
+            ResourceService.move_to_position(1, to_position=1, new_parent_id=6,
+                                             db_session=db_session)
+
+
+    @pytest.mark.skipif(not_postgres, reason="requires postgres")
+    def test_wrong_parent(self, db_session):
+        from ziggurat_foundations.models.services.resource import \
+            ZigguratResourceTreeMissingException
+        create_default_tree(db_session=db_session)
+        with pytest.raises(ZigguratResourceTreeMissingException):
+            ResourceService.move_to_position(1, to_position=1, parent_id=-6,
+                                             db_session=db_session)
+
+    @pytest.mark.skipif(not_postgres, reason="requires postgres")
+    def test_wrong_new_parent(self, db_session):
+        from ziggurat_foundations.models.services.resource import \
+            ZigguratResourceTreeMissingException
+        create_default_tree(db_session=db_session)
+        with pytest.raises(ZigguratResourceTreeMissingException):
+            ResourceService.move_to_position(1, to_position=1, new_parent_id=-6,
+                                             db_session=db_session)

@@ -13,7 +13,11 @@ from ziggurat_foundations.permissions import (
     resource_permissions_for_users)
 
 
-class ResourceTreeException(ZigguratException):
+class ZigguratResourceTreeMissingException(ZigguratException):
+    pass
+
+
+class ZigguratResourceTreePathException(ZigguratException):
     pass
 
 
@@ -293,20 +297,56 @@ class ResourceService(BaseService):
             resource_id=object_id, depth=limit_depth)
         return q
 
-    def lock_resource_for_update(self, resource_id, db_session):
+    @classmethod
+    def lock_resource_for_update(cls, resource_id, db_session):
+        """
+        Selects resource for update to
+        :param resource_id:
+        :param db_session:
+        :return:
+        """
         db_session = get_db_session(db_session)
-        pass
+        query = db_session.query(cls.model)
+        query = query.filter(cls.model.resource_id == resource_id)
+        query = query.with_for_update()
+        return query.first()
 
     @classmethod
-    def move_to_position(cls, resource_id, to_position, parent_id=None,
+    def move_to_position(cls, resource_id, to_position,
+                         parent_id=None,
+                         new_parent_id=None,
                          db_session=None):
         """
         Moves node to new location in the tree
 
-        :param resource_id:
-        :param to_position:
-        :param parent_id: new parent id
+        :param resource_id: resource to move
+        :param to_position: new position
+        :param parent_id: current parent id
+        :param new_parent_id: new parent id
         :param db_session:
         :return:
         """
+        db_session = get_db_session(db_session)
+        parent = None
+        new_parent = None
+
+        if parent_id:
+            parent = cls.lock_resource_for_update(
+                resource_id=parent_id,
+                db_session=db_session)
+            if not parent:
+                raise ZigguratResourceTreeMissingException('Parent node not found')
+        if new_parent_id:
+            new_parent = cls.lock_resource_for_update(
+                resource_id=new_parent_id,
+                db_session=db_session)
+            if not new_parent:
+                raise ZigguratResourceTreeMissingException('New parent node not found')
+            result = ResourceService.path_upper(new_parent_id,
+                                                db_session=db_session)
+            path_ids = [r.resource_id for r in result]
+            if resource_id in path_ids:
+                raise ZigguratResourceTreePathException(
+                    'Trying to insert node into itself')
+
         return True
