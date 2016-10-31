@@ -21,6 +21,14 @@ class ZigguratResourceTreePathException(ZigguratException):
     pass
 
 
+class ZigguratResourceOutOfBoundaryException(ZigguratException):
+    pass
+
+
+class ZigguratResourceWrongPositionException(ZigguratException):
+    pass
+
+
 class ResourceService(BaseService):
     @classmethod
     def get(cls, resource_id, db_session=None):
@@ -213,12 +221,12 @@ class ResourceService(BaseService):
         return group_perms
 
     @classmethod
-    def subtree_deeper(cls, object_id, limit_depth=1000000, db_session=None):
+    def from_resource_deeper(cls, resource_id=None, limit_depth=1000000, db_session=None):
         """
-        This returns you subree of ordered objects relative
-        to the start object id currently only postgresql
+        This returns you subtree of ordered objects relative
+        to the start resource_id (currently only implemented in postgresql)
 
-        :param object_id:
+        :param resource_id:
         :param limit_depth:
         :param db_session:
         :return:
@@ -239,11 +247,48 @@ class ResourceService(BaseService):
         """
         db_session = get_db_session(db_session)
         text_obj = sa.text(raw_q)
-        q = db_session.query(cls.model, 'depth', 'sorting',
-                             'path').from_statement(
-            text_obj).params(
-            resource_id=object_id, depth=limit_depth)
-        return q
+        query = db_session.query(cls.model, 'depth', 'sorting', 'path')
+        query = query.from_statement(text_obj)
+        query = query.params(resource_id=resource_id, depth=limit_depth)
+        return query
+
+    @classmethod
+    def from_parent_deeper(cls, parent_id=None, limit_depth=1000000, db_session=None):
+        """
+        This returns you subtree of ordered objects relative
+        to the start resource_id (currently only implemented in postgresql)
+
+        :param resource_id:
+        :param limit_depth:
+        :param db_session:
+        :return:
+        """
+
+        if parent_id:
+            limiting_clause = 'res.parent_id = :parent_id'
+        else:
+            limiting_clause = 'res.parent_id is null'
+
+        raw_q = """
+            WITH RECURSIVE subtree AS (
+                    SELECT res.*, 1 AS depth, res.ordering::CHARACTER VARYING AS sorting,
+                    res.resource_id::CHARACTER VARYING AS path
+                    FROM resources AS res WHERE {}
+                  UNION ALL
+                    SELECT res_u.*, depth+1 AS depth,
+                    (st.sorting::CHARACTER VARYING || '/' || res_u.ordering::CHARACTER VARYING ) AS sorting,
+                    (st.path::CHARACTER VARYING || '/' || res_u.resource_id::CHARACTER VARYING ) AS path
+                    FROM resources res_u, subtree st
+                    WHERE res_u.parent_id = st.resource_id
+            )
+            SELECT * FROM subtree WHERE depth<=:depth ORDER BY sorting;
+        """.format(limiting_clause)
+        db_session = get_db_session(db_session)
+        text_obj = sa.text(raw_q)
+        query = db_session.query(cls.model, 'depth', 'sorting', 'path')
+        query = query.from_statement(text_obj)
+        query = query.params(parent_id=parent_id, depth=limit_depth)
+        return query
 
     @classmethod
     def build_subtree_strut(self, result):
@@ -255,15 +300,14 @@ class ResourceService(BaseService):
         :return:
         """
         items = list(result)
-        struct_dict = OrderedDict()
+        root_elem = {'node': None, 'children': OrderedDict()}
         if len(items) == 0:
-            return struct_dict[0]
-        root_elem = {'node': items[0].Resource, 'children': OrderedDict()}
-        for i, node in enumerate(items[1:]):
+            return root_elem
+        for i, node in enumerate(items):
             new_elem = {'node': node.Resource, 'children': OrderedDict()}
             path = list(map(int, node.path.split('/')))
             parent_node = root_elem
-            normalized_path = path[1:-1]
+            normalized_path = path[:-1]
             if normalized_path:
                 for path_part in normalized_path:
                     parent_node = parent_node['children'][path_part]
@@ -313,7 +357,6 @@ class ResourceService(BaseService):
 
     @classmethod
     def move_to_position(cls, resource_id, to_position,
-                         parent_id=None,
                          new_parent_id=None,
                          db_session=None):
         """
@@ -321,32 +364,72 @@ class ResourceService(BaseService):
 
         :param resource_id: resource to move
         :param to_position: new position
-        :param parent_id: current parent id
         :param new_parent_id: new parent id
         :param db_session:
         :return:
         """
         db_session = get_db_session(db_session)
-        parent = None
         new_parent = None
+        item_count = 0
+        resource = cls.lock_resource_for_update(
+            resource_id=resource_id,
+            db_session=db_session)
+        parent = cls.lock_resource_for_update(
+            resource_id=resource.parent_id,
+            db_session=db_session)
 
-        if parent_id:
-            parent = cls.lock_resource_for_update(
-                resource_id=parent_id,
-                db_session=db_session)
-            if not parent:
-                raise ZigguratResourceTreeMissingException('Parent node not found')
+        if new_parent_id == resource.parent_id and new_parent_id is not None:
+            raise ZigguratResourceTreePathException(
+                'New parent is the same as old parent')
         if new_parent_id:
             new_parent = cls.lock_resource_for_update(
                 resource_id=new_parent_id,
                 db_session=db_session)
             if not new_parent:
-                raise ZigguratResourceTreeMissingException('New parent node not found')
+                raise ZigguratResourceTreeMissingException(
+                    'New parent node not found')
+
             result = ResourceService.path_upper(new_parent_id,
                                                 db_session=db_session)
             path_ids = [r.resource_id for r in result]
             if resource_id in path_ids:
                 raise ZigguratResourceTreePathException(
                     'Trying to insert node into itself')
+        if not new_parent_id and to_position == resource.ordering:
+            raise ZigguratResourceWrongPositionException(
+                'Position is the same as old one')
+        if to_position < 1:
+            raise ZigguratResourceOutOfBoundaryException(
+                'Position is lower than 1')
 
+        query = db_session.query(cls.model.resource_id)
+        parent_id = parent.resource_id if parent else new_parent_id
+        query = query.filter(cls.model.parent_id == parent_id)
+        item_count = query.count()
+
+        if (to_position > item_count and new_parent_id is None) or \
+                (to_position > item_count + 1 and new_parent_id is not None):
+            raise ZigguratResourceOutOfBoundaryException(
+                'Position is higher than item count')
+
+        # move on same branch
+        if new_parent_id is None:
+            order_range = list(sorted((resource.ordering, to_position)))
+            move_down = resource.ordering > to_position
+
+            query = db_session.query(cls.model)
+            query = query.filter(cls.model.parent_id == parent.resource_id)
+            query = query.filter(cls.model.ordering.between(*order_range))
+            if move_down:
+                query.update({cls.model.ordering: cls.model.ordering + 1},
+                             synchronize_session=False)
+            else:
+                query.update({cls.model.ordering: cls.model.ordering - 1},
+                             synchronize_session=False)
+            db_session.flush()
+            resource.ordering = to_position
+            db_session.flush()
+        # move between branches
+        elif new_parent_id is not None or resource.parent_id is not None:
+            pass
         return True

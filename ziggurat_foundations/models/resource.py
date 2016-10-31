@@ -90,9 +90,9 @@ class ResourceMixin(BaseModel):
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
 
     def __repr__(self):
-        return '<Resource: %s, %s, id: %s>' % (self.resource_type,
-                                               self.resource_name,
-                                               self.resource_id,)
+        return '<Resource: %s, %s, id: %s position: %s>' % (
+            self.resource_type, self.resource_name, self.resource_id,
+            self.ordering)
 
     @property
     def __acl__(self):
@@ -228,44 +228,4 @@ class ResourceMixin(BaseModel):
         return ResourceService.groups_for_perm(
             self, perm_name=perm_name, group_ids=group_ids,
             limit_group_permissions=limit_group_permissions,
-            db_session=db_session)
-
-    @classmethod
-    @deprecation.deprecate("Resource.subtree_deeper "
-                           "will be removed in 0.8, use service instead")
-    def subtree_deeper(cls, object_id, limit_depth=1000000, flat=True,
-                       db_session=None):
-        """
-
-        .. deprecated:: 0.8
-
-        :param object_id:
-        :param limit_depth:
-        :param flat:
-        :param db_session:
-        :return:
-        """
-        db_session = get_db_session(db_session)
-        return ResourceService.subtree_deeper(
-            object_id=object_id, limit_depth=limit_depth, flat=flat,
-            db_session=db_session)
-
-    @classmethod
-    @deprecation.deprecate("Resource.path_upper "
-                           "will be removed in 0.8, use service instead")
-    def path_upper(cls, object_id, limit_depth=1000000, flat=True,
-                   db_session=None):
-        """
-
-        .. deprecated:: 0.8
-
-        :param object_id:
-        :param limit_depth:
-        :param flat:
-        :param db_session:
-        :return:
-        """
-        db_session = get_db_session(db_session)
-        return ResourceService.path_upper(
-            object_id=object_id, limit_depth=limit_depth, flat=flat,
             db_session=db_session)
