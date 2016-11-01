@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from collections import OrderedDict
 
 import sqlalchemy as sa
-from ziggurat_foundations import ZigguratException
+from ziggurat_foundations import ZigguratException, noop
 from ziggurat_foundations.models.services import BaseService
 from ziggurat_foundations.models.base import get_db_session
 from ziggurat_foundations.permissions import (
@@ -221,7 +221,8 @@ class ResourceService(BaseService):
         return group_perms
 
     @classmethod
-    def from_resource_deeper(cls, resource_id=None, limit_depth=1000000, db_session=None):
+    def from_resource_deeper(cls, resource_id=None, limit_depth=1000000,
+                             db_session=None):
         """
         This returns you subtree of ordered objects relative
         to the start resource_id (currently only implemented in postgresql)
@@ -253,10 +254,11 @@ class ResourceService(BaseService):
         return query
 
     @classmethod
-    def from_parent_deeper(cls, parent_id=None, limit_depth=1000000, db_session=None):
+    def from_parent_deeper(cls, parent_id=None, limit_depth=1000000,
+                           db_session=None):
         """
         This returns you subtree of ordered objects relative
-        to the start resource_id (currently only implemented in postgresql)
+        to the start parent_id (currently only implemented in postgresql)
 
         :param resource_id:
         :param limit_depth:
@@ -357,7 +359,7 @@ class ResourceService(BaseService):
 
     @classmethod
     def move_to_position(cls, resource_id, to_position,
-                         new_parent_id=None,
+                         new_parent_id=noop,
                          db_session=None):
         """
         Moves node to new location in the tree
@@ -377,25 +379,24 @@ class ResourceService(BaseService):
         parent = cls.lock_resource_for_update(
             resource_id=resource.parent_id,
             db_session=db_session)
-
-        if new_parent_id == resource.parent_id and new_parent_id is not None:
+        if new_parent_id == resource.parent_id and new_parent_id is not noop:
             raise ZigguratResourceTreePathException(
                 'New parent is the same as old parent')
-        if new_parent_id:
+        if new_parent_id is not noop:
             new_parent = cls.lock_resource_for_update(
                 resource_id=new_parent_id,
                 db_session=db_session)
-            if not new_parent:
+            if not new_parent and new_parent_id is not None:
                 raise ZigguratResourceTreeMissingException(
                     'New parent node not found')
-
-            result = ResourceService.path_upper(new_parent_id,
-                                                db_session=db_session)
-            path_ids = [r.resource_id for r in result]
-            if resource_id in path_ids:
-                raise ZigguratResourceTreePathException(
-                    'Trying to insert node into itself')
-        if not new_parent_id and to_position == resource.ordering:
+            else:
+                result = ResourceService.path_upper(new_parent_id,
+                                                    db_session=db_session)
+                path_ids = [r.resource_id for r in result]
+                if resource_id in path_ids:
+                    raise ZigguratResourceTreePathException(
+                        'Trying to insert node into itself')
+        if to_position == resource.ordering and new_parent_id is noop:
             raise ZigguratResourceWrongPositionException(
                 'Position is the same as old one')
         if to_position < 1:
@@ -403,17 +404,16 @@ class ResourceService(BaseService):
                 'Position is lower than 1')
 
         query = db_session.query(cls.model.resource_id)
-        parent_id = parent.resource_id if parent else new_parent_id
+        parent_id = resource.parent_id if new_parent_id is noop else new_parent_id
         query = query.filter(cls.model.parent_id == parent_id)
         item_count = query.count()
-
-        if (to_position > item_count and new_parent_id is None) or \
-                (to_position > item_count + 1 and new_parent_id is not None):
+        if (to_position > item_count and new_parent_id is noop) or \
+                (to_position > item_count + 1):
             raise ZigguratResourceOutOfBoundaryException(
                 'Position is higher than item count')
 
         # move on same branch
-        if new_parent_id is None:
+        if new_parent_id is noop:
             order_range = list(sorted((resource.ordering, to_position)))
             move_down = resource.ordering > to_position
 
@@ -426,10 +426,21 @@ class ResourceService(BaseService):
             else:
                 query.update({cls.model.ordering: cls.model.ordering - 1},
                              synchronize_session=False)
-            db_session.flush()
             resource.ordering = to_position
             db_session.flush()
         # move between branches
-        elif new_parent_id is not None or resource.parent_id is not None:
-            pass
+        else:
+            query = db_session.query(cls.model)
+            query = query.filter(cls.model.parent_id == resource.parent_id)
+            query = query.filter(cls.model.ordering > resource.ordering)
+            query.update({cls.model.ordering: cls.model.ordering + 1},
+                         synchronize_session=False)
+            query = db_session.query(cls.model)
+            query = query.filter(cls.model.parent_id == new_parent_id)
+            query = query.filter(cls.model.ordering >= to_position)
+            query.update({cls.model.ordering: cls.model.ordering + 1},
+                         synchronize_session=False)
+            resource.parent_id = new_parent_id
+            resource.ordering = to_position
+            db_session.flush()
         return True

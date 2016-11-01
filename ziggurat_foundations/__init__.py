@@ -11,6 +11,18 @@ class ModelProxy(object):
     pass
 
 
+class NOOP(object):
+    def __nonzero__(self):
+        return False
+
+        # py3 compat
+
+    __bool__ = __nonzero__
+
+
+noop = NOOP()
+
+
 def make_passwordmanager():
     from passlib.context import CryptContext
     pwd_context = CryptContext(

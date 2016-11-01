@@ -233,3 +233,74 @@ class TestResources(BaseTestCase):
         with pytest.raises(ZigguratResourceOutOfBoundaryException):
             ResourceService.move_to_position(
                 4, new_parent_id=-1, to_position=7, db_session=db_session)
+
+    @pytest.mark.skipif(not_postgres, reason="requires postgres")
+    def test_move_to_first_on_different_branch(self, db_session):
+        import pprint
+        create_default_tree(db_session)
+        ResourceService.move_to_position(
+            4, new_parent_id=1, to_position=1, db_session=db_session)
+
+        result = ResourceService.from_resource_deeper(
+            1, limit_depth=2, db_session=db_session)
+        tree_struct = ResourceService.build_subtree_strut(result)['children'][1]
+        pprint.pprint(tree_struct)
+        l_a_nodes = [n for n in tree_struct['children'].values()]
+        assert [n['node'].resource_id for n in l_a_nodes] == [4, 5, 6, 7, 8]
+
+    @pytest.mark.skipif(not_postgres, reason="requires postgres")
+    def test_move_to_middle_on_different_branch(self, db_session):
+        import pprint
+        create_default_tree(db_session)
+        ResourceService.move_to_position(
+            4, new_parent_id=1, to_position=3, db_session=db_session)
+
+        result = ResourceService.from_resource_deeper(
+            1, limit_depth=2, db_session=db_session)
+        tree_struct = ResourceService.build_subtree_strut(result)['children'][1]
+        pprint.pprint(tree_struct)
+        l_a_nodes = [n for n in tree_struct['children'].values()]
+        assert [n['node'].resource_id for n in l_a_nodes] == [5, 6, 4, 7, 8]
+
+    @pytest.mark.skipif(not_postgres, reason="requires postgres")
+    def test_move_to_last_on_different_branch(self, db_session):
+        import pprint
+        create_default_tree(db_session)
+        ResourceService.move_to_position(
+            4, new_parent_id=1, to_position=5, db_session=db_session)
+
+        result = ResourceService.from_resource_deeper(
+            1, limit_depth=2, db_session=db_session)
+        tree_struct = ResourceService.build_subtree_strut(result)['children'][1]
+        pprint.pprint(tree_struct)
+        l_a_nodes = [n for n in tree_struct['children'].values()]
+        assert [n['node'].resource_id for n in l_a_nodes] == [5, 6, 7, 8, 4]
+
+    @pytest.mark.skipif(not_postgres, reason="requires postgres")
+    def test_move_to_first_on_root_branch(self, db_session):
+        import pprint
+        create_default_tree(db_session)
+        ResourceService.move_to_position(
+            4, new_parent_id=None, to_position=1, db_session=db_session)
+
+        result = ResourceService.from_parent_deeper(
+            parent_id=None, db_session=db_session)
+        tree_struct = ResourceService.build_subtree_strut(result)['children']
+        pprint.pprint(tree_struct)
+        r_nodes = [n for n in tree_struct.values()]
+        assert [n['node'].resource_id for n in r_nodes] == [4, -1, -2, -3]
+
+    @pytest.mark.skipif(not_postgres, reason="requires postgres")
+    def test_move_from_root_deeper(self, db_session):
+        import pprint
+        create_default_tree(db_session)
+        ResourceService.move_to_position(
+            -3, new_parent_id=1, to_position=1, db_session=db_session)
+
+        result = ResourceService.from_parent_deeper(
+            parent_id=None, db_session=db_session)
+        tree_struct = ResourceService.build_subtree_strut(result)['children']
+        pprint.pprint(tree_struct)
+        r_nodes = [n for n in
+                   tree_struct[-1]['children'][1]['children'].values()]
+        assert [n['node'].resource_id for n in r_nodes] == [-3, 5, 6, 7, 8]
