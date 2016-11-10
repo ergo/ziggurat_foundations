@@ -373,44 +373,32 @@ class ResourceService(BaseService):
         db_session = get_db_session(db_session)
         new_parent = None
         item_count = 0
+        # lets lock rows to prevent bad tree states
         resource = cls.lock_resource_for_update(
             resource_id=resource_id,
             db_session=db_session)
         parent = cls.lock_resource_for_update(
             resource_id=resource.parent_id,
             db_session=db_session)
-        if new_parent_id == resource.parent_id and new_parent_id is not noop:
-            raise ZigguratResourceTreePathException(
-                'New parent is the same as old parent')
-        if new_parent_id is not noop:
-            new_parent = cls.lock_resource_for_update(
-                resource_id=new_parent_id,
-                db_session=db_session)
-            if not new_parent and new_parent_id is not None:
-                raise ZigguratResourceTreeMissingException(
-                    'New parent node not found')
-            else:
-                result = ResourceService.path_upper(new_parent_id,
-                                                    db_session=db_session)
-                path_ids = [r.resource_id for r in result]
-                if resource_id in path_ids:
-                    raise ZigguratResourceTreePathException(
-                        'Trying to insert node into itself')
-        if to_position == resource.ordering and new_parent_id is noop:
-            raise ZigguratResourceWrongPositionException(
-                'Position is the same as old one')
-        if to_position < 1:
-            raise ZigguratResourceOutOfBoundaryException(
-                'Position is lower than 1')
+        same_branch = False
 
-        query = db_session.query(cls.model.resource_id)
+        # reset if parent is same as old
+        if new_parent_id == resource.parent_id:
+            new_parent_id = noop
+
+        if new_parent_id is not noop:
+            cls.check_node_parent(resource_id, new_parent_id,
+                                  db_session=db_session)
+        else:
+            same_branch = True
+
+        if to_position == resource.ordering and new_parent_id is noop:
+            return True
+
         parent_id = resource.parent_id if new_parent_id is noop else new_parent_id
-        query = query.filter(cls.model.parent_id == parent_id)
-        item_count = query.count()
-        if (to_position > item_count and new_parent_id is noop) or \
-                (to_position > item_count + 1):
-            raise ZigguratResourceOutOfBoundaryException(
-                'Position is higher than item count')
+        cls.check_node_position(
+            parent_id, to_position, on_same_branch=same_branch,
+            db_session=db_session)
 
         # move on same branch
         if new_parent_id is noop:
@@ -444,3 +432,58 @@ class ResourceService(BaseService):
             resource.ordering = to_position
             db_session.flush()
         return True
+
+    @classmethod
+    def check_node_parent(cls, resource_id, new_parent_id, db_session=None):
+        """
+        Checks if parent destination is valid for node
+
+        :param resource_id:
+        :param new_parent_id:
+        :param db_session:
+        :return:
+        """
+        db_session = get_db_session(db_session)
+        new_parent = cls.lock_resource_for_update(
+            resource_id=new_parent_id,
+            db_session=db_session)
+        # we are not moving to "root" so parent should be found
+        if not new_parent and new_parent_id is not None:
+            raise ZigguratResourceTreeMissingException(
+                'New parent node not found')
+        else:
+            result = ResourceService.path_upper(new_parent_id,
+                                                db_session=db_session)
+            path_ids = [r.resource_id for r in result]
+            if resource_id in path_ids:
+                raise ZigguratResourceTreePathException(
+                    'Trying to insert node into itself')
+
+    @classmethod
+    def count_children(cls, resource_id, db_session=None):
+        query = db_session.query(cls.model.resource_id)
+        query = query.filter(cls.model.parent_id == resource_id)
+        return query.count()
+
+    @classmethod
+    def check_node_position(
+            cls, parent_id, position, on_same_branch, db_session=None):
+        """
+        Checks if node position for given parent is valid, raises exception if
+        this is not the case
+        :param parent_id:
+        :param position:
+        :param on_same_branch: indicates that we are checking same branch
+        :param db_session:
+        :return:
+        """
+        db_session = get_db_session(db_session)
+        if position < 1:
+            raise ZigguratResourceOutOfBoundaryException(
+                'Position is lower than 1')
+        item_count = cls.count_children(parent_id, db_session=db_session)
+        print(position, item_count, parent_id, on_same_branch)
+        if (position > item_count and on_same_branch) or \
+                (position > item_count + 1):
+            raise ZigguratResourceOutOfBoundaryException(
+                'Position is higher than item count')

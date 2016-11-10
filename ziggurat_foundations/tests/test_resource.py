@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import with_statement, unicode_literals
+import pprint
+
 import pytest
 
 from ziggurat_foundations.tests import (
@@ -51,7 +53,6 @@ class TestResources(BaseTestCase):
 
     @pytest.mark.skipif(not_postgres, reason="requires postgres")
     def test_root_nesting(self, db_session):
-        import pprint
         root = create_default_tree(db_session)[0]
 
         result = ResourceService.from_resource_deeper(root.resource_id,
@@ -74,7 +75,6 @@ class TestResources(BaseTestCase):
 
     @pytest.mark.skipif(not_postgres, reason="requires postgres")
     def test_full_nesting(self, db_session):
-        import pprint
         create_default_tree(db_session)
 
         result = ResourceService.from_parent_deeper(db_session=db_session)
@@ -87,7 +87,6 @@ class TestResources(BaseTestCase):
 
     @pytest.mark.skipif(not_postgres, reason="requires postgres")
     def test_branch_data_with_limit(self, db_session):
-        import pprint
         create_default_tree(db_session)
         result = ResourceService.from_resource_deeper(
             1, limit_depth=2, db_session=db_session)
@@ -100,7 +99,6 @@ class TestResources(BaseTestCase):
 
     @pytest.mark.skipif(not_postgres, reason="requires postgres")
     def test_branch_data_with_limit_from_parent(self, db_session):
-        import pprint
         create_default_tree(db_session)
         result = ResourceService.from_parent_deeper(
             1, limit_depth=2, db_session=db_session)
@@ -119,7 +117,6 @@ class TestResources(BaseTestCase):
 
     @pytest.mark.skipif(not_postgres, reason="requires postgres")
     def test_move_up_on_same_branch(self, db_session):
-        import pprint
         root = create_default_tree(db_session=db_session)[0]
         ResourceService.move_to_position(
             3, to_position=2, db_session=db_session)
@@ -133,7 +130,6 @@ class TestResources(BaseTestCase):
 
     @pytest.mark.skipif(not_postgres, reason="requires postgres")
     def test_move_up_on_same_branch_first(self, db_session):
-        import pprint
         root = create_default_tree(db_session=db_session)[0]
         ResourceService.move_to_position(
             3, to_position=1, db_session=db_session)
@@ -150,7 +146,6 @@ class TestResources(BaseTestCase):
 
     @pytest.mark.skipif(not_postgres, reason="requires postgres")
     def test_move_down_on_same_branch(self, db_session):
-        import pprint
         root = create_default_tree(db_session=db_session)[0]
         ResourceService.move_to_position(1, to_position=3,
                                          db_session=db_session)
@@ -165,7 +160,6 @@ class TestResources(BaseTestCase):
 
     @pytest.mark.skipif(not_postgres, reason="requires postgres")
     def test_move_down_on_same_branch_last(self, db_session):
-        import pprint
         root = create_default_tree(db_session=db_session)[0]
         ResourceService.move_to_position(1, to_position=5,
                                          db_session=db_session)
@@ -193,19 +187,28 @@ class TestResources(BaseTestCase):
     def test_move_after_last_on_same_branch(self, db_session):
         from ziggurat_foundations.models.services.resource import \
             ZigguratResourceOutOfBoundaryException
-        create_default_tree(db_session=db_session)
+        root = create_default_tree(db_session=db_session)[0]
+        result = ResourceService.from_resource_deeper(
+            root.resource_id, limit_depth=2, db_session=db_session)
+        tree = ResourceService.build_subtree_strut(result)['children'][
+            root.resource_id]
+        pprint.pprint(tree)
         with pytest.raises(ZigguratResourceOutOfBoundaryException):
             ResourceService.move_to_position(
                 3, to_position=6, db_session=db_session)
 
     @pytest.mark.skipif(not_postgres, reason="requires postgres")
     def test_move_to_same_position(self, db_session):
-        from ziggurat_foundations.models.services.resource import \
-            ZigguratResourceWrongPositionException
-        create_default_tree(db_session=db_session)
-        with pytest.raises(ZigguratResourceWrongPositionException):
-            ResourceService.move_to_position(
-                1, to_position=1, db_session=db_session)
+        root = create_default_tree(db_session=db_session)[0]
+        ResourceService.move_to_position(
+            1, to_position=1, db_session=db_session)
+        result = ResourceService.from_resource_deeper(
+            root.resource_id, limit_depth=2, db_session=db_session)
+        tree = ResourceService.build_subtree_strut(result)['children'][
+            root.resource_id]
+        assert tree['children'][1]['node'].ordering == 1
+        assert tree['children'][2]['node'].ordering == 2
+        assert tree['children'][3]['node'].ordering == 3
 
     @pytest.mark.skipif(not_postgres, reason="requires postgres")
     def test_move_inside_itself(self, db_session):
@@ -236,7 +239,6 @@ class TestResources(BaseTestCase):
 
     @pytest.mark.skipif(not_postgres, reason="requires postgres")
     def test_move_to_first_on_different_branch(self, db_session):
-        import pprint
         create_default_tree(db_session)
         ResourceService.move_to_position(
             4, new_parent_id=1, to_position=1, db_session=db_session)
@@ -250,7 +252,6 @@ class TestResources(BaseTestCase):
 
     @pytest.mark.skipif(not_postgres, reason="requires postgres")
     def test_move_to_middle_on_different_branch(self, db_session):
-        import pprint
         create_default_tree(db_session)
         ResourceService.move_to_position(
             4, new_parent_id=1, to_position=3, db_session=db_session)
@@ -264,7 +265,6 @@ class TestResources(BaseTestCase):
 
     @pytest.mark.skipif(not_postgres, reason="requires postgres")
     def test_move_to_last_on_different_branch(self, db_session):
-        import pprint
         create_default_tree(db_session)
         ResourceService.move_to_position(
             4, new_parent_id=1, to_position=5, db_session=db_session)
@@ -278,7 +278,6 @@ class TestResources(BaseTestCase):
 
     @pytest.mark.skipif(not_postgres, reason="requires postgres")
     def test_move_to_first_on_root_branch(self, db_session):
-        import pprint
         create_default_tree(db_session)
         ResourceService.move_to_position(
             4, new_parent_id=None, to_position=1, db_session=db_session)
@@ -292,7 +291,6 @@ class TestResources(BaseTestCase):
 
     @pytest.mark.skipif(not_postgres, reason="requires postgres")
     def test_move_from_root_deeper(self, db_session):
-        import pprint
         create_default_tree(db_session)
         ResourceService.move_to_position(
             -3, new_parent_id=1, to_position=1, db_session=db_session)
