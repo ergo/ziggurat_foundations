@@ -4,7 +4,12 @@ __version__ = {'major': 0, 'minor': 6, 'patch': 8}
 
 
 class ZigguratException(Exception):
-    pass
+    def __init__(self, msg, value=None):
+        self.msg = msg
+        self.value = value
+
+    def __str__(self):
+        return self.msg.format(self.value)
 
 
 class ModelProxy(object):

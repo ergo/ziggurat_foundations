@@ -487,10 +487,11 @@ class ResourceService(BaseService):
         db_session = get_db_session(db_session)
         if position < 1:
             raise ZigguratResourceOutOfBoundaryException(
-                'Position is lower than 1')
+                'Position is lower than {}', value=1)
         item_count = cls.count_children(parent_id, db_session=db_session)
-        print(position, item_count, parent_id, on_same_branch)
-        if (position > item_count and on_same_branch) or \
-                (position > item_count + 1):
+        max_value = item_count if on_same_branch else item_count + 1
+        print('on_same_branch',on_same_branch)
+        if position > max_value:
             raise ZigguratResourceOutOfBoundaryException(
-                'Position is higher than item count')
+                'Maximum resource ordering is {}',
+                value=max_value)
