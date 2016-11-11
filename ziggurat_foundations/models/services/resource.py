@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from collections import OrderedDict
 
 import sqlalchemy as sa
-from ziggurat_foundations import ZigguratException, noop
+from ziggurat_foundations import ZigguratException, noparent
 from ziggurat_foundations.models.services import BaseService
 from ziggurat_foundations.models.base import get_db_session
 from ziggurat_foundations.permissions import (
@@ -11,6 +11,10 @@ from ziggurat_foundations.permissions import (
     ALL_PERMISSIONS,
     PermissionTuple,
     resource_permissions_for_users)
+
+__all__ = ['ZigguratResourceTreeMissingException',
+           'ZigguratResourceTreePathException',
+           'ZigguratResourceOutOfBoundaryException', 'ResourceService']
 
 
 class ZigguratResourceTreeMissingException(ZigguratException):
@@ -359,7 +363,7 @@ class ResourceService(BaseService):
 
     @classmethod
     def move_to_position(cls, resource_id, to_position,
-                         new_parent_id=noop,
+                         new_parent_id=noparent,
                          db_session=None):
         """
         Moves node to new location in the tree
@@ -371,8 +375,6 @@ class ResourceService(BaseService):
         :return:
         """
         db_session = get_db_session(db_session)
-        new_parent = None
-        item_count = 0
         # lets lock rows to prevent bad tree states
         resource = cls.lock_resource_for_update(
             resource_id=resource_id,
@@ -384,24 +386,23 @@ class ResourceService(BaseService):
 
         # reset if parent is same as old
         if new_parent_id == resource.parent_id:
-            new_parent_id = noop
+            new_parent_id = noparent
 
-        if new_parent_id is not noop:
+        if new_parent_id is not noparent:
             cls.check_node_parent(resource_id, new_parent_id,
                                   db_session=db_session)
         else:
             same_branch = True
 
-        if to_position == resource.ordering and new_parent_id is noop:
+        if to_position == resource.ordering and new_parent_id is noparent:
             return True
 
-        parent_id = resource.parent_id if new_parent_id is noop else new_parent_id
+        parent_id = resource.parent_id if new_parent_id is noparent else new_parent_id
         cls.check_node_position(
             parent_id, to_position, on_same_branch=same_branch,
             db_session=db_session)
-
         # move on same branch
-        if new_parent_id is noop:
+        if new_parent_id is noparent:
             order_range = list(sorted((resource.ordering, to_position)))
             move_down = resource.ordering > to_position
 
@@ -416,6 +417,7 @@ class ResourceService(BaseService):
                              synchronize_session=False)
             resource.ordering = to_position
             db_session.flush()
+            db_session.expire(resource)
         # move between branches
         else:
             query = db_session.query(cls.model)
@@ -428,9 +430,39 @@ class ResourceService(BaseService):
             query = query.filter(cls.model.ordering >= to_position)
             query.update({cls.model.ordering: cls.model.ordering + 1},
                          synchronize_session=False)
+            db_session.flush()
+            db_session.expire(resource)
             resource.parent_id = new_parent_id
             resource.ordering = to_position
             db_session.flush()
+        return True
+
+    @classmethod
+    def set_position(cls, resource_id, to_position, db_session=None):
+        """
+        Sets node position for new node in the tree
+
+        :param resource_id: resource to move
+        :param to_position: new position
+        :param db_session:
+        :return:
+        """
+        db_session = get_db_session(db_session)
+        # lets lock rows to prevent bad tree states
+        resource = cls.lock_resource_for_update(
+            resource_id=resource_id,
+            db_session=db_session)
+        cls.check_node_position(
+            resource.parent_id, to_position, on_same_branch=True,
+            db_session=db_session)
+        query = db_session.query(cls.model)
+        query = query.filter(cls.model.parent_id == resource.parent_id)
+        query = query.filter(cls.model.ordering >= to_position)
+        query.update({cls.model.ordering: cls.model.ordering + 1},
+                     synchronize_session=False)
+        db_session.flush()
+        db_session.expire(resource)
+        resource.ordering = to_position
         return True
 
     @classmethod

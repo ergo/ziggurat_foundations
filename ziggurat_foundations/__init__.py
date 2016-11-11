@@ -26,7 +26,7 @@ class NOOP(object):
 
 
 noop = NOOP()
-
+noparent = NOOP()
 
 def make_passwordmanager():
     from passlib.context import CryptContext
