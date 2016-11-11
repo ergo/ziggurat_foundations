@@ -175,6 +175,19 @@ class TestResources(BaseTestCase):
         assert tree['children'][1]['node'].ordering == 5
 
     @pytest.mark.skipif(not_postgres, reason="requires postgres")
+    def test_move_down_on_same_branch_last_on_root(self, db_session):
+        root = create_default_tree(db_session=db_session)[0]
+        ResourceService.move_to_position(-2, to_position=3,
+                                         db_session=db_session)
+        result = ResourceService.from_parent_deeper(
+            None, limit_depth=2, db_session=db_session)
+        tree = ResourceService.build_subtree_strut(result)
+        pprint.pprint(tree)
+        assert tree['children'][-1]['node'].ordering == 1
+        assert tree['children'][-3]['node'].ordering == 2
+        assert tree['children'][-2]['node'].ordering == 3
+
+    @pytest.mark.skipif(not_postgres, reason="requires postgres")
     def test_move_before_1_on_same_branch(self, db_session):
         from ziggurat_foundations.models.services.resource import \
             ZigguratResourceOutOfBoundaryException
@@ -310,7 +323,7 @@ class TestResources(BaseTestCase):
     def test_move_from_root_deeper(self, db_session):
         create_default_tree(db_session)
         ResourceService.move_to_position(
-            -3, new_parent_id=1, to_position=1, db_session=db_session)
+            -2, new_parent_id=1, to_position=1, db_session=db_session)
 
         result = ResourceService.from_parent_deeper(
             parent_id=None, db_session=db_session)
@@ -318,4 +331,6 @@ class TestResources(BaseTestCase):
         pprint.pprint(tree_struct)
         r_nodes = [n for n in
                    tree_struct[-1]['children'][1]['children'].values()]
-        assert [n['node'].resource_id for n in r_nodes] == [-3, 5, 6, 7, 8]
+        assert [n['node'].resource_id for n in r_nodes] == [-2, 5, 6, 7, 8]
+        assert list(tree_struct.keys()) == [-1, -3]
+        assert [n['node'].ordering for n in tree_struct.values()] == [1, 2]

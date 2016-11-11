@@ -394,10 +394,12 @@ class ResourceService(BaseService):
         else:
             same_branch = True
 
-        if to_position == resource.ordering and new_parent_id is noparent:
-            return True
+        if new_parent_id is noparent:
+            # it is not guaranteed that parent exists
+            parent_id = resource.parent_id if resource else None
+        else:
+            parent_id = new_parent_id
 
-        parent_id = resource.parent_id if new_parent_id is noparent else new_parent_id
         cls.check_node_position(
             parent_id, to_position, on_same_branch=same_branch,
             db_session=db_session)
@@ -407,7 +409,7 @@ class ResourceService(BaseService):
             move_down = resource.ordering > to_position
 
             query = db_session.query(cls.model)
-            query = query.filter(cls.model.parent_id == parent.resource_id)
+            query = query.filter(cls.model.parent_id == parent_id)
             query = query.filter(cls.model.ordering.between(*order_range))
             if move_down:
                 query.update({cls.model.ordering: cls.model.ordering + 1},
@@ -415,9 +417,9 @@ class ResourceService(BaseService):
             else:
                 query.update({cls.model.ordering: cls.model.ordering - 1},
                              synchronize_session=False)
-            resource.ordering = to_position
             db_session.flush()
             db_session.expire(resource)
+            resource.ordering = to_position
         # move between branches
         else:
             query = db_session.query(cls.model)
