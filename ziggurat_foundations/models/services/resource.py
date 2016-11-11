@@ -423,7 +423,7 @@ class ResourceService(BaseService):
             query = db_session.query(cls.model)
             query = query.filter(cls.model.parent_id == resource.parent_id)
             query = query.filter(cls.model.ordering > resource.ordering)
-            query.update({cls.model.ordering: cls.model.ordering + 1},
+            query.update({cls.model.ordering: cls.model.ordering - 1},
                          synchronize_session=False)
             query = db_session.query(cls.model)
             query = query.filter(cls.model.parent_id == new_parent_id)
