@@ -159,6 +159,20 @@ class TestResources(BaseTestCase):
         assert tree['children'][1]['node'].ordering == 3
 
     @pytest.mark.skipif(not_postgres, reason="requires postgres")
+    def test_move_down_on_same_branch_witn_new_parent_set(self, db_session):
+        root = create_default_tree(db_session=db_session)[0]
+        ResourceService.move_to_position(
+            1, to_position=3, new_parent_id=-1, db_session=db_session)
+        result = ResourceService.from_resource_deeper(
+            root.resource_id, limit_depth=2, db_session=db_session)
+        tree = ResourceService.build_subtree_strut(result)['children'][
+            root.resource_id]
+        pprint.pprint(tree)
+        assert tree['children'][2]['node'].ordering == 1
+        assert tree['children'][3]['node'].ordering == 2
+        assert tree['children'][1]['node'].ordering == 3
+
+    @pytest.mark.skipif(not_postgres, reason="requires postgres")
     def test_move_down_on_same_branch_last(self, db_session):
         root = create_default_tree(db_session=db_session)[0]
         ResourceService.move_to_position(1, to_position=5,
