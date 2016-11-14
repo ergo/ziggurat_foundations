@@ -409,22 +409,51 @@ class ResourceService(BaseService):
             resource.ordering = to_position
         # move between branches
         else:
-            query = db_session.query(cls.model)
-            query = query.filter(cls.model.parent_id == resource.parent_id)
-            query = query.filter(cls.model.ordering > resource.ordering)
-            query.update({cls.model.ordering: cls.model.ordering - 1},
-                         synchronize_session=False)
-            query = db_session.query(cls.model)
-            query = query.filter(cls.model.parent_id == new_parent_id)
-            query = query.filter(cls.model.ordering >= to_position)
-            query.update({cls.model.ordering: cls.model.ordering + 1},
-                         synchronize_session=False)
-            db_session.flush()
+            cls.shift_ordering_down(resource.parent_id, resource.ordering,
+                                    db_session=db_session)
+            cls.shift_ordering_up(new_parent_id, to_position,
+                                  db_session=db_session)
             db_session.expire(resource)
             resource.parent_id = new_parent_id
             resource.ordering = to_position
             db_session.flush()
         return True
+
+    @classmethod
+    def shift_ordering_down(cls, parent_id, position, db_session=None):
+        """
+        Shifts ordering to "close gaps" after node deletion or being moved
+        to another branch, begins the shift from given position
+        :param parent_id:
+        :param position:
+        :param db_session:
+        :return:
+        """
+        db_session = get_db_session(db_session)
+        query = db_session.query(cls.model)
+        query = query.filter(cls.model.parent_id == parent_id)
+        query = query.filter(cls.model.ordering >= position)
+        query.update({cls.model.ordering: cls.model.ordering - 1},
+                     synchronize_session=False)
+        db_session.flush()
+
+    @classmethod
+    def shift_ordering_up(cls, parent_id, position, db_session=None):
+        """
+        Shifts ordering to "open a gap" for node insertion,
+        begins the shift from given position
+        :param parent_id:
+        :param position:
+        :param db_session:
+        :return:
+        """
+        db_session = get_db_session(db_session)
+        query = db_session.query(cls.model)
+        query = query.filter(cls.model.parent_id == parent_id)
+        query = query.filter(cls.model.ordering >= position)
+        query.update({cls.model.ordering: cls.model.ordering + 1},
+                     synchronize_session=False)
+        db_session.flush()
 
     @classmethod
     def set_position(cls, resource_id, to_position, db_session=None):
@@ -444,11 +473,8 @@ class ResourceService(BaseService):
         cls.check_node_position(
             resource.parent_id, to_position, on_same_branch=True,
             db_session=db_session)
-        query = db_session.query(cls.model)
-        query = query.filter(cls.model.parent_id == resource.parent_id)
-        query = query.filter(cls.model.ordering >= to_position)
-        query.update({cls.model.ordering: cls.model.ordering + 1},
-                     synchronize_session=False)
+        cls.shift_ordering_up(resource.parent_id, to_position,
+                              db_session=db_session)
         db_session.flush()
         db_session.expire(resource)
         resource.ordering = to_position
