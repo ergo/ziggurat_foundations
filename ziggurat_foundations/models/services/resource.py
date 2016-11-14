@@ -3,7 +3,12 @@ from __future__ import unicode_literals
 from collections import OrderedDict
 
 import sqlalchemy as sa
-from ziggurat_foundations import ZigguratException, noparent
+from ziggurat_foundations import noparent
+from ziggurat_foundations.exc import (
+    ZigguratResourceTreeMissingException,
+    ZigguratResourceTreePathException,
+    ZigguratResourceOutOfBoundaryException
+)
 from ziggurat_foundations.models.services import BaseService
 from ziggurat_foundations.models.base import get_db_session
 from ziggurat_foundations.permissions import (
@@ -12,25 +17,7 @@ from ziggurat_foundations.permissions import (
     PermissionTuple,
     resource_permissions_for_users)
 
-__all__ = ['ZigguratResourceTreeMissingException',
-           'ZigguratResourceTreePathException',
-           'ZigguratResourceOutOfBoundaryException', 'ResourceService']
-
-
-class ZigguratResourceTreeMissingException(ZigguratException):
-    pass
-
-
-class ZigguratResourceTreePathException(ZigguratException):
-    pass
-
-
-class ZigguratResourceOutOfBoundaryException(ZigguratException):
-    pass
-
-
-class ZigguratResourceWrongPositionException(ZigguratException):
-    pass
+__all__ = ['ResourceService']
 
 
 class ResourceService(BaseService):

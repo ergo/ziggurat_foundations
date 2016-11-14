@@ -1,11 +1,7 @@
 from __future__ import unicode_literals
 import sqlalchemy as sa
 
-from ziggurat_foundations import ZigguratException
-
-
-class ZigguratSessionException(ZigguratException):
-    pass
+from ziggurat_foundations.exc import ZigguratSessionException
 
 
 class BaseModel(object):

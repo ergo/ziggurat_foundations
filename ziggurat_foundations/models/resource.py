@@ -3,7 +3,7 @@ import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
 from zope.deprecation import deprecation
 
-from ziggurat_foundations import ZigguratException
+from ziggurat_foundations.exc import ZigguratException
 from ziggurat_foundations.models.base import BaseModel
 from ziggurat_foundations.models.services.resource import ResourceService
 from .base import get_db_session
