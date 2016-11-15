@@ -1,6 +1,20 @@
 Changelog
 =========
 
+2016-11-XX
+----------
+
+* Release 0.7.0
+* Introduced ResourceTreeService for nested resource management
+  (currently only PostgreSQL support is implemented)
+* added deprecation warnings
+
+**BACKWARDS INCOMPATIBLE CHANGES**
+
+- code reorganization that might break existing code
+- _ziggurat_services is now a list
+
+
 2016-07-05
 ----------
 * Release: 0.6.8

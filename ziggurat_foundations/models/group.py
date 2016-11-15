@@ -13,7 +13,7 @@ __all__ = ['GroupMixin']
 class GroupMixin(BaseModel):
     """ base mixin for group object"""
 
-    _ziggurat_service = GroupService
+    _ziggurat_services = [GroupService]
 
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
 

@@ -6,6 +6,8 @@ from zope.deprecation import deprecation
 from ziggurat_foundations.exc import ZigguratException
 from ziggurat_foundations.models.base import BaseModel
 from ziggurat_foundations.models.services.resource import ResourceService
+from ziggurat_foundations.models.services.resource_tree import \
+    ResourceTreeService
 from ziggurat_foundations.models.base import get_db_session
 
 __all__ = ['ResourceMixin']
@@ -14,7 +16,7 @@ __all__ = ['ResourceMixin']
 class ResourceMixin(BaseModel):
     __possible_permissions__ = ()
 
-    _ziggurat_service = ResourceService
+    _ziggurat_services = [ResourceService, ResourceTreeService]
 
     @declared_attr
     def __tablename__(self):

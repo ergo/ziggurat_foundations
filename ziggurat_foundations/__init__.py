@@ -32,31 +32,32 @@ def make_passwordmanager():
     return pwd_context
 
 
-def ziggurat_model_init(*k, **kw):
+def ziggurat_model_init(*args, **kwargs):
     """
     This function handles attaching model to service if model has one specified
     as `_ziggurat_service`, Also attached a proxy object holding all model
     definitions that services might use
 
-    :param k:
-    :param kw:
+    :param args:
+    :param kwargs:
     :return:
     """
     models = ModelProxy()
-    for cls2 in k:
+    for cls2 in args:
         setattr(models, cls2.__name__, cls2)
 
-    for cls in k:
+    for cls in args:
         if cls.__name__ == 'User':
-            if kw.get('passwordmanager'):
-                cls.passwordmanager = kw['passwordmanager']
+            if kwargs.get('passwordmanager'):
+                cls.passwordmanager = kwargs['passwordmanager']
             else:
                 cls.passwordmanager = make_passwordmanager()
 
-        for cls2 in k:
+        for cls2 in args:
             setattr(models, cls2.__name__, cls2)
         setattr(cls, "_ziggurat_models", models)
         # if model has a manager attached attached the class also to manager
-        if hasattr(cls, '_ziggurat_service'):
-            setattr(cls._ziggurat_service, 'model', cls)
-            setattr(cls._ziggurat_service, 'models_proxy', models)
+        if hasattr(cls, '_ziggurat_services'):
+            for service in cls._ziggurat_services:
+                setattr(service, 'model', cls)
+                setattr(service, 'models_proxy', models)

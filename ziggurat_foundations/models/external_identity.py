@@ -18,7 +18,7 @@ class ExternalIdentityMixin(BaseModel):
         {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8',
          })
 
-    _ziggurat_service = ExternalIdentityService
+    _ziggurat_services = [ExternalIdentityService]
 
     @declared_attr
     def __tablename__(self):
