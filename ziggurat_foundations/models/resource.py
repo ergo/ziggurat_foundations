@@ -6,7 +6,9 @@ from zope.deprecation import deprecation
 from ziggurat_foundations.exc import ZigguratException
 from ziggurat_foundations.models.base import BaseModel
 from ziggurat_foundations.models.services.resource import ResourceService
-from .base import get_db_session
+from ziggurat_foundations.models.base import get_db_session
+
+__all__ = ['ResourceMixin']
 
 
 class ResourceMixin(BaseModel):
@@ -189,6 +191,7 @@ class ResourceMixin(BaseModel):
         db_session = get_db_session(db_session)
         return ResourceService.by_resource_id(resource_id=resource_id,
                                               db_session=db_session)
+
     @classmethod
     @deprecation.deprecate("Resource.perm_by_group_and_perm_name "
                            "will be removed in 0.8, use service instead")

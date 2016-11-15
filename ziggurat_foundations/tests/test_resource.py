@@ -57,8 +57,8 @@ class TestResources(BaseTestCase):
 
         result = ResourceService.from_resource_deeper(root.resource_id,
                                                       db_session=db_session)
-        tree_struct = ResourceService.build_subtree_strut(result)['children'][
-            -1]
+        tree = ResourceService.build_subtree_strut(result)
+        tree_struct = tree['children'][-1]
         pprint.pprint(tree_struct)
         assert tree_struct['node'].resource_id == -1
         l1_nodes = [n for n in tree_struct['children'].values()]
@@ -122,8 +122,8 @@ class TestResources(BaseTestCase):
             3, to_position=2, db_session=db_session)
         result = ResourceService.from_resource_deeper(
             root.resource_id, limit_depth=2, db_session=db_session)
-        tree = ResourceService.build_subtree_strut(result)['children'][
-            root.resource_id]
+        tree = ResourceService.build_subtree_strut(result)
+        tree = tree['children'][root.resource_id]
         pprint.pprint(tree)
         assert tree['children'][3]['node'].ordering == 2
         assert tree['children'][2]['node'].ordering == 3
@@ -135,8 +135,8 @@ class TestResources(BaseTestCase):
             3, to_position=1, db_session=db_session)
         result = ResourceService.from_resource_deeper(
             root.resource_id, limit_depth=2, db_session=db_session)
-        tree = ResourceService.build_subtree_strut(result)['children'][
-            root.resource_id]
+        tree = ResourceService.build_subtree_strut(result)
+        tree = tree['children'][root.resource_id]
         pprint.pprint(tree)
         assert tree['children'][3]['node'].ordering == 1
         assert tree['children'][1]['node'].ordering == 2
@@ -151,8 +151,8 @@ class TestResources(BaseTestCase):
                                          db_session=db_session)
         result = ResourceService.from_resource_deeper(
             root.resource_id, limit_depth=2, db_session=db_session)
-        tree = ResourceService.build_subtree_strut(result)['children'][
-            root.resource_id]
+        tree = ResourceService.build_subtree_strut(result)
+        tree = tree['children'][root.resource_id]
         pprint.pprint(tree)
         assert tree['children'][2]['node'].ordering == 1
         assert tree['children'][3]['node'].ordering == 2
@@ -165,8 +165,8 @@ class TestResources(BaseTestCase):
             1, to_position=3, new_parent_id=-1, db_session=db_session)
         result = ResourceService.from_resource_deeper(
             root.resource_id, limit_depth=2, db_session=db_session)
-        tree = ResourceService.build_subtree_strut(result)['children'][
-            root.resource_id]
+        tree = ResourceService.build_subtree_strut(result)
+        tree = tree['children'][root.resource_id]
         pprint.pprint(tree)
         assert tree['children'][2]['node'].ordering == 1
         assert tree['children'][3]['node'].ordering == 2
@@ -179,8 +179,8 @@ class TestResources(BaseTestCase):
                                          db_session=db_session)
         result = ResourceService.from_resource_deeper(
             root.resource_id, limit_depth=2, db_session=db_session)
-        tree = ResourceService.build_subtree_strut(result)['children'][
-            root.resource_id]
+        tree = ResourceService.build_subtree_strut(result)
+        tree = tree['children'][root.resource_id]
         pprint.pprint(tree)
         assert tree['children'][2]['node'].ordering == 1
         assert tree['children'][3]['node'].ordering == 2
@@ -217,8 +217,8 @@ class TestResources(BaseTestCase):
         root = create_default_tree(db_session=db_session)[0]
         result = ResourceService.from_resource_deeper(
             root.resource_id, limit_depth=2, db_session=db_session)
-        tree = ResourceService.build_subtree_strut(result)['children'][
-            root.resource_id]
+        tree = ResourceService.build_subtree_strut(result)
+        tree = tree['children'][root.resource_id]
         pprint.pprint(tree)
         with pytest.raises(ZigguratResourceOutOfBoundaryException):
             ResourceService.move_to_position(
@@ -263,10 +263,12 @@ class TestResources(BaseTestCase):
 
         result = ResourceService.from_resource_deeper(
             -1, limit_depth=3, db_session=db_session)
-        tree_struct = ResourceService.build_subtree_strut(result)['children'][-1]
+        tree = ResourceService.build_subtree_strut(result)
+        tree_struct = tree['children'][-1]
         pprint.pprint(tree_struct)
         l_r_nodes = [n for n in tree_struct['children'].values()]
-        assert [n['node'].resource_id for n in l_r_nodes] == [6, 1, 2, 3, 10, 11]
+        check_values = [6, 1, 2, 3, 10, 11]
+        assert [n['node'].resource_id for n in l_r_nodes] == check_values
         l_a_nodes = [n for n in tree_struct['children'][1]['children'].values()]
         pprint.pprint(l_a_nodes)
         assert [n['node'].resource_id for n in l_a_nodes] == [5, 7, 8]
@@ -335,6 +337,22 @@ class TestResources(BaseTestCase):
 
     @pytest.mark.skipif(not_postgres, reason="requires postgres")
     def test_move_from_root_deeper(self, db_session):
+        create_default_tree(db_session)
+        ResourceService.move_to_position(
+            -2, new_parent_id=1, to_position=1, db_session=db_session)
+
+        result = ResourceService.from_parent_deeper(
+            parent_id=None, db_session=db_session)
+        tree_struct = ResourceService.build_subtree_strut(result)['children']
+        pprint.pprint(tree_struct)
+        r_nodes = [n for n in
+                   tree_struct[-1]['children'][1]['children'].values()]
+        assert [n['node'].resource_id for n in r_nodes] == [-2, 5, 6, 7, 8]
+        assert list(tree_struct.keys()) == [-1, -3]
+        assert [n['node'].ordering for n in tree_struct.values()] == [1, 2]
+
+    @pytest.mark.skipif(not_postgres, reason="requires postgres")
+    def test_delete_with_children(self, db_session):
         create_default_tree(db_session)
         ResourceService.move_to_position(
             -2, new_parent_id=1, to_position=1, db_session=db_session)

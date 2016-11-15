@@ -2,7 +2,9 @@ from __future__ import unicode_literals
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import validates
-from .base import BaseModel
+from ziggurat_foundations.models.base import BaseModel
+
+__all__ = ['GroupResourcePermissionMixin']
 
 
 class GroupResourcePermissionMixin(BaseModel):

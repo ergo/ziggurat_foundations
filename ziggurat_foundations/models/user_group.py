@@ -1,7 +1,9 @@
 from __future__ import unicode_literals
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
-from .base import BaseModel
+from ziggurat_foundations.models.base import BaseModel
+
+__all__ = ['UserGroupMixin']
 
 
 class UserGroupMixin(BaseModel):

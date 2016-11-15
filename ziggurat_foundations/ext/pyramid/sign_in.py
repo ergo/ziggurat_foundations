@@ -4,7 +4,6 @@ import importlib
 import logging
 import pyramid.security
 
-
 from ziggurat_foundations.exc import ZigguratException
 from ziggurat_foundations.models.base import get_db_session
 

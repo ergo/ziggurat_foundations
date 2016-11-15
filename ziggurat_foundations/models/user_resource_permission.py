@@ -4,9 +4,12 @@ from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import validates
 from zope.deprecation import deprecation
 
-from .base import BaseModel
-from .services.user_resource_permission import UserResourcePermissionService
-from .base import get_db_session
+from ziggurat_foundations.models.base import BaseModel
+from ziggurat_foundations.models.services.user_resource_permission import \
+    UserResourcePermissionService
+from ziggurat_foundations.models.base import get_db_session
+
+__all__ = ['UserResourcePermissionMixin']
 
 
 class UserResourcePermissionMixin(BaseModel):

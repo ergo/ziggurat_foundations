@@ -1,10 +1,14 @@
 from __future__ import unicode_literals
 from paginate_sqlalchemy import SqlalchemyOrmPage
-from . import BaseService
-from ..base import get_db_session
-from ...permissions import (ANY_PERMISSION,
-                            ALL_PERMISSIONS,
-                            PermissionTuple)
+from ziggurat_foundations.models.services import BaseService
+from ziggurat_foundations.models.base import get_db_session
+from ziggurat_foundations.permissions import (
+    ANY_PERMISSION,
+    ALL_PERMISSIONS,
+    PermissionTuple,
+)
+
+__all__ = ['GroupService']
 
 
 class GroupService(BaseService):

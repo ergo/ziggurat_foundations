@@ -29,6 +29,10 @@ except ImportError as e:
 
     ALL_PERMISSIONS = AllPermissionsList()
 
+__all__ = ['ANY_PERMISSION_CLS', 'ANY_PERMISSION',
+           'resource_permissions_for_users',
+           'permission_to_04_acls', 'permission_to_pyramid_acls']
+
 
 class ANY_PERMISSION_CLS(object):
     def __eq__(self, other):
@@ -149,6 +153,11 @@ def resource_permissions_for_users(models_proxy, perm_names, resource_ids=None,
 
 
 def permission_to_04_acls(permissions):
+    """
+    Legacy acl format kept for bw. compatibility
+    :param permissions:
+    :return:
+    """
     acls = []
     for perm in permissions:
         if perm.type == 'user':
@@ -159,6 +168,11 @@ def permission_to_04_acls(permissions):
 
 
 def permission_to_pyramid_acls(permissions):
+    """
+    Returns a list of permissions in a format understood by pyramid
+    :param permissions:
+    :return:
+    """
     acls = []
     for perm in permissions:
         if perm.type == 'user':

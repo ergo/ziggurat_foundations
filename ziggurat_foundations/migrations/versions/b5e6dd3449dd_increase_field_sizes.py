@@ -37,5 +37,6 @@ def upgrade():
                     type_=sa.Unicode(64), existing_type=sa.Unicode(50),
                     nullable=False)
 
+
 def downgrade():
     pass

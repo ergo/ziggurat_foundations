@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-__version__ = {'major': 0, 'minor': 6, 'patch': 8}
+__version__ = {'major': 0, 'minor': 7, 'patch': 0}
 
 
 class ModelProxy(object):
@@ -18,6 +18,7 @@ class NOOP(object):
 
 noop = NOOP()
 noparent = NOOP()
+
 
 def make_passwordmanager():
     from passlib.context import CryptContext

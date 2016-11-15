@@ -16,7 +16,7 @@ import sqlalchemy as sa
 ${imports if imports else ""}
 
 def upgrade():
-    ${upgrades if upgrades else "pass"}
+${upgrades if upgrades else "pass"}
 
 def downgrade():
-    ${downgrades if downgrades else "pass"}
+${downgrades if downgrades else "pass"}

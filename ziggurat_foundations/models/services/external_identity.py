@@ -1,6 +1,8 @@
 from __future__ import unicode_literals
-from . import BaseService
-from ..base import get_db_session
+from ziggurat_foundations.models.services import BaseService
+from ziggurat_foundations.models.base import get_db_session
+
+__all__ = ['ExternalIdentityService']
 
 
 class ExternalIdentityService(BaseService):

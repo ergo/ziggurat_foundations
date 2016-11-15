@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-from ..base import get_db_session
+from ziggurat_foundations.models.base import get_db_session
 
 
 class BaseService(object):
