@@ -223,26 +223,53 @@ class ResourceService(BaseService):
         :param db_session:
         :return:
         """
+        tablename = cls.model.__table__.name
         raw_q = """
             WITH RECURSIVE subtree AS (
                     SELECT res.*, 1 AS depth, res.ordering::CHARACTER VARYING AS sorting,
                     res.resource_id::CHARACTER VARYING AS path
-                    FROM resources AS res WHERE res.resource_id = :resource_id
+                    FROM {tablename} AS res WHERE res.resource_id = :resource_id
                   UNION ALL
                     SELECT res_u.*, depth+1 AS depth,
                     (st.sorting::CHARACTER VARYING || '/' || res_u.ordering::CHARACTER VARYING ) AS sorting,
                     (st.path::CHARACTER VARYING || '/' || res_u.resource_id::CHARACTER VARYING ) AS path
-                    FROM resources res_u, subtree st
+                    FROM {tablename} res_u, subtree st
                     WHERE res_u.parent_id = st.resource_id
             )
             SELECT * FROM subtree WHERE depth<=:depth ORDER BY sorting;
-        """
+        """.format(tablename=tablename)
         db_session = get_db_session(db_session)
         text_obj = sa.text(raw_q)
         query = db_session.query(cls.model, 'depth', 'sorting', 'path')
         query = query.from_statement(text_obj)
         query = query.params(resource_id=resource_id, depth=limit_depth)
         return query
+
+    @classmethod
+    def delete_branch(cls, resource_id=None, db_session=None):
+        """
+        This deletes whole branch with children starting from resource_id
+
+        :param resource_id:
+        :param db_session:
+        :return:
+        """
+        tablename = cls.model.__table__.name
+        raw_q = """
+            WITH RECURSIVE subtree AS (
+                    SELECT res.resource_id
+                    FROM {tablename} AS res WHERE res.resource_id = :resource_id
+                  UNION ALL
+                    SELECT res_u.resource_id
+                    FROM {tablename} res_u, subtree st
+                    WHERE res_u.parent_id = st.resource_id
+            )
+            DELETE FROM resources where resource_id in (select * from subtree);
+        """.format(tablename=tablename)
+        db_session = get_db_session(db_session)
+        text_obj = sa.text(raw_q)
+        db_session.execute(text_obj, params={'resource_id': resource_id})
+        return True
 
     @classmethod
     def from_parent_deeper(cls, parent_id=None, limit_depth=1000000,
@@ -261,21 +288,21 @@ class ResourceService(BaseService):
             limiting_clause = 'res.parent_id = :parent_id'
         else:
             limiting_clause = 'res.parent_id is null'
-
+        tablename = cls.model.__table__.name
         raw_q = """
             WITH RECURSIVE subtree AS (
                     SELECT res.*, 1 AS depth, res.ordering::CHARACTER VARYING AS sorting,
                     res.resource_id::CHARACTER VARYING AS path
-                    FROM resources AS res WHERE {}
+                    FROM {tablename} AS res WHERE {limiting_clause}
                   UNION ALL
                     SELECT res_u.*, depth+1 AS depth,
                     (st.sorting::CHARACTER VARYING || '/' || res_u.ordering::CHARACTER VARYING ) AS sorting,
                     (st.path::CHARACTER VARYING || '/' || res_u.resource_id::CHARACTER VARYING ) AS path
-                    FROM resources res_u, subtree st
+                    FROM {tablename} res_u, subtree st
                     WHERE res_u.parent_id = st.resource_id
             )
             SELECT * FROM subtree WHERE depth<=:depth ORDER BY sorting;
-        """.format(limiting_clause)
+        """.format(tablename=tablename, limiting_clause=limiting_clause)
         db_session = get_db_session(db_session)
         text_obj = sa.text(raw_q)
         query = db_session.query(cls.model, 'depth', 'sorting', 'path')
@@ -318,17 +345,18 @@ class ResourceService(BaseService):
         :param db_session:
         :return:
         """
+        tablename = cls.model.__table__.name
         raw_q = """
             WITH RECURSIVE subtree AS (
-                    SELECT res.*, 1 as depth FROM resources res
+                    SELECT res.*, 1 as depth FROM {tablename} res
                     WHERE res.resource_id = :resource_id
                   UNION ALL
                     SELECT res_u.*, depth+1 as depth
-                    FROM resources res_u, subtree st
+                    FROM {tablename} res_u, subtree st
                     WHERE res_u.resource_id = st.parent_id
             )
             SELECT * FROM subtree WHERE depth<=:depth;
-        """
+        """.format(tablename=tablename)
         db_session = get_db_session(db_session)
         q = db_session.query(cls.model).from_statement(sa.text(raw_q)).params(
             resource_id=object_id, depth=limit_depth)

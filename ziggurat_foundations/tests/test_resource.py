@@ -352,17 +352,18 @@ class TestResources(BaseTestCase):
         assert [n['node'].ordering for n in tree_struct.values()] == [1, 2]
 
     @pytest.mark.skipif(not_postgres, reason="requires postgres")
-    def test_delete_with_children(self, db_session):
+    @pytest.mark.parametrize("resource_id, expected", [
+        (1, [-1, 2, 4, 3, 10, 11, -2, -3]),
+        (9, [-1, 1, 5, 6, 7, 8, 2, 4, 3, 10, 11, -2, -3]),
+        (12, [-1, 1, 5, 6, 7, 9, 8, 2, 4, 3, 10, 11, -2, -3]),
+        (-1, [-2, -3]),
+    ])
+    def test_delete_branches(self, db_session, resource_id, expected):
         create_default_tree(db_session)
-        ResourceService.move_to_position(
-            -2, new_parent_id=1, to_position=1, db_session=db_session)
+        ResourceService.delete_branch(resource_id, db_session=db_session)
 
         result = ResourceService.from_parent_deeper(
             parent_id=None, db_session=db_session)
-        tree_struct = ResourceService.build_subtree_strut(result)['children']
-        pprint.pprint(tree_struct)
-        r_nodes = [n for n in
-                   tree_struct[-1]['children'][1]['children'].values()]
-        assert [n['node'].resource_id for n in r_nodes] == [-2, 5, 6, 7, 8]
-        assert list(tree_struct.keys()) == [-1, -3]
-        assert [n['node'].ordering for n in tree_struct.values()] == [1, 2]
+        row_ids = [r.Resource.resource_id for r in result]
+        print(row_ids)
+        assert row_ids == expected
