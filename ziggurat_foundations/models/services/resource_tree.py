@@ -10,7 +10,6 @@ class ResourceTreeService(object):
         service_cls.model = self.model
         self.service = service_cls
 
-
     def from_resource_deeper(self, resource_id=None, limit_depth=1000000,
                              db_session=None, *args, **kwargs):
         return self.service.from_resource_deeper(
@@ -68,9 +67,8 @@ class ResourceTreeService(object):
             db_session=db_session, *args, **kwargs)
 
     def count_children(self, resource_id, db_session=None, *args, **kwargs):
-        return self.service.count_children(self, resource_id=resource_id,
-                                           db_session=db_session, *args,
-                                           **kwargs)
+        return self.service.count_children(
+            resource_id=resource_id, db_session=db_session, *args, **kwargs)
 
     def check_node_position(
             self, parent_id, position, on_same_branch, db_session=None,
