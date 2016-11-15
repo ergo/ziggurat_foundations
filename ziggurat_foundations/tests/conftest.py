@@ -95,6 +95,38 @@ ziggurat_model_init(User, Group, UserGroup, GroupPermission, UserPermission,
 def db_session(request):
     sql_str = os.environ.get("DB_STRING", 'sqlite://', )
     engine = create_engine(sql_str)
+    engine.echo = True
+    # pyramid way
+    maker = sessionmaker(bind=engine)
+    Base.metadata.bind = engine
+    Base.metadata.drop_all(engine)
+    engine.execute(
+        'DROP TABLE IF EXISTS alembic_ziggurat_foundations_version')
+    if sql_str.startswith('sqlite'):
+        # sqlite will not work with alembic
+        Base.metadata.create_all(engine)
+    else:
+        alembic_cfg = Config()
+        alembic_cfg.set_main_option('script_location',
+                                    'ziggurat_foundations:migrations')
+        alembic_cfg.set_main_option('sqlalchemy.url', sql_str)
+        command.upgrade(alembic_cfg, "head")
+
+    session = maker()
+
+    def teardown():
+        session.rollback()
+        session.close()
+
+    request.addfinalizer(teardown)
+
+    return session
+
+@pytest.fixture
+def db_session2(request):
+    sql_str = os.environ.get("DB_STRING2", 'sqlite://', )
+    engine = create_engine(sql_str)
+    engine.echo = True
     # pyramid way
     maker = sessionmaker(bind=engine)
     Base.metadata.bind = engine
