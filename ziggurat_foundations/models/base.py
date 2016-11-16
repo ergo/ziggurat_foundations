@@ -19,14 +19,15 @@ class BaseModel(object):
         return sa.orm.class_mapper(cls).primary_key
 
     def get_dict(self, exclude_keys=None, include_keys=None):
-        """ return dictionary of keys and values corresponding to this model's
-        data
-        if include_keys is null the function will return all keys
+        """
+        return dictionary of keys and values corresponding to this model's
+        data - if include_keys is null the function will return all keys
 
-        ::arg include_keys (optional) is a list of columns from model that
-        should be returned by this function
-        ::arg exclude_keys (optional) is a list of columns from model that
+        :param exclude_keys: (optional) is a list of columns from model that
         should not be returned by this function
+        :param include_keys: (optional) is a list of columns from model that
+        should be returned by this function
+        :return:
         """
         d = {}
         exclude_keys_list = exclude_keys or []
@@ -50,11 +51,11 @@ class BaseModel(object):
         updates instance properties *for column names that exist*
         for this model and are keys present in passed dictionary
 
-        :dictionary appstruct:
-        ::arg include_keys (optional) is a list of columns from model that
-        should be updated by this function
-        ::arg exclude_keys (optional) is a list of columns from model that
+        :param appstruct: (dictionary)
+        :param exclude_keys: (optional) is a list of columns from model that
         should not be updated by this function
+        :param include_keys: (optional) is a list of columns from model that
+        should be updated by this function
         :return:
         """
         exclude_keys_list = exclude_keys or []
@@ -70,11 +71,11 @@ class BaseModel(object):
         updates instance properties *for column names that exist*
         for this model and are properties present in passed dictionary
 
-        :object object:
-        ::arg include_keys (optional) is a list of columns from model that
-        should be updated by this function
-        ::arg exclude_keys (optional) is a list of columns from model that
+        :param instance:
+        :param exclude_keys: (optional) is a list of columns from model that
         should not be updated by this function
+        :param include_keys: (optional) is a list of columns from model that
+        should be updated by this function
         :return:
         """
         exclude_keys_list = exclude_keys or []
@@ -85,12 +86,18 @@ class BaseModel(object):
                 setattr(self, k, getattr(instance, k))
 
     def get_db_session(self, session=None):
-        """ Attempts to return session via get_db_session utility function
-        :meth:`~ziggurat_foundations.models.get_db_session`"""
+        """
+        Attempts to return session via get_db_session utility function
+        :meth:`~ziggurat_foundations.models.get_db_session`
+
+        :param session:
+        :return:
+        """
         return get_db_session(session, self)
 
     def persist(self, flush=False, db_session=None):
         """
+
         Adds object to session, if the object was freshly created this will
         persist the object in the storage on commit
 
@@ -105,8 +112,13 @@ class BaseModel(object):
             db_session.flush()
 
     def delete(self, db_session=None):
-        """ Deletes the object via session, this will permanently delete the
-        object from storage on commit """
+        """
+        Deletes the object via session, this will permanently delete the
+        object from storage on commit
+
+        :param db_session:
+        :return:
+        """
         db_session = get_db_session(db_session, self)
         db_session.delete(self)
 
@@ -114,6 +126,7 @@ class BaseModel(object):
     def base_query(cls, db_session=None):
         """
         Returns a base query object one can use to search on simple properties
+
         :param db_session:
         :return:
         """
@@ -123,6 +136,7 @@ class BaseModel(object):
     def all(cls, db_session=None):
         """
         Alias for base_query()
+
         :param db_session:
         :return:
         """
@@ -131,7 +145,8 @@ class BaseModel(object):
 
 
 def get_db_session(session=None, obj=None):
-    """ utility function that attempts to return sqlalchemy session that could
+    """
+    utility function that attempts to return sqlalchemy session that could
     have been created/passed in one of few ways:
 
     * It first tries to read session attached to instance
@@ -141,7 +156,12 @@ def get_db_session(session=None, obj=None):
 
     * finally tries to read pylons-like threadlocal called DBSession
 
-    * if this fails exception is thrown """
+    * if this fails exception is thrown
+
+    :param session:
+    :param obj:
+    :return:
+    """
     # try to read the session from instance
     from ziggurat_foundations import models
     if obj:

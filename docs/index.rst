@@ -34,9 +34,11 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
-   
+
+   overview
    configuration
    usage_examples
+   integrations
    api/index
 
 

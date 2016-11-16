@@ -102,23 +102,20 @@ pygments_style = 'sphinx'
 
 
 # -- Options for HTML output ---------------------------------------------------
-import itcase_sphinx_theme
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'itcase'
+html_theme = 'pyramid'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 html_theme_options = {
-    'github_button': True,
-    'github_user': 'Ergo',
-    'github_repo': 'ziggurat_foundations',
+
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = [itcase_sphinx_theme.get_html_themes_path()]
+html_theme_path = []
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".

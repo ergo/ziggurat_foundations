@@ -1,1 +1,1 @@
-make html SPHINXBUILD='~/python/bin/sphinx-build'
+make html SPHINXBUILD='sphinx-build'

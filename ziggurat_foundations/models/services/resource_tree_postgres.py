@@ -246,6 +246,7 @@ class ResourceTreeServicePostgreSQL(object):
         """
         Shifts ordering to "close gaps" after node deletion or being moved
         to another branch, begins the shift from given position
+
         :param parent_id:
         :param position:
         :param db_session:
@@ -265,6 +266,7 @@ class ResourceTreeServicePostgreSQL(object):
         """
         Shifts ordering to "open a gap" for node insertion,
         begins the shift from given position
+
         :param parent_id:
         :param position:
         :param db_session:
@@ -351,6 +353,7 @@ class ResourceTreeServicePostgreSQL(object):
         """
         Checks if node position for given parent is valid, raises exception if
         this is not the case
+
         :param parent_id:
         :param position:
         :param on_same_branch: indicates that we are checking same branch

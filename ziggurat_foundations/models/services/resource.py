@@ -15,13 +15,28 @@ __all__ = ['ResourceService']
 class ResourceService(BaseService):
     @classmethod
     def get(cls, resource_id, db_session=None):
+        """
+        Fetch row using primary key -
+        will use existing object in session if already present
+
+        :param resource_id:
+        :param db_session:
+        :return:
+        """
         db_session = get_db_session(db_session)
         return db_session.query(cls.model).get(resource_id)
 
     @classmethod
     def perms_for_user(cls, instance, user, db_session=None):
-        """ returns all permissions that given user has for this resource
-            from groups and directly set ones too"""
+        """
+        returns all permissions that given user has for this resource
+            from groups and directly set ones too
+
+        :param instance:
+        :param user:
+        :param db_session:
+        :return:
+        """
         db_session = get_db_session(db_session, instance)
         query = db_session.query(
             cls.models_proxy.GroupResourcePermission.group_id.label(
@@ -72,8 +87,15 @@ class ResourceService(BaseService):
 
     @classmethod
     def direct_perms_for_user(cls, instance, user, db_session=None):
-        """ returns permissions that given user has for this resource
-            without ones inherited from groups that user belongs to"""
+        """
+        returns permissions that given user has for this resource
+            without ones inherited from groups that user belongs to
+
+        :param instance:
+        :param user:
+        :param db_session:
+        :return:
+        """
         db_session = get_db_session(db_session, instance)
         query = db_session.query(
             cls.models_proxy.UserResourcePermission.user_id,
@@ -98,8 +120,15 @@ class ResourceService(BaseService):
 
     @classmethod
     def group_perms_for_user(cls, instance, user, db_session=None):
-        """ returns permissions that given user has for this resource
-            that are inherited from groups """
+        """
+        returns permissions that given user has for this resource
+            that are inherited from groups
+
+        :param instance:
+        :param user:
+        :param db_session:
+        :return:
+        """
         db_session = get_db_session(db_session, instance)
         perms = resource_permissions_for_users(cls.models_proxy,
                                                ANY_PERMISSION,
@@ -121,15 +150,21 @@ class ResourceService(BaseService):
     def users_for_perm(cls, instance, perm_name, user_ids=None, group_ids=None,
                        limit_group_permissions=False, skip_group_perms=False,
                        db_session=None):
-        """ return PermissionTuples for users AND groups that have given
+        """
+        return PermissionTuples for users AND groups that have given
         permission for the resource, perm_name is __any_permission__ then
         users with any permission will be listed
-        user_ids - limits the permissions to specific user ids,
-        group_ids - limits the permissions to specific group ids,
-        limit_group_permissions - should be used if we do not want to have
+
+        :param instance:
+        :param perm_name:
+        :param user_ids: limits the permissions to specific user ids
+        :param group_ids: limits the permissions to specific group ids
+        :param limit_group_permissions: should be used if we do not want to have
         user objects returned for group permissions, this might cause performance
         issues for big groups
-        skip_group_perms - do not attach group permissions to the resultset
+        :param skip_group_perms: do not attach group permissions to the resultset
+        :param db_session:
+        :return:
         """
         db_session = get_db_session(db_session, instance)
         users_perms = resource_permissions_for_users(cls.models_proxy,
@@ -156,7 +191,13 @@ class ResourceService(BaseService):
 
     @classmethod
     def by_resource_id(cls, resource_id, db_session=None):
-        """ fetch the resouce by id """
+        """
+        fetch the resouce by id
+
+        :param resource_id:
+        :param db_session:
+        :return:
+        """
         db_session = get_db_session(db_session)
         query = db_session.query(cls.model).filter(cls.model.resource_id ==
                                                    int(resource_id))
@@ -165,7 +206,15 @@ class ResourceService(BaseService):
     @classmethod
     def perm_by_group_and_perm_name(cls, resource_id, group_id, perm_name,
                                     db_session=None):
-        """ fetch permissions by group and permission name"""
+        """
+        fetch permissions by group and permission name
+
+        :param resource_id:
+        :param group_id:
+        :param perm_name:
+        :param db_session:
+        :return:
+        """
         db_session = get_db_session(db_session)
         query = db_session.query(cls.models_proxy.GroupResourcePermission)
         query = query.filter(
@@ -180,11 +229,19 @@ class ResourceService(BaseService):
     def groups_for_perm(cls, instance, perm_name, group_ids=None,
                         limit_group_permissions=False,
                         db_session=None):
-        """ return PermissionTuples for groups that have given
+        """
+        return PermissionTuples for groups that have given
         permission for the resource, perm_name is __any_permission__ then
         users with any permission will be listed
-        user_ids - limits the permissions to specific user ids,
-        group_ids - limits the permissions to specific group ids,
+
+        :param instance:
+        :param perm_name:
+        :param group_ids: limits the permissions to specific group ids
+        :param limit_group_permissions: should be used if we do not want to have
+        user objects returned for group permissions, this might cause performance
+        issues for big groups
+        :param db_session:
+        :return:
         """
         db_session = get_db_session(db_session, instance)
         group_perms = resource_permissions_for_users(cls.models_proxy,
@@ -206,7 +263,8 @@ class ResourceService(BaseService):
     @classmethod
     def lock_resource_for_update(cls, resource_id, db_session):
         """
-        Selects resource for update to
+        Selects resource for update - locking access for other transactions
+
         :param resource_id:
         :param db_session:
         :return:

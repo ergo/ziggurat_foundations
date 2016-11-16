@@ -17,13 +17,27 @@ __all__ = ['UserService']
 class UserService(BaseService):
     @classmethod
     def get(cls, user_id, db_session=None):
+        """
+        Fetch row using primary key -
+        will use existing object in session if already present
+
+        :param user_id:
+        :param db_session:
+        :return:
+        """
         db_session = get_db_session(db_session)
         return db_session.query(cls.model).get(user_id)
 
     @classmethod
     def permissions(cls, instance, db_session=None):
-        """ returns all non-resource permissions based on what groups user
-            belongs and directly set ones for this user"""
+        """
+        returns all non-resource permissions based on what groups user
+            belongs and directly set ones for this user
+
+        :param instance:
+        :param db_session:
+        :return:
+        """
         db_session = get_db_session(db_session, instance)
         query = db_session.query(
             cls.models_proxy.GroupPermission.group_id.label('owner_id'),
@@ -54,9 +68,17 @@ class UserService(BaseService):
     def resources_with_perms(cls, instance, perms, resource_ids=None,
                              resource_types=None,
                              db_session=None):
-        """ returns all resources that user has perms for,
-            note that at least one perm needs to be met,
-            resource_ids restricts the search to specific resources"""
+        """
+        returns all resources that user has perms for
+            (note that at least one perm needs to be met)
+
+        :param instance:
+        :param perms:
+        :param resource_ids: restricts the search to specific resources
+        :param resource_types:
+        :param db_session:
+        :return:
+        """
         # owned entities have ALL permissions so we return those resources too
         # even without explict perms set
         # TODO: implement admin superrule perm - maybe return all apps
@@ -113,8 +135,13 @@ class UserService(BaseService):
 
     @classmethod
     def groups_with_resources(cls, instance):
-        """ Returns a list of groups users belongs to with eager loaded
-        resources owned by those groups """
+        """
+        Returns a list of groups users belongs to with eager loaded
+        resources owned by those groups
+
+        :param instance:
+        :return:
+        """
         return instance.groups_dynamic.options(
             sa.orm.eagerload(cls.models_proxy.Group.resources))
 
@@ -122,8 +149,15 @@ class UserService(BaseService):
     def resources_with_possible_perms(cls, instance, resource_ids=None,
                                       resource_types=None,
                                       db_session=None):
-        """ returns list of permissions and resources for this user,
-            resource_ids restricts the search to specific resources"""
+        """
+        returns list of permissions and resources for this user
+
+        :param instance:
+        :param resource_ids: restricts the search to specific resources
+        :param resource_types: restricts the search to specific resource types
+        :param db_session:
+        :return:
+        """
         perms = resource_permissions_for_users(cls.models_proxy,
                                                ANY_PERMISSION,
                                                resource_ids=resource_ids,
@@ -144,7 +178,14 @@ class UserService(BaseService):
 
     @classmethod
     def gravatar_url(cls, instance, default='mm', **kwargs):
-        """ returns user gravatar url """
+        """
+        returns user gravatar url
+
+        :param instance:
+        :param default:
+        :param kwargs:
+        :return:
+        """
         # construct the url
         hash = hashlib.md5(instance.email.encode('utf8').lower()).hexdigest()
         if 'd' not in kwargs:
@@ -156,7 +197,13 @@ class UserService(BaseService):
 
     @classmethod
     def set_password(cls, instance, raw_password):
-        """ sets new password """
+        """
+        sets new password on a user using password manager
+
+        :param instance:
+        :param raw_password:
+        :return:
+        """
         password = instance.passwordmanager.encrypt(raw_password)
         if six.PY2:
             instance.user_password = password.decode('utf8')
@@ -166,28 +213,55 @@ class UserService(BaseService):
 
     @classmethod
     def check_password(cls, instance, raw_password):
-        """ checks string with users password hash"""
+        """
+        checks string with users password hash using password manager
+
+        :param instance:
+        :param raw_password:
+        :return:
+        """
         return instance.passwordmanager.verify(raw_password,
                                                instance.user_password)
 
     @classmethod
     def generate_random_pass(cls, chars=7):
-        """ generates random string of fixed length"""
+        """
+        generates random string of fixed length
+
+        :param chars:
+        :return:
+        """
         return cls.generate_random_string(chars)
 
     @classmethod
     def regenerate_security_code(cls, instance):
-        """ generates new security code"""
+        """
+        generates new security code
+
+        :param instance:
+        :return:
+        """
         instance.security_code = instance.generate_random_string(64)
 
     @staticmethod
     def generate_random_string(chars=7):
+        """
+
+        :param chars:
+        :return:
+        """
         return u''.join(random.sample(string.ascii_letters * 2 + string.digits,
                                       chars))
 
     @classmethod
     def by_id(cls, user_id, db_session=None):
-        """ fetch user by user id """
+        """
+        fetch user by user id
+
+        :param user_id:
+        :param db_session:
+        :return:
+        """
         db_session = get_db_session(db_session)
         query = db_session.query(cls.model)
         query = query.filter(cls.model.id == user_id)
@@ -196,7 +270,13 @@ class UserService(BaseService):
 
     @classmethod
     def by_user_name(cls, user_name, db_session=None):
-        """ fetch user by user name """
+        """
+        fetch user by user name
+
+        :param user_name:
+        :param db_session:
+        :return:
+        """
         db_session = get_db_session(db_session)
         query = db_session.query(cls.model)
         query = query.filter(sa.func.lower(cls.model.user_name) ==
@@ -207,7 +287,14 @@ class UserService(BaseService):
     @classmethod
     def by_user_name_and_security_code(cls, user_name, security_code,
                                        db_session=None):
-        """ fetch user objects by user name and security code"""
+        """
+        fetch user objects by user name and security code
+
+        :param user_name:
+        :param security_code:
+        :param db_session:
+        :return:
+        """
         db_session = get_db_session(db_session)
         query = db_session.query(cls.model)
         query = query.filter(sa.func.lower(cls.model.user_name) ==
@@ -217,7 +304,13 @@ class UserService(BaseService):
 
     @classmethod
     def by_user_names(cls, user_names, db_session=None):
-        """ fetch user objects by user names """
+        """
+        fetch user objects by user names
+
+        :param user_names:
+        :param db_session:
+        :return:
+        """
         user_names = [(name or '').lower() for name in user_names]
         db_session = get_db_session(db_session)
         query = db_session.query(cls.model)
@@ -229,10 +322,11 @@ class UserService(BaseService):
     @classmethod
     def user_names_like(cls, user_name, db_session=None):
         """
-        fetch users with similar names
+        fetch users with similar names using LIKE clause
 
-        For now rely on LIKE in db - shouldnt be issue ever
-        in future we can plug in fulltext search like solr or whoosh
+        :param user_name:
+        :param db_session:
+        :return:
         """
         db_session = get_db_session(db_session)
         query = db_session.query(cls.model)
@@ -244,7 +338,13 @@ class UserService(BaseService):
 
     @classmethod
     def by_email(cls, email, db_session=None):
-        """ fetch user object by email """
+        """
+        fetch user object by email
+
+        :param email:
+        :param db_session:
+        :return:
+        """
         db_session = get_db_session(db_session)
         query = db_session.query(cls.model).filter(
             sa.func.lower(cls.model.email) == (email or '').lower())
@@ -253,7 +353,14 @@ class UserService(BaseService):
 
     @classmethod
     def by_email_and_username(cls, email, user_name, db_session=None):
-        """ fetch user object by email and username """
+        """
+        fetch user object by email and username
+
+        :param email:
+        :param user_name:
+        :param db_session:
+        :return:
+        """
         db_session = get_db_session(db_session)
         query = db_session.query(cls.model).filter(cls.model.email == email)
         query = query.filter(sa.func.lower(cls.model.user_name) ==
@@ -263,7 +370,13 @@ class UserService(BaseService):
 
     @classmethod
     def users_for_perms(cls, perm_names, db_session=None):
-        """ return users hat have one of given permissions """
+        """
+        return users hat have one of given permissions
+
+        :param perm_names:
+        :param db_session:
+        :return:
+        """
         db_session = get_db_session(db_session)
         query = db_session.query(cls.model)
         query = query.filter(

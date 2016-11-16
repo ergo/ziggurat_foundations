@@ -14,12 +14,26 @@ __all__ = ['GroupService']
 class GroupService(BaseService):
     @classmethod
     def get(cls, group_id, db_session=None):
+        """
+        Fetch row using primary key -
+        will use existing object in session if already present
+
+        :param group_id:
+        :param db_session:
+        :return:
+        """
         db_session = get_db_session(db_session)
         return db_session.query(cls.model).get(group_id)
 
     @classmethod
     def by_group_name(cls, group_name, db_session=None):
-        """ fetch group by name"""
+        """
+        fetch group by name
+
+        :param group_name:
+        :param db_session:
+        :return:
+        """
         db_session = get_db_session(db_session)
         query = db_session.query(cls.model).filter(
             cls.model.group_name == group_name)
@@ -29,7 +43,17 @@ class GroupService(BaseService):
     def get_user_paginator(cls, instance, page=1, item_count=None,
                            items_per_page=50,
                            user_ids=None, GET_params=None):
-        """ returns paginator over users belonging to the group"""
+        """
+        returns paginator over users belonging to the group
+
+        :param instance:
+        :param page:
+        :param item_count:
+        :param items_per_page:
+        :param user_ids:
+        :param GET_params:
+        :return:
+        """
         if not GET_params:
             GET_params = {}
         GET_params.pop('page', None)
@@ -46,8 +70,17 @@ class GroupService(BaseService):
                                       resource_ids=None,
                                       resource_types=None,
                                       db_session=None):
-        """ returns list of permissions and resources for this group,
-            resource_ids restricts the search to specific resources"""
+        """
+        returns list of permissions and resources for this group,
+            resource_ids restricts the search to specific resources
+
+        :param instance:
+        :param perm_names:
+        :param resource_ids:
+        :param resource_types:
+        :param db_session:
+        :return:
+        """
         db_session = get_db_session(db_session, instance)
 
         query = db_session.query(
