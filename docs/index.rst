@@ -30,6 +30,8 @@ further in the documentation)
 
 **BUG TRACKER**: https://github.com/ergo/ziggurat_foundations
 
+**DOCUMENTATION REPO**: https://github.com/ergo/ziggurat_foundations/docs
+
 Contents:
 
 .. toctree::
