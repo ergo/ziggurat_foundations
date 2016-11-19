@@ -138,7 +138,19 @@ inside your models file, to extend your existing models (if following the basic 
 
     class Resource(ResourceMixin, Base):
         # ... your own properties....
-        pass
+
+        # example implementation of ACLS for pyramid application
+        @property
+        def __acl__(self):
+            acls = []
+
+            if self.owner_user_id:
+                acls.extend([(Allow, self.owner_user_id, ALL_PERMISSIONS,), ])
+
+            if self.owner_group_id:
+                acls.extend([(Allow, "group:%s" % self.owner_group_id,
+                              ALL_PERMISSIONS,), ])
+            return acls
 
     class UserPermission(UserPermissionMixin, Base):
         pass
