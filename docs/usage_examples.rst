@@ -157,6 +157,20 @@ Create a new resource and place it somewhere:
         resource_id=resource.resource_id, to_position=total_children,
         db_session=self.request.dbsession)
 
+Fetch all resources that are parent of resource:
+
+.. code-block:: python
+
+    tree_service.path_upper(resource.resource_id, db_session=db_session)
+
+Fetch all children of a resource limiting the amount of levels to go down,
+then build a nested dictionary structure out of it:
+
+.. code-block:: python
+
+    result = tree_service.from_resource_deeper(
+        resource_id, limit_depth=2, db_session=db_session)
+    tree_struct = tree_service.build_subtree_strut(result)
 
 Delete some resource and all its descendants:
 
