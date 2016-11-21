@@ -8,6 +8,10 @@ __all__ = ['GroupResourcePermissionMixin']
 
 
 class GroupResourcePermissionMixin(BaseModel):
+    """
+    Mixin for GroupResourcePermission model
+    """
+
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
 
     @declared_attr

@@ -14,6 +14,10 @@ __all__ = ['ResourceMixin']
 
 
 class ResourceMixin(BaseModel):
+    """
+    Mixin for Resource model
+    """
+
     __possible_permissions__ = ()
 
     _ziggurat_services = [ResourceService, ResourceTreeService]

@@ -14,7 +14,7 @@ __all__ = ['UserMixin']
 
 
 class UserMixin(BaseModel):
-    """ Base mixin for user object representation.
+    """ Base mixin for User object representation.
         It supplies all the basic functionality from password hash generation
         and matching to utility methods used for querying database for users
         and their permissions or resources they have access to. It is meant

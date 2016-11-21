@@ -13,6 +13,9 @@ __all__ = ['UserResourcePermissionMixin']
 
 
 class UserResourcePermissionMixin(BaseModel):
+    """
+    Mixin for UserResourcePermission model
+    """
     __table_args__ = (sa.PrimaryKeyConstraint(
         'user_id', 'resource_id', 'perm_name',
         name='pk_users_resources_permissions '),

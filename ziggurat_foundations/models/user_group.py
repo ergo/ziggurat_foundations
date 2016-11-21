@@ -7,6 +7,9 @@ __all__ = ['UserGroupMixin']
 
 
 class UserGroupMixin(BaseModel):
+    """
+    Mixin for UserGroup model
+    """
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
 
     @declared_attr

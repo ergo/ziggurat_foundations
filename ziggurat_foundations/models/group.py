@@ -11,7 +11,7 @@ __all__ = ['GroupMixin']
 
 
 class GroupMixin(BaseModel):
-    """ base mixin for group object"""
+    """ Mixin for Group model """
 
     _ziggurat_services = [GroupService]
 

@@ -13,7 +13,7 @@ __all__ = ['GroupPermissionMixin']
 
 
 class GroupPermissionMixin(BaseModel):
-    """ group permission mixin """
+    """ Mixin for GroupPermission model"""
 
     __table_args__ = (sa.PrimaryKeyConstraint('group_id', 'perm_name',
                                               name='pk_groups_permissions'),

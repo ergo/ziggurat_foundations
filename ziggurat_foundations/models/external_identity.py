@@ -12,6 +12,11 @@ __all__ = ['ExternalIdentityMixin']
 
 
 class ExternalIdentityMixin(BaseModel):
+    """
+    Mixin for External Identity model - it represents oAuth(or other) accounts
+    attached to your user object
+    """
+
     __table_args__ = (
         sa.PrimaryKeyConstraint('external_id', 'local_user_id', 'provider_name',
                                 name='pk_external_identities'),

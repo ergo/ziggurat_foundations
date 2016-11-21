@@ -13,6 +13,9 @@ __all__ = ['UserPermissionMixin']
 
 
 class UserPermissionMixin(BaseModel):
+    """
+    Mixin for UserPermission model
+    """
     __table_args__ = (sa.PrimaryKeyConstraint('user_id', 'perm_name',
                                               name='pk_users_permissions'),
                       {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'})
