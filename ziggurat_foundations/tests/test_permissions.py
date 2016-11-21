@@ -19,6 +19,8 @@ from ziggurat_foundations.models.services.user_permission import \
     UserPermissionService
 from ziggurat_foundations.models.services.user_resource_permission import \
     UserResourcePermissionService
+from ziggurat_foundations.models.services.group_resource_permission import \
+    GroupResourcePermissionService
 
 
 class TestUserPermissions(BaseTestCase):
@@ -758,6 +760,24 @@ class TestGroupPermission(BaseTestCase):
                   ]
 
         check_one_in_other(perms, second)
+
+    def test_group_resource_permission(self, db_session):
+        self.set_up_user_group_and_perms(db_session)
+        resource3 = add_resource_b(db_session, 3, 'other resource')
+        db_session.flush()
+        group_permission2 = GroupResourcePermission(
+            perm_name='group_perm2',
+            group_id=self.group2.id,
+        )
+        row = GroupResourcePermissionService.get(
+            group_id=self.group2.id, resource_id=self.resource2.resource_id,
+            perm_name='group_perm2', db_session=db_session)
+        assert row is None
+        self.resource2.group_permissions.append(group_permission2)
+        row = GroupResourcePermissionService.get(
+            group_id=self.group2.id, resource_id=self.resource2.resource_id,
+            perm_name='group_perm2', db_session=db_session)
+        assert row is not None
 
 
 class TestUserPermission(BaseTestCase):

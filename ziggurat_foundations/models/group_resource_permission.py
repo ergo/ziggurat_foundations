@@ -3,6 +3,8 @@ import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import validates
 from ziggurat_foundations.models.base import BaseModel
+from ziggurat_foundations.models.services.group_resource_permission import \
+    GroupResourcePermissionService
 
 __all__ = ['GroupResourcePermissionMixin']
 
@@ -11,8 +13,12 @@ class GroupResourcePermissionMixin(BaseModel):
     """
     Mixin for GroupResourcePermission model
     """
+    __table_args__ = (sa.PrimaryKeyConstraint(
+        'group_id', 'resource_id', 'perm_name',
+        name='pk_users_resources_permissions '),
+                      {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'})
 
-    __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
+    _ziggurat_services = [GroupResourcePermissionService]
 
     @declared_attr
     def __tablename__(self):
