@@ -130,6 +130,13 @@ Here is an example of how to connect a user to an external identity like twitter
 Tree Structures
 ---------------
 
+.. warning::
+
+    When using `populate_instance` or any other means to set values on resources
+    remember to **NOT** modify `ordering` and `parent_id` values on the resource
+    rows - always perform tree operations via tree service. Otherwise it will
+    confuse the service and it might perform incorrect operations.
+
 Create a tree structure manager:
 
 
