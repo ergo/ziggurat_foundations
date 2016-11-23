@@ -17,7 +17,6 @@ class NOOP(object):
 
 
 noop = NOOP()
-noparent = NOOP()
 
 
 def make_passwordmanager():

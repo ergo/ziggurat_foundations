@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from ziggurat_foundations import noparent
+from ziggurat_foundations import noop
 
 __all__ = ['ResourceTreeService']
 
@@ -77,7 +77,7 @@ class ResourceTreeService(object):
             object_id=object_id, limit_depth=limit_depth, db_session=db_session,
             *args, **kwargs)
 
-    def move_to_position(self, resource_id, to_position, new_parent_id=noparent,
+    def move_to_position(self, resource_id, to_position, new_parent_id=noop,
                          db_session=None, *args, **kwargs):
         """
         Moves node to new location in the tree

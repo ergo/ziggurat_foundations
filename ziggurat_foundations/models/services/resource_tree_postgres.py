@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from collections import OrderedDict
 
 import sqlalchemy as sa
-from ziggurat_foundations import noparent
+from ziggurat_foundations import noop
 from ziggurat_foundations.exc import (
     ZigguratResourceTreeMissingException,
     ZigguratResourceTreePathException,
@@ -171,7 +171,7 @@ class ResourceTreeServicePostgreSQL(object):
 
     @classmethod
     def move_to_position(cls, resource_id, to_position,
-                         new_parent_id=noparent, db_session=None, *args,
+                         new_parent_id=noop, db_session=None, *args,
                          **kwargs):
         """
         Moves node to new location in the tree
@@ -194,15 +194,15 @@ class ResourceTreeServicePostgreSQL(object):
 
         # reset if parent is same as old
         if new_parent_id == resource.parent_id:
-            new_parent_id = noparent
+            new_parent_id = noop
 
-        if new_parent_id is not noparent:
+        if new_parent_id is not noop:
             cls.check_node_parent(resource_id, new_parent_id,
                                   db_session=db_session)
         else:
             same_branch = True
 
-        if new_parent_id is noparent:
+        if new_parent_id is noop:
             # it is not guaranteed that parent exists
             parent_id = resource.parent_id if resource else None
         else:
@@ -212,7 +212,7 @@ class ResourceTreeServicePostgreSQL(object):
             parent_id, to_position, on_same_branch=same_branch,
             db_session=db_session)
         # move on same branch
-        if new_parent_id is noparent:
+        if new_parent_id is noop:
             order_range = list(sorted((resource.ordering, to_position)))
             move_down = resource.ordering > to_position
 
@@ -361,7 +361,7 @@ class ResourceTreeServicePostgreSQL(object):
         :return:
         """
         db_session = get_db_session(db_session)
-        if position < 1:
+        if not position or position < 1:
             raise ZigguratResourceOutOfBoundaryException(
                 'Position is lower than {}', value=1)
         item_count = cls.count_children(parent_id, db_session=db_session)
