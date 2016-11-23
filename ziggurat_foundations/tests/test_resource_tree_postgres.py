@@ -5,7 +5,7 @@ import pprint
 import pytest
 
 from ziggurat_foundations.tests import (
-    add_resource, BaseTestCase)
+    add_resource, BaseTestCase, create_default_tree)
 from ziggurat_foundations.tests.conftest import Resource, not_postgres
 from ziggurat_foundations.models.services.resource import ResourceService
 from ziggurat_foundations.models.services.resource_tree import ResourceTreeService
@@ -13,40 +13,6 @@ from ziggurat_foundations.models.services.resource_tree_postgres import \
     ResourceTreeServicePostgreSQL
 
 tree_service = ResourceTreeService(ResourceTreeServicePostgreSQL)
-
-
-def create_default_tree(db_session):
-    root = add_resource(
-        db_session, -1, 'root a', ordering=1)
-    res_a = add_resource(
-        db_session, 1, 'a', parent_id=root.resource_id, ordering=1)
-    res_aa = add_resource(
-        db_session, 5, 'aa', parent_id=res_a.resource_id, ordering=1)
-    res_ab = add_resource(
-        db_session, 6, 'ab', parent_id=res_a.resource_id, ordering=2)
-    res_ac = add_resource(
-        db_session, 7, 'ac', parent_id=res_a.resource_id, ordering=3)
-    res_aca = add_resource(
-        db_session, 9, 'aca', parent_id=res_ac.resource_id, ordering=1)
-    res_acaa = add_resource(
-        db_session, 12, 'acaa', parent_id=res_aca.resource_id, ordering=1)
-    res_ad = add_resource(
-        db_session, 8, 'ad', parent_id=res_a.resource_id, ordering=4)
-    res_b = add_resource(
-        db_session, 2, 'b', parent_id=root.resource_id, ordering=2)
-    res_ba = add_resource(
-        db_session, 4, 'ba', parent_id=res_b.resource_id, ordering=1)
-    res_c = add_resource(
-        db_session, 3, 'c', parent_id=root.resource_id, ordering=3)
-    res_d = add_resource(
-        db_session, 10, 'd', parent_id=root.resource_id, ordering=4)
-    res_e = add_resource(
-        db_session, 11, 'e', parent_id=root.resource_id, ordering=5)
-    root_b = add_resource(
-        db_session, -2, 'root b', ordering=2)
-    root_c = add_resource(
-        db_session, -3, 'root c', ordering=3)
-    return [root, root_b, root_c]
 
 
 class TestResources(BaseTestCase):
@@ -259,6 +225,19 @@ class TestResources(BaseTestCase):
         with pytest.raises(ZigguratResourceTreeMissingException):
             tree_service.move_to_position(
                 1, to_position=1, new_parent_id=-6, db_session=db_session)
+
+    @pytest.mark.skipif(not_postgres, reason="requires postgres")
+    def test_move_to_same_parent(self, db_session):
+        root = create_default_tree(db_session=db_session)[0]
+        tree_service.move_to_position(
+            1, 1, new_parent_id=root.resource_id, db_session=db_session)
+        result = tree_service.from_resource_deeper(
+            root.resource_id, limit_depth=2, db_session=db_session)
+        tree = tree_service.build_subtree_strut(result)['children'][
+            root.resource_id]
+        assert tree['children'][1]['node'].ordering == 1
+        assert tree['children'][2]['node'].ordering == 2
+        assert tree['children'][3]['node'].ordering == 3
 
     @pytest.mark.skipif(not_postgres, reason="requires postgres")
     def test_move_on_different_branch_with_siblings(self, db_session):

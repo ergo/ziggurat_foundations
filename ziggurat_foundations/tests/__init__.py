@@ -65,6 +65,39 @@ def add_group(db_session, group_name='group', description='desc'):
     return group
 
 
+def create_default_tree(db_session):
+    root = add_resource(
+        db_session, -1, 'root a', ordering=1)
+    res_a = add_resource(
+        db_session, 1, 'a', parent_id=root.resource_id, ordering=1)
+    res_aa = add_resource(
+        db_session, 5, 'aa', parent_id=res_a.resource_id, ordering=1)
+    res_ab = add_resource(
+        db_session, 6, 'ab', parent_id=res_a.resource_id, ordering=2)
+    res_ac = add_resource(
+        db_session, 7, 'ac', parent_id=res_a.resource_id, ordering=3)
+    res_aca = add_resource(
+        db_session, 9, 'aca', parent_id=res_ac.resource_id, ordering=1)
+    res_acaa = add_resource(
+        db_session, 12, 'acaa', parent_id=res_aca.resource_id, ordering=1)
+    res_ad = add_resource(
+        db_session, 8, 'ad', parent_id=res_a.resource_id, ordering=4)
+    res_b = add_resource(
+        db_session, 2, 'b', parent_id=root.resource_id, ordering=2)
+    res_ba = add_resource(
+        db_session, 4, 'ba', parent_id=res_b.resource_id, ordering=1)
+    res_c = add_resource(
+        db_session, 3, 'c', parent_id=root.resource_id, ordering=3)
+    res_d = add_resource(
+        db_session, 10, 'd', parent_id=root.resource_id, ordering=4)
+    res_e = add_resource(
+        db_session, 11, 'e', parent_id=root.resource_id, ordering=5)
+    root_b = add_resource(
+        db_session, -2, 'root b', ordering=2)
+    root_c = add_resource(
+        db_session, -3, 'root c', ordering=3)
+    return [root, root_b, root_c]
+
 class BaseTestCase(object):
     def set_up_user_group_and_perms(self, db_session):
         """
