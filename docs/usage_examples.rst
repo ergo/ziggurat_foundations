@@ -114,8 +114,16 @@ Checking all permissions user has to specific resource:
         print(perm.user, perm.perm_name, perm.type, perm.group, perm.resource, perm.owner)
         .... list acls ....
 
+List all **direct** permissions that users have for specific resource
 
-Here is an example of how to connect a user to an external identity like twitter login:
+.. no-code-block:: python
+
+    from ziggurat_foundations.permissions import ANY_PERMISSION
+    permissions = ResourceService.users_for_perm(
+        resource, perm_name=ANY_PERMISSION, skip_group_perms=True)
+
+Here is an example of how to connect a user to an external identity
+provider like twitter:
 
 .. code-block:: python
 
