@@ -1,4 +1,4 @@
-|Build Status| |Coverage Status| |PyPI|
+|Build Status| |Coverage Status|
 
 Ziggurat Foundations
 =====================
@@ -59,5 +59,3 @@ Ziggurat Foundations is BSD Licensed
    :target: https://travis-ci.org/ergo/ziggurat_foundations
 .. |Coverage Status| image:: https://coveralls.io/repos/ergo/ziggurat_foundations/badge.png?branch=master
    :target: https://coveralls.io/r/ergo/ziggurat_foundations?branch=master
-.. |PyPI| image:: http://img.shields.io/pypi/dm/ziggurat_foundations.svg
-   :target: https://pypi.python.org/pypi/ziggurat_foundations/
