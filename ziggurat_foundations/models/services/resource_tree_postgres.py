@@ -62,6 +62,13 @@ class ResourceTreeServicePostgreSQL(object):
         :return:
         """
         tablename = cls.model.__table__.name
+
+        # lets lock rows to prevent bad tree states
+        resource = ResourceService.lock_resource_for_update(
+            resource_id=resource_id,
+            db_session=db_session)
+        parent_id = resource.parent_id
+        ordering = resource.ordering
         raw_q = """
             WITH RECURSIVE subtree AS (
                     SELECT res.resource_id
@@ -74,8 +81,14 @@ class ResourceTreeServicePostgreSQL(object):
             DELETE FROM resources where resource_id in (select * from subtree);
         """.format(tablename=tablename)
         db_session = get_db_session(db_session)
+        # this is required to force transaction managers to mark the session
+        # as "dirty"
+        dummy = db_session.query(cls.model)
+        dummy.filter(cls.model.resource_id == None).delete(
+            synchronize_session=False)
         text_obj = sa.text(raw_q)
         db_session.execute(text_obj, params={'resource_id': resource_id})
+        cls.shift_ordering_down(parent_id, ordering, db_session=db_session)
         return True
 
     @classmethod

@@ -14,13 +14,17 @@ class ZigguratSessionException(ZigguratException):
     pass
 
 
-class ZigguratResourceTreeMissingException(ZigguratException):
+class ZugguratTreeException(ZigguratException):
     pass
 
 
-class ZigguratResourceTreePathException(ZigguratException):
+class ZigguratResourceTreeMissingException(ZugguratTreeException):
     pass
 
 
-class ZigguratResourceOutOfBoundaryException(ZigguratException):
+class ZigguratResourceTreePathException(ZugguratTreeException):
+    pass
+
+
+class ZigguratResourceOutOfBoundaryException(ZugguratTreeException):
     pass

@@ -338,18 +338,21 @@ class TestResources(BaseTestCase):
         assert [n['node'].ordering for n in tree_struct.values()] == [1, 2]
 
     @pytest.mark.skipif(not_postgres, reason="requires postgres")
-    @pytest.mark.parametrize("resource_id, expected", [
-        (1, [-1, 2, 4, 3, 10, 11, -2, -3]),
-        (9, [-1, 1, 5, 6, 7, 8, 2, 4, 3, 10, 11, -2, -3]),
-        (12, [-1, 1, 5, 6, 7, 9, 8, 2, 4, 3, 10, 11, -2, -3]),
-        (-1, [-2, -3]),
+    @pytest.mark.parametrize("resource_id, expected_ids, expected_order", [
+        (1, [-1, 2, 4, 3, 10, 11, -2, -3], None),
+        (9, [-1, 1, 5, 6, 7, 8, 2, 4, 3, 10, 11, -2, -3], None),
+        (12, [-1, 1, 5, 6, 7, 9, 8, 2, 4, 3, 10, 11, -2, -3], None),
+        (-1, [-2, -3], [1, 2]),
     ])
-    def test_delete_branches(self, db_session, resource_id, expected):
+    def test_delete_branches(self, db_session, resource_id, expected_ids,
+                             expected_order):
         create_default_tree(db_session)
         tree_service.delete_branch(resource_id, db_session=db_session)
 
         result = tree_service.from_parent_deeper(
             parent_id=None, db_session=db_session)
         row_ids = [r.Resource.resource_id for r in result]
-        print(row_ids)
-        assert row_ids == expected
+        ordering = [r.Resource.ordering for r in result]
+        assert row_ids == expected_ids
+        if expected_order:
+            assert ordering == expected_order
