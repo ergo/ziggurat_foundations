@@ -2,27 +2,26 @@
 from __future__ import absolute_import, unicode_literals
 
 import os
+
 import pytest
-
-from alembic.config import Config
 from alembic import command
-
-from sqlalchemy.orm import sessionmaker
+from alembic.config import Config
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
 from ziggurat_foundations import ziggurat_model_init
-from ziggurat_foundations.models.user import UserMixin
+from ziggurat_foundations.models.external_identity import ExternalIdentityMixin
 from ziggurat_foundations.models.group import GroupMixin
 from ziggurat_foundations.models.group_permission import GroupPermissionMixin
-from ziggurat_foundations.models.user_permission import UserPermissionMixin
-from ziggurat_foundations.models.user_group import UserGroupMixin
-from ziggurat_foundations.models.user_resource_permission import \
-    UserResourcePermissionMixin
 from ziggurat_foundations.models.group_resource_permission import \
     GroupResourcePermissionMixin
 from ziggurat_foundations.models.resource import ResourceMixin
-from ziggurat_foundations.models.external_identity import ExternalIdentityMixin
+from ziggurat_foundations.models.user import UserMixin
+from ziggurat_foundations.models.user_group import UserGroupMixin
+from ziggurat_foundations.models.user_permission import UserPermissionMixin
+from ziggurat_foundations.models.user_resource_permission import \
+    UserResourcePermissionMixin
 from ziggurat_foundations.permissions import ALL_PERMISSIONS, Allow
 
 not_postgres = 'postgres' not in os.environ.get("DB_STRING", '').lower()
@@ -121,6 +120,7 @@ def db_session(request):
     request.addfinalizer(teardown)
 
     return session
+
 
 @pytest.fixture
 def db_session2(request):

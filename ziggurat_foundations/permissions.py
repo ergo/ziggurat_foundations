@@ -1,5 +1,9 @@
-import sqlalchemy as sa
+# -*- coding: utf-8 -*-
+
 from collections import namedtuple
+
+import sqlalchemy as sa
+
 from .models.base import get_db_session
 
 try:

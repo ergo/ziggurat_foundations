@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import with_statement, unicode_literals
+
 import pprint
 
 import pytest
 
-from ziggurat_foundations.tests import (
-    add_resource, BaseTestCase, create_default_tree)
-from ziggurat_foundations.tests.conftest import Resource, not_postgres
 from ziggurat_foundations.models.services.resource import ResourceService
-from ziggurat_foundations.models.services.resource_tree import ResourceTreeService
+from ziggurat_foundations.models.services.resource_tree import \
+    ResourceTreeService
 from ziggurat_foundations.models.services.resource_tree_postgres import \
     ResourceTreeServicePostgreSQL
+from ziggurat_foundations.tests import (
+    add_resource, BaseTestCase, create_default_tree)
+from ziggurat_foundations.tests.conftest import not_postgres
 
 tree_service = ResourceTreeService(ResourceTreeServicePostgreSQL)
 

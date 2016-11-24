@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import with_statement, unicode_literals
+
 import os
 
 import pytest
 
+from ziggurat_foundations.models.services import BaseService
 from ziggurat_foundations.tests import (
     BaseTestCase)
 from ziggurat_foundations.tests.conftest import User
-from ziggurat_foundations.models.services import BaseService
-from ziggurat_foundations.models.services.user import UserService
 
 not_multi_db = os.environ.get("DB_STRING", '') == os.environ.get("DB_STRING2",
                                                                  '')
@@ -37,4 +37,3 @@ class TestMultiDB(BaseTestCase):
         assert len(db2_users) == 2
         assert db_users[0].user_name == 'username_1_db_a'
         assert db2_users[0].user_name == 'username_1_db_b'
-

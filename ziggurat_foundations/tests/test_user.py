@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import with_statement, unicode_literals
+
 import six
 
+from ziggurat_foundations.models.services.user import UserService
 from ziggurat_foundations.tests import BaseTestCase, add_user
 from ziggurat_foundations.tests.conftest import (User)
-from ziggurat_foundations.models.services.user import UserService
 
 
 class TestUser(BaseTestCase):

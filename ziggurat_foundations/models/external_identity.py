@@ -1,12 +1,14 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
 from zope.deprecation import deprecation
 
 from ziggurat_foundations.models.base import BaseModel
+from ziggurat_foundations.models.base import get_db_session
 from ziggurat_foundations.models.services.external_identity import \
     ExternalIdentityService
-from ziggurat_foundations.models.base import get_db_session
 
 __all__ = ['ExternalIdentityMixin']
 

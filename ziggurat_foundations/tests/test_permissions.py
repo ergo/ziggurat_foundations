@@ -1,9 +1,17 @@
 # -*- coding: utf-8 -*-
 from __future__ import with_statement, unicode_literals
+
 import pytest
 
+from ziggurat_foundations.models.services.group_permission import \
+    GroupPermissionService
+from ziggurat_foundations.models.services.group_resource_permission import \
+    GroupResourcePermissionService
+from ziggurat_foundations.models.services.user_permission import \
+    UserPermissionService
+from ziggurat_foundations.models.services.user_resource_permission import \
+    UserResourcePermissionService
 from ziggurat_foundations.permissions import PermissionTuple, ALL_PERMISSIONS
-
 from ziggurat_foundations.tests import (
     add_user, check_one_in_other, add_resource, add_resource_b, add_group,
     BaseTestCase)
@@ -13,14 +21,6 @@ from ziggurat_foundations.tests.conftest import (
     GroupPermission,
     UserResourcePermission,
     GroupResourcePermission, TestResourceB)
-from ziggurat_foundations.models.services.group_permission import \
-    GroupPermissionService
-from ziggurat_foundations.models.services.user_permission import \
-    UserPermissionService
-from ziggurat_foundations.models.services.user_resource_permission import \
-    UserResourcePermissionService
-from ziggurat_foundations.models.services.group_resource_permission import \
-    GroupResourcePermissionService
 
 
 class TestUserPermissions(BaseTestCase):

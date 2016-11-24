@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
 __version__ = {'major': 0, 'minor': 7, 'patch': 0}

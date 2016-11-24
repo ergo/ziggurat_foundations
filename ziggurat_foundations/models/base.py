@@ -1,8 +1,10 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
 import sqlalchemy as sa
+from zope.deprecation import deprecation
 
 from ziggurat_foundations.exc import ZigguratSessionException
-from zope.deprecation import deprecation
 
 
 class BaseModel(object):

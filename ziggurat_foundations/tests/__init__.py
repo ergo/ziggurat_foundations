@@ -98,6 +98,7 @@ def create_default_tree(db_session):
         db_session, -3, 'root c', ordering=3)
     return [root, root_b, root_c]
 
+
 class BaseTestCase(object):
     def set_up_user_group_and_perms(self, db_session):
         """

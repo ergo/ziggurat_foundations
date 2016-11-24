@@ -1,8 +1,10 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
 from collections import OrderedDict
 
 import sqlalchemy as sa
+
 from ziggurat_foundations import noop
 from ziggurat_foundations.exc import (
     ZigguratResourceTreeMissingException,
@@ -10,7 +12,6 @@ from ziggurat_foundations.exc import (
     ZigguratResourceOutOfBoundaryException
 )
 from ziggurat_foundations.models.base import get_db_session
-
 from ziggurat_foundations.models.services.resource import ResourceService
 
 __all__ = ['ResourceTreeServicePostgreSQL']

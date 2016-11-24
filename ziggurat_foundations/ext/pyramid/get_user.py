@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import logging
+
 import importlib
+import logging
 
 from ziggurat_foundations.exc import ZigguratException
 from ziggurat_foundations.models.base import get_db_session
@@ -37,7 +39,7 @@ def includeme(config):
     _tmp = importlib.import_module(parts[0])
     UserModel = getattr(_tmp, parts[1])
 
-    # This function is bundled into the request, so for each request you can 
+    # This function is bundled into the request, so for each request you can
     # do request.user
     def get_user(request):
         userid = request.unauthenticated_userid

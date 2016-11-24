@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+
+
 class ZigguratException(Exception):
     def __init__(self, msg, value=None):
         self.msg = msg

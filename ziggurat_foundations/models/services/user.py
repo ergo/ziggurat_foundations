@@ -1,15 +1,20 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
 import hashlib
 import random
+import string
+
 import six
 import sqlalchemy as sa
-import string
-from ziggurat_foundations.models.services import BaseService
+
 from ziggurat_foundations.models.base import get_db_session
-from ...permissions import (ANY_PERMISSION,
-                            ALL_PERMISSIONS,
-                            PermissionTuple,
-                            resource_permissions_for_users)
+from ziggurat_foundations.models.services import BaseService
+from ziggurat_foundations.permissions import (
+    ANY_PERMISSION,
+    ALL_PERMISSIONS,
+    PermissionTuple,
+    resource_permissions_for_users)
 
 __all__ = ['UserService']
 

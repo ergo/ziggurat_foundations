@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
 from datetime import datetime
@@ -7,8 +8,8 @@ from sqlalchemy.ext.declarative import declared_attr
 from zope.deprecation import deprecation
 
 from ziggurat_foundations.models.base import BaseModel
-from ziggurat_foundations.models.services.user import UserService
 from ziggurat_foundations.models.base import get_db_session
+from ziggurat_foundations.models.services.user import UserService
 
 __all__ = ['UserMixin']
 

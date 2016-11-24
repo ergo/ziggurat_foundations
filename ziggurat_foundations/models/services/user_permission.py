@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from ziggurat_foundations.models.services import BaseService
+
 from ziggurat_foundations.models.base import get_db_session
+from ziggurat_foundations.models.services import BaseService
 
 __all__ = ['UserPermissionService']
 

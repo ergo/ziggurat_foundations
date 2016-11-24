@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import with_statement, unicode_literals
 
+from ziggurat_foundations.models.services.group import GroupService
 from ziggurat_foundations.tests import (
     add_user, add_group,
     BaseTestCase)
 from ziggurat_foundations.tests.conftest import (
     Group)
-from ziggurat_foundations.models.services.group import GroupService
 
 
 class TestGroup(BaseTestCase):

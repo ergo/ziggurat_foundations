@@ -1,13 +1,15 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import validates
 from zope.deprecation import deprecation
 
 from ziggurat_foundations.models.base import BaseModel
+from ziggurat_foundations.models.base import get_db_session
 from ziggurat_foundations.models.services.user_resource_permission import \
     UserResourcePermissionService
-from ziggurat_foundations.models.base import get_db_session
 
 __all__ = ['UserResourcePermissionMixin']
 

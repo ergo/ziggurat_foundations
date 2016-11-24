@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from __future__ import with_statement, unicode_literals
-import pytest
 
 from ziggurat_foundations.models.base import get_db_session
 from ziggurat_foundations.tests import (
