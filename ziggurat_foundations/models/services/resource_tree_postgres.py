@@ -81,11 +81,6 @@ class ResourceTreeServicePostgreSQL(object):
             DELETE FROM resources where resource_id in (select * from subtree);
         """.format(tablename=tablename)
         db_session = get_db_session(db_session)
-        # this is required to force transaction managers to mark the session
-        # as "dirty"
-        dummy = db_session.query(cls.model)
-        dummy.filter(cls.model.resource_id == None).delete(
-            synchronize_session=False)
         text_obj = sa.text(raw_q)
         db_session.execute(text_obj, params={'resource_id': resource_id})
         cls.shift_ordering_down(parent_id, ordering, db_session=db_session)
