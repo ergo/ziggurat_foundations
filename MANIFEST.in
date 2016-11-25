@@ -1,1 +1,2 @@
 include *.rst
+recursive-include ziggurat_foundations/migrations *.py
