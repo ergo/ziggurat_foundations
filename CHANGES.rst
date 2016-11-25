@@ -1,13 +1,14 @@
 Changelog
 =========
 
-2016-11-XX
+2016-11-25
 ----------
 
 * Release 0.7.0
 * Introduced ResourceTreeService for nested resource management
   (currently only PostgreSQL support is implemented)
 * added deprecation warnings
+* lots of new tests
 
 **BACKWARDS INCOMPATIBLE CHANGES**
 
@@ -133,10 +134,10 @@ Changelog
 2012-11-28
 ----------
 * First Alpha Release 0.3 - This release should have a fairly stable API
-* Hundreds of small and big changes - based on all great feedback we are now 
-  using surrogate pkeys instead of natural pkeys for most models. 
-  As result of this few methods started accepting id's instead usernames, 
-  so consider yourself warned that this release might be bw. incompatible a bit 
+* Hundreds of small and big changes - based on all great feedback we are now
+  using surrogate pkeys instead of natural pkeys for most models.
+  As result of this few methods started accepting id's instead usernames,
+  so consider yourself warned that this release might be bw. incompatible a bit
   with your application
 * At this point all tests should pass on mysql, postgresql, sqlite
 
@@ -176,7 +177,7 @@ Changelog
 2012-03-10
 ----------
 
-* Add registration date to user model, changed last_login_date to no-timezone type (this seem trivial enough to not faciliate schema change) 
+* Add registration date to user model, changed last_login_date to no-timezone type (this seem trivial enough to not faciliate schema change)
 * previous revision ID: 2d472fe79b95
 
 2012-02-19
@@ -212,8 +213,8 @@ Changelog
 * resource.users_for_perm(),  resource.direct_perms_for_user() and resource.group_perms_for_user() return tuple (user/group_name,perm_name) now
 
 .. hint::
-    What "previous revision ID" means? 
-    If you are updating the package that never was stamped with 
-    alembic you may need to stamp the database manually with following revision id, 
+    What "previous revision ID" means?
+    If you are updating the package that never was stamped with
+    alembic you may need to stamp the database manually with following revision id,
     from this point onwards you will be able to update schemas automaticly.
     Alembic 0.3.3+ (or current trunk for 2012-05-27) is required for this to function properly
