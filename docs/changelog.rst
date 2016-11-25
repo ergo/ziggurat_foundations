@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2016-11-XX
+2016-11-25
 ----------
 
 * Release 0.7.0
@@ -134,10 +134,10 @@ import related changes:
 2012-11-28 version 0.3 First Alpha release
 -------------------------------------------
 * This release should have a fairly stable API
-* Hundreds of small and big changes - based on all great feedback we are now 
-  using surrogate pkeys instead of natural pkeys for most models. 
-  As result of this few methods started accepting id's instead usernames, 
-  so consider yourself warned that this release might be bw. incompatible a bit 
+* Hundreds of small and big changes - based on all great feedback we are now
+  using surrogate pkeys instead of natural pkeys for most models.
+  As result of this few methods started accepting id's instead usernames,
+  so consider yourself warned that this release might be bw. incompatible a bit
   with your application
 * At this point all tests should pass on mysql, postgresql, sqlite
 
@@ -159,7 +159,7 @@ import related changes:
 2012-03-10
 ----------
 
-* Add registration date to user model, changed last_login_date to no-timezone type (this seem trivial enough to not faciliate schema change) 
+* Add registration date to user model, changed last_login_date to no-timezone type (this seem trivial enough to not faciliate schema change)
 * previous revision ID: 2d472fe79b95
 
 2012-02-19

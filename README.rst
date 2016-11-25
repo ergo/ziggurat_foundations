@@ -12,7 +12,7 @@ Ziggurat Foundations
 **BUG TRACKER**: https://github.com/ergo/ziggurat_foundations
 
 Top layer to make authentication, resource ownership and permission management
-fast, simple and easy. In summary, Ziggurat Foundations (Zigg), is a set of framework agnostic 
+fast, simple and easy. In summary, Ziggurat Foundations (Zigg), is a set of framework agnostic
 set of sqlalchemy classes, but most of the documentation refers to using it
 within pyramid. It is the perfect solution for handling complex login and user
 management systems, from e-commerce systems, to private intranets or large (and small)
@@ -22,7 +22,7 @@ further in the documentation)
 Zigg has been used (at scale) for very large implementations (millions of real users) and
 has been extended for custom applications such as geo-location applications that rely
 on pin-point accuracy for a users location. Zigg has been designed to work for
-high end environments, where the user(s) are at the main focus of the application 
+high end environments, where the user(s) are at the main focus of the application
 (for example Zigg could become the backbone for a social media style application).
 
 Zigg supplies a set of *sqlalchemy mixins* that can be used to extend
@@ -47,6 +47,7 @@ Zigg provides standard functions that let you:
 - Assign arbitrary permissions to groups
 - Assign arbitrary resource permissions to users (ie. only user X can access private forum)
 - Assign arbitrary resource permissions to groups
+- Manage nested resources with tree service
 - Assign a user o an external identity (such as facebook/twitter)
 - Manage the sign in/sign out process
 - Change users password and generate security codes
