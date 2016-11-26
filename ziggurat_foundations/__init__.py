@@ -26,7 +26,7 @@ def make_passwordmanager():
         # replace this list with the hash(es) you wish to support.
         # this example sets pbkdf2_sha256 as the default,
         # with support for legacy des_crypt hashes.
-        schemes=["bcrypt"],
+        schemes=["bcrypt", "pbkdf2_sha256"],
         default="bcrypt"
     )
     return pwd_context
