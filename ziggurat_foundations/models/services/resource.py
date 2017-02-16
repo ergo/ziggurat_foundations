@@ -222,7 +222,7 @@ class ResourceService(BaseService):
         query = query.filter(
             cls.models_proxy.GroupResourcePermission.group_id == group_id)
         query = query.filter(
-            cls.models_proxy.GroupResourcePermission.perm_id == perm_name)
+            cls.models_proxy.GroupResourcePermission.perm_name == perm_name)
         query = query.filter(
             cls.models_proxy.GroupResourcePermission.resource_id == resource_id)
         return query.first()
