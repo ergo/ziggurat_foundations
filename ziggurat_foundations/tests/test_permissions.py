@@ -11,6 +11,9 @@ from ziggurat_foundations.models.services.user_permission import \
     UserPermissionService
 from ziggurat_foundations.models.services.user_resource_permission import \
     UserResourcePermissionService
+
+from ziggurat_foundations.models.services.resource import ResourceService
+
 from ziggurat_foundations.permissions import PermissionTuple, ALL_PERMISSIONS
 from ziggurat_foundations.tests import (
     add_user, check_one_in_other, add_resource, add_resource_b, add_group,
@@ -778,6 +781,30 @@ class TestGroupPermission(BaseTestCase):
             group_id=self.group2.id, resource_id=self.resource2.resource_id,
             perm_name='group_perm2', db_session=db_session)
         assert row is not None
+
+    def test_group_resource_permission_wrong(self, db_session):
+        self.set_up_user_group_and_perms(db_session)
+        perm_name = 'group_permX'
+        perm = ResourceService.perm_by_group_and_perm_name(
+            resource_id=self.resource.resource_id,
+            group_id=self.group.id,
+            perm_name=perm_name,
+            db_session=db_session
+        )
+        assert perm is None
+
+    def test_group_resource_permission(self, db_session):
+        self.set_up_user_group_and_perms(db_session)
+        perm_name = 'group_perm'
+        perm = ResourceService.perm_by_group_and_perm_name(
+            resource_id=self.resource.resource_id,
+            group_id=self.group.id,
+            perm_name=perm_name,
+            db_session=db_session
+        )
+        assert perm.group_id == self.group.id
+        assert perm.resource_id == self.resource.resource_id
+        assert perm.perm_name == perm_name
 
 
 class TestUserPermission(BaseTestCase):
