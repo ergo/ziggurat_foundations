@@ -1,6 +1,13 @@
 Changelog
 =========
 
+2017-02-19
+----------
+
+* Release 0.7.1
+* fixed tree ordering for nested elements
+* fixed `perm_by_group_and_perm_name` method
+
 2016-11-25
 ----------
 
