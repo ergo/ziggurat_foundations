@@ -43,3 +43,4 @@ Contributors:
 * Arian Maykon de Araújo Diógenes (arianmaykon) 2016-04-19
 * Edward Arghiroiu (themightyonyx) 2015-11-13
 * Łukasz Bołdys (utek) 2013-11-22
+* Christian Benke (peletiah) 2017-02-19
