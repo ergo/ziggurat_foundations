@@ -21,7 +21,7 @@ def includeme(config):
     if not user_model_location:
         raise ZigguratException('''You need to pass location of user model
         inside your application eg.:
-        ziggurat_foundations.user_model_location = youappname.models:User
+        ziggurat_foundations.model_locations.User = youappname.models:User
         ''')
 
     if not session_provider_callable:
