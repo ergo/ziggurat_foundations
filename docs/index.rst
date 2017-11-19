@@ -6,7 +6,8 @@
 ziggurat_foundations
 ====================
 
-.. image:: /_static/pyramid_small.png
+.. image:: /_static/pyramid_logo_red_on_transparent_background.png
+   :width: 64 px
    :alt: Pyramid Logo
   
 .. image:: /_static/flask_small.png
@@ -30,7 +31,7 @@ further in the documentation)
 
 **BUG TRACKER**: https://github.com/ergo/ziggurat_foundations
 
-**DOCUMENTATION REPO**: https://github.com/ergo/ziggurat_foundations/docs
+**DOCUMENTATION REPO**: https://github.com/ergo/ziggurat_foundations/tree/master/docs
 
 Contents:
 
