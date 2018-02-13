@@ -1,6 +1,7 @@
 from __future__ import with_statement, unicode_literals
+import os
 from alembic import context
-from sqlalchemy import engine_from_config, pool
+from sqlalchemy import create_engine, pool
 from sqlalchemy.schema import MetaData
 from logging.config import fileConfig
 
@@ -8,7 +9,7 @@ from logging.config import fileConfig
 # access to the values within the .ini file in use.
 config = context.config
 
-# Interpret the config file for Python logging. 
+# Interpret the config file for Python logging.
 # This line sets up loggers basically.
 if config.config_file_name:
     fileConfig(config.config_file_name)
@@ -26,6 +27,12 @@ target_metadata = MetaData(naming_convention={
     "pk": "pk_%(table_name)s"
 })
 
+def get_url():
+    url = os.getenv("DB_URL", "")
+    if url == "":
+        url = config.get_main_option("sqlalchemy.url")
+
+    return url
 
 # target_metadata = None
 
@@ -41,12 +48,12 @@ def run_migrations_offline():
     and not an Engine, though an Engine is acceptable
     here as well.  By skipping the Engine creation
     we don't even need a DBAPI to be available.
-    
+
     Calls to context.execute() here emit the given string to the
     script output.
-    
+
     """
-    url = config.get_main_option("sqlalchemy.url")
+    url = get_url()
     context.configure(url=url,
                       version_table='alembic_ziggurat_foundations_version',
                       transaction_per_migration=True,
@@ -61,12 +68,9 @@ def run_migrations_online():
 
     In this scenario we need to create an Engine
     and associate a connection with the context.
-    
+
     """
-    engine = engine_from_config(
-        config.get_section(config.config_ini_section),
-        prefix='sqlalchemy.',
-        poolclass=pool.NullPool)
+    engine = create_engine(get_url())
 
     connection = engine.connect()
     context.configure(
