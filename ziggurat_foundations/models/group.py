@@ -32,7 +32,7 @@ class GroupMixin(BaseModel):
 
     @declared_attr
     def group_name(self):
-        return sa.Column(sa.Unicode(128), nullable=False)
+        return sa.Column(sa.Unicode(128), nullable=False, unique=True)
 
     @declared_attr
     def description(self):
