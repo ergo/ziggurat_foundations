@@ -1,6 +1,13 @@
 Changelog
 =========
 
+2018-02-17
+----------
+
+* Release 0.7.2
+* Fixed some minor issues that resulted in bad migrations when someone used `autogenerate in alembic`
+* Added a way to read sqlalchemy.url from environment variable (thanks René Jochum)
+
 2017-02-19
 ----------
 
