@@ -17,6 +17,12 @@ matrix:
     - python: "2.7"
       env: BCRYPT="enabled" DB_STRING="postgres://postgres@127.0.0.1:5432/test"
 
+    - python: "2.7"
+      env: DB_STRING=""
+
+    - python: "3.5"
+      env: DB_STRING=""
+
     - python: "3.3"
       env: BCRYPT="enabled" DB_STRING="postgres://postgres@127.0.0.1:5432/test"
 
@@ -28,9 +34,6 @@ matrix:
 
     - python: "3.5"
       env: BCRYPT="enabled" DB_STRING="postgres://postgres@127.0.0.1:5432/test"
-
-    - python: "3.5"
-      env: DB_STRING=""
 
     - python: "pypy"
       env: DB_STRING="postgresql+psycopg2cffi://postgres@127.0.0.1:5432/test"
