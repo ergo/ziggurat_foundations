@@ -8,6 +8,7 @@ import pyramid.security
 
 from ziggurat_foundations.exc import ZigguratException
 from ziggurat_foundations.models.base import get_db_session
+from ziggurat_foundations.models.services.user import UserService
 
 CONFIG_KEY = 'ziggurat_foundations'
 log = logging.getLogger(__name__)
@@ -46,7 +47,6 @@ def includeme(config):
                                 '/sign_in')
     sign_out_path = settings.get('%s.sign_in.sign_out_pattern' % CONFIG_KEY,
                                  '/sign_out')
-    user_model_location = settings.get('%s.model_locations.User' % CONFIG_KEY)
     session_provider_callable = settings.get(
         '%s.session_provider_callable' % CONFIG_KEY)
     signin_came_from_key = settings.get('%s.sign_in.came_from_key' %
@@ -56,12 +56,6 @@ def includeme(config):
     signin_password_key = settings.get('%s.sign_in.password_key' %
                                        CONFIG_KEY, 'password')
 
-    if not user_model_location:
-        raise ZigguratException('''You need to pass location of user model
-        inside your application eg.:
-        ziggurat_foundations.user_model_location = youappname.models:User
-        ''')
-
     if not session_provider_callable:
         def session_provider_callable(request):
             return get_db_session()
@@ -70,12 +64,7 @@ def includeme(config):
         _tmp = importlib.import_module(parts[0])
         session_provider_callable = getattr(_tmp, parts[1])
 
-    parts = user_model_location.split(':')
-    _tmp = importlib.import_module(parts[0])
-    UserModel = getattr(_tmp, parts[1])
-
     endpoint = ZigguratSignInProvider(settings=settings,
-                                      UserModel=UserModel,
                                       session_getter=session_provider_callable,
                                       signin_came_from_key=signin_came_from_key,
                                       signin_username_key=signin_username_key,
@@ -98,17 +87,17 @@ class ZigguratSignInProvider(object):
         came_from = request.params.get(self.signin_came_from_key, '/')
         db_session = self.session_getter(request)
 
-        user = self.UserModel.by_user_name(
+        user = UserService.by_user_name(
             request.params.get(self.signin_username_key),
             db_session=db_session)
         if user is None:
             # if no result, test to see if email exists
-            user = self.UserModel.by_email(
+            user = UserService.by_email(
                 request.params.get(self.signin_username_key),
                 db_session=db_session)
         if user:
             password = request.params.get(self.signin_password_key)
-            if user.check_password(password):
+            if UserService.check_password(user, password):
                 headers = pyramid.security.remember(request, user.id)
                 return ZigguratSignInSuccess(headers=headers,
                                              came_from=came_from, user=user)
