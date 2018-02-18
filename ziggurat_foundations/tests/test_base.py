@@ -6,6 +6,7 @@ from ziggurat_foundations.tests import (
     add_user, BaseTestCase, DummyUserObj)
 from ziggurat_foundations.tests.conftest import (
     User)
+from ziggurat_foundations.models.services.user import UserService
 
 
 class TestModel(BaseTestCase):
@@ -133,9 +134,9 @@ class TestModel(BaseTestCase):
         user.persist(flush=True, db_session=db_session)
         assert user.id is not None
         uid = user.id
-        User.by_id(uid, db_session=db_session) is not None
+        UserService.by_id(uid, db_session=db_session) is not None
         user.delete()
-        assert User.by_id(uid, db_session=db_session) is None
+        assert UserService.by_id(uid, db_session=db_session) is None
 
 
 class TestMigrations(BaseTestCase):
