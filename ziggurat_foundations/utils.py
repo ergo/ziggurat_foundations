@@ -15,3 +15,31 @@ class PlaceholderPasswordChecker(object):
 
     def check(self, encoded, password):
         return False
+
+
+class ModelProxy(dict):
+    """
+    Holds model references used in services
+    """
+
+    def __setattr__(self, key, value):
+        self[key] = value
+
+    def __getattr__(self, key):
+        return self[key]
+
+
+class NOOP(object):
+    """
+    For tree manager
+    """
+
+    def __nonzero__(self):
+        return False
+
+        # py3 compat
+
+    __bool__ = __nonzero__
+
+
+noop = NOOP()

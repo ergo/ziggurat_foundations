@@ -25,8 +25,6 @@ class UserMixin(BaseModel):
     __table_args__ = {'mysql_engine': 'InnoDB',
                       'mysql_charset': 'utf8'}
 
-    _ziggurat_services = [UserService]
-
     @declared_attr
     def __tablename__(self):
         return 'users'

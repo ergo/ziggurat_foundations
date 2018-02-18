@@ -15,8 +15,6 @@ __all__ = ['GroupMixin']
 class GroupMixin(BaseModel):
     """ Mixin for Group model """
 
-    _ziggurat_services = [GroupService]
-
     __table_args__ = {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'}
 
     @declared_attr

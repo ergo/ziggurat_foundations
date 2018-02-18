@@ -5,7 +5,7 @@ from collections import OrderedDict
 
 import sqlalchemy as sa
 
-from ziggurat_foundations import noop
+from ziggurat_foundations.utils import noop
 from ziggurat_foundations.exc import (
     ZigguratResourceTreeMissingException,
     ZigguratResourceTreePathException,

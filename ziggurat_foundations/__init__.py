@@ -3,21 +3,35 @@ from __future__ import unicode_literals
 
 __version__ = {'major': 0, 'minor': 7, 'patch': 3}
 
+from ziggurat_foundations.utils import ModelProxy, noop
+from ziggurat_foundations.models.services.user import UserService
+from ziggurat_foundations.models.services.group import GroupService
+from ziggurat_foundations.models.services.group_permission import \
+    GroupPermissionService
+from ziggurat_foundations.models.services.user_permission import \
+    UserPermissionService
+from ziggurat_foundations.models.services.user_resource_permission import \
+    UserResourcePermissionService
+from ziggurat_foundations.models.services.group_resource_permission import \
+    GroupResourcePermissionService
+from ziggurat_foundations.models.services.resource import ResourceService
+from ziggurat_foundations.models.services.resource_tree import \
+    ResourceTreeService
+from ziggurat_foundations.models.services.external_identity import \
+    ExternalIdentityService
 
-class ModelProxy(object):
-    pass
-
-
-class NOOP(object):
-    def __nonzero__(self):
-        return False
-
-        # py3 compat
-
-    __bool__ = __nonzero__
-
-
-noop = NOOP()
+model_service_mapping = {
+    'User': [UserService],
+    'Group': [GroupService],
+    'GroupPermission': [GroupPermissionService],
+    'UserPermission': [UserPermissionService],
+    'UserResourcePermission': [
+        UserResourcePermissionService],
+    'GroupResourcePermission': [
+        GroupResourcePermissionService],
+    'Resource': [ResourceService, ResourceTreeService],
+    'ExternalIdentity': [ExternalIdentityService]
+}
 
 
 def make_passwordmanager(schemes=None):
@@ -52,20 +66,22 @@ def ziggurat_model_init(*args, **kwargs):
     """
     models = ModelProxy()
     for cls2 in args:
-        setattr(models, cls2.__name__, cls2)
+        models[cls2.__name__] = cls2
 
     for cls in args:
         if cls.__name__ == 'User':
             if kwargs.get('passwordmanager'):
                 cls.passwordmanager = kwargs['passwordmanager']
             else:
-                cls.passwordmanager = make_passwordmanager(kwargs.get('passwordmanager_schemes'))
+                cls.passwordmanager = make_passwordmanager(
+                    kwargs.get('passwordmanager_schemes'))
 
         for cls2 in args:
             setattr(models, cls2.__name__, cls2)
+
         setattr(cls, "_ziggurat_models", models)
         # if model has a manager attached attached the class also to manager
-        if hasattr(cls, '_ziggurat_services'):
-            for service in cls._ziggurat_services:
-                setattr(service, 'model', cls)
-                setattr(service, 'models_proxy', models)
+        services = model_service_mapping.get(cls.__name__, [])
+        for service in services:
+            setattr(service, 'model', cls)
+            setattr(service, 'models_proxy', models)

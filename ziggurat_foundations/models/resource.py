@@ -22,8 +22,6 @@ class ResourceMixin(BaseModel):
 
     __possible_permissions__ = ()
 
-    _ziggurat_services = [ResourceService, ResourceTreeService]
-
     @declared_attr
     def __tablename__(self):
         return 'resources'

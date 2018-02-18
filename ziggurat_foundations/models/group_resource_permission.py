@@ -21,8 +21,6 @@ class GroupResourcePermissionMixin(BaseModel):
         name='pk_users_resources_permissions '),
                       {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'})
 
-    _ziggurat_services = [GroupResourcePermissionService]
-
     @declared_attr
     def __tablename__(self):
         return 'groups_resources_permissions'

@@ -23,8 +23,6 @@ class UserResourcePermissionMixin(BaseModel):
         name='pk_users_resources_permissions '),
                       {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'})
 
-    _ziggurat_services = [UserResourcePermissionService]
-
     @declared_attr
     def __tablename__(self):
         return 'users_resources_permissions'

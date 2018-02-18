@@ -22,8 +22,6 @@ class UserPermissionMixin(BaseModel):
                                               name='pk_users_permissions'),
                       {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'})
 
-    _ziggurat_services = [UserPermissionService]
-
     @declared_attr
     def __tablename__(self):
         return 'users_permissions'
