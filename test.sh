@@ -7,7 +7,7 @@ NC='\033[0m' # No Color
 
 RST_FILES=`find . -name "*.rst" -printf "%p "`
 RST_CHECK=$(rstcheck $RST_FILES --report 2 3>&1 1>&2 2>&3 | tee >(cat - >&2)) # fd=STDERR_FILENO
-# FLAKE8=$(flake8 ./ziggurat_foundations/)
+FLAKE8=$(flake8 ./ziggurat_foundations/)
 
 echo -e "${RED}"
 if [ -n "$RST_CHECK" ] ||

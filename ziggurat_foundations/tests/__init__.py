@@ -2,9 +2,9 @@
 from __future__ import with_statement, unicode_literals
 
 from ziggurat_foundations.tests.conftest import (
-    User, Group, UserGroup, GroupPermission, UserPermission,
+    User, Group, GroupPermission, UserPermission,
     UserResourcePermission, GroupResourcePermission, Resource,
-    ExternalIdentity, TestResource, TestResourceB)
+    TestResource, TestResourceB)
 from ziggurat_foundations.models.services.user import UserService
 
 

@@ -1,7 +1,7 @@
 from __future__ import with_statement, unicode_literals
 import os
 from alembic import context
-from sqlalchemy import create_engine, pool
+from sqlalchemy import create_engine
 from sqlalchemy.schema import MetaData
 from logging.config import fileConfig
 
@@ -29,6 +29,7 @@ target_metadata = MetaData(naming_convention={
     "pk": "pk_%(table_name)s"
 })
 
+
 def get_url():
     url = os.getenv("DB_URL", "")
     if url == "":
@@ -42,6 +43,7 @@ def get_url():
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
+
 
 def run_migrations_offline():
     """Run migrations in 'offline' mode.

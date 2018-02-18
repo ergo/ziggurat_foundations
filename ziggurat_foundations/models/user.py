@@ -5,11 +5,8 @@ from datetime import datetime
 
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
-from zope.deprecation import deprecation
 
 from ziggurat_foundations.models.base import BaseModel
-from ziggurat_foundations.models.base import get_db_session
-from ziggurat_foundations.models.services.user import UserService
 
 __all__ = ['UserMixin']
 

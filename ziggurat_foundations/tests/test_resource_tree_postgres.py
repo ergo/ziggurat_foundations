@@ -54,7 +54,9 @@ class TestResources(BaseTestCase):
         tree_struct = tree_service.build_subtree_strut(result)
         pprint.pprint(tree_struct)
         root_nodes = [n for n in tree_struct['children'].values()]
-        l1_nodes = [n for n in tree_struct['children'][-1]['children'].values()]
+        l1_nodes = [n for
+                    n in tree_struct['children'][-1]['children'].values()
+                    ]
         assert [n['node'].resource_id for n in root_nodes] == [-1, -2, -3]
         assert [n['node'].resource_id for n in l1_nodes] == [1, 2, 3, 10, 11]
 
@@ -255,7 +257,8 @@ class TestResources(BaseTestCase):
         l_r_nodes = [n for n in tree_struct['children'].values()]
         check_values = [6, 1, 2, 3, 10, 11]
         assert [n['node'].resource_id for n in l_r_nodes] == check_values
-        l_a_nodes = [n for n in tree_struct['children'][1]['children'].values()]
+        l_a_nodes = [n for n in tree_struct['children']
+                     [1]['children'].values()]
         pprint.pprint(l_a_nodes)
         assert [n['node'].resource_id for n in l_a_nodes] == [5, 7, 8]
         assert [n['node'].ordering for n in l_a_nodes] == [1, 2, 3]

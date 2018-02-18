@@ -7,12 +7,12 @@ Create Date: 2016-05-05 11:00:59.915215
 """
 from __future__ import unicode_literals
 
+import sqlalchemy as sa
+from alembic import op
+
 # revision identifiers, used by Alembic.
 revision = 'b5e6dd3449dd'
 down_revision = '57bbf0c387c'
-
-from alembic import op
-import sqlalchemy as sa
 
 
 def upgrade():

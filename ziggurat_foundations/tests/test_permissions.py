@@ -24,17 +24,16 @@ from ziggurat_foundations.tests.conftest import (
     GroupPermission,
     UserResourcePermission,
     GroupResourcePermission, TestResourceB)
-from ziggurat_foundations.models.services.user_permission import UserPermissionService
 from ziggurat_foundations.models.services.group import GroupService
-from ziggurat_foundations.models.services.group_permission import GroupPermissionService
-from ziggurat_foundations.models.services.resource import ResourceService
 from ziggurat_foundations.models.services.user import UserService
 
 
 class TestUserPermissions(BaseTestCase):
     def test_user_permissions(self, db_session):
         created_user = add_user(db_session)
-        permissions = UserService.permissions(created_user, db_session=db_session)
+        permissions = UserService.permissions(
+            created_user, db_session=db_session
+        )
         expected = [
             PermissionTuple(created_user, 'alter_users', 'user', None, None,
                             False, True),
@@ -230,7 +229,9 @@ class TestUserPermissions(BaseTestCase):
     def test_resources_with_direct_user_perms(self, db_session):
         self.set_up_user_group_and_perms(db_session)
         # test_perm1 from group perms should be ignored
-        perms = ResourceService.direct_perms_for_user(self.resource, self.user, db_session=db_session)
+        perms = ResourceService.direct_perms_for_user(
+            self.resource, self.user, db_session=db_session
+        )
         second = [PermissionTuple(self.user, 'foo_perm', 'user', None,
                                   self.resource, False, True),
                   PermissionTuple(self.user, 'test_perm2', 'user', None,
@@ -241,7 +242,9 @@ class TestUserPermissions(BaseTestCase):
     def test_resources_with_direct_group_perms(self, db_session):
         self.set_up_user_group_and_perms(db_session)
         # test_perm1 from group perms should be ignored
-        perms = ResourceService.group_perms_for_user(self.resource, self.user, db_session=db_session)
+        perms = ResourceService.group_perms_for_user(
+            self.resource, self.user, db_session=db_session
+        )
         second = [
             PermissionTuple(self.user, 'group_perm', 'group', self.group,
                             self.resource, False, True)]
@@ -251,7 +254,9 @@ class TestUserPermissions(BaseTestCase):
     def test_resources_with_user_perms(self, db_session):
         self.maxDiff = 9999
         self.set_up_user_group_and_perms(db_session)
-        perms = ResourceService.perms_for_user(self.resource, self.user, db_session=db_session)
+        perms = ResourceService.perms_for_user(
+            self.resource, self.user, db_session=db_session
+        )
         second = [PermissionTuple(self.user, 'foo_perm', 'user', None,
                                   self.resource, False, True),
                   PermissionTuple(self.user, 'group_perm', 'group',
@@ -263,7 +268,9 @@ class TestUserPermissions(BaseTestCase):
 
     def test_resource_users_for_perm(self, db_session):
         self.set_up_user_group_and_perms(db_session)
-        perms = ResourceService.users_for_perm(self.resource, 'foo_perm', db_session=db_session)
+        perms = ResourceService.users_for_perm(
+            self.resource, 'foo_perm', db_session=db_session
+        )
         second = [PermissionTuple(self.user, 'foo_perm', 'user', None,
                                   self.resource, False, True)]
 
@@ -272,7 +279,9 @@ class TestUserPermissions(BaseTestCase):
     def test_resource_users_for_any_perm(self, db_session):
         self.maxDiff = 99999
         self.set_up_user_group_and_perms(db_session)
-        perms = ResourceService.users_for_perm(self.resource, '__any_permission__', db_session=db_session)
+        perms = ResourceService.users_for_perm(
+            self.resource, '__any_permission__', db_session=db_session
+        )
         second = [
             PermissionTuple(self.user, 'group_perm', 'group', self.group,
                             self.resource, False, True),
@@ -288,8 +297,9 @@ class TestUserPermissions(BaseTestCase):
 
     def test_resource_users_for_any_perm_resource_2(self, db_session):
         self.set_up_user_group_and_perms(db_session)
-        perms = ResourceService.users_for_perm(self.resource2,
-                                               '__any_permission__', db_session=db_session)
+        perms = ResourceService.users_for_perm(
+            self.resource2,
+            '__any_permission__', db_session=db_session)
         second = [
             PermissionTuple(self.user2, 'foo_perm', 'user', None,
                             self.resource2, False, True),
@@ -302,9 +312,10 @@ class TestUserPermissions(BaseTestCase):
     def test_resource_users_limited_users(self, db_session):
         self.maxDiff = 9999
         self.set_up_user_group_and_perms(db_session)
-        perms = ResourceService.users_for_perm(self.resource, '__any_permission__',
-                                               user_ids=[self.user.id],
-                                               db_session=db_session)
+        perms = ResourceService.users_for_perm(
+            self.resource, '__any_permission__',
+            user_ids=[self.user.id],
+            db_session=db_session)
         second = [
             PermissionTuple(self.user, 'group_perm', 'group', self.group,
                             self.resource, False, True),
@@ -319,10 +330,11 @@ class TestUserPermissions(BaseTestCase):
     def test_resource_users_limited_group(self, db_session):
         self.maxDiff = 9999
         self.set_up_user_group_and_perms(db_session)
-        perms = ResourceService.users_for_perm(self.resource, '__any_permission__',
-                                               user_ids=[self.user.id],
-                                               group_ids=[self.group2.id],
-                                               db_session=db_session)
+        perms = ResourceService.users_for_perm(
+            self.resource, '__any_permission__',
+            user_ids=[self.user.id],
+            group_ids=[self.group2.id],
+            db_session=db_session)
         second = [
             PermissionTuple(self.user, 'test_perm2', 'user', None,
                             self.resource, False, True),
@@ -336,7 +348,8 @@ class TestUserPermissions(BaseTestCase):
         self.maxDiff = 9999
         self.set_up_user_group_and_perms(db_session)
         perms = ResourceService.users_for_perm(
-            self.resource2, '__any_permission__', user_ids=[self.user3.id], db_session=db_session)
+            self.resource2, '__any_permission__',
+            user_ids=[self.user3.id], db_session=db_session)
         second = [
             PermissionTuple(self.user3, 'test_perm', 'user', None,
                             self.resource2, False, True)
@@ -347,10 +360,11 @@ class TestUserPermissions(BaseTestCase):
     def test_resource_users_limited_group_other_user_4(self, db_session):
         self.maxDiff = 9999
         self.set_up_user_group_and_perms(db_session)
-        perms = ResourceService.users_for_perm(self.resource, '__any_permission__',
-                                               user_ids=[self.user4.id],
-                                               group_ids=[self.group2.id],
-                                               db_session=db_session)
+        perms = ResourceService.users_for_perm(
+            self.resource, '__any_permission__',
+            user_ids=[self.user4.id],
+            group_ids=[self.group2.id],
+            db_session=db_session)
         second = [
             PermissionTuple(self.user4, 'group_perm', 'group', self.group2,
                             self.resource, False, True)
@@ -379,7 +393,8 @@ class TestUserPermissions(BaseTestCase):
         self.user.resources.append(resource)
         self.group2.resources.append(resource)
         db_session.flush()
-        perms = ResourceService.users_for_perm(resource, '__any_permission__', db_session=db_session)
+        perms = ResourceService.users_for_perm(
+            resource, '__any_permission__', db_session=db_session)
         second = [
             PermissionTuple(self.user2, 'foo_perm', 'user', None, resource,
                             False, True),
@@ -414,7 +429,8 @@ class TestUserPermissions(BaseTestCase):
         users = UserService.users_for_perms(['aaa'], db_session=db_session)
         assert len(users.all()) == 1
         assert users[0].user_name == 'aaa'
-        users = UserService.users_for_perms(['bbb'], db_session=db_session).all()
+        users = UserService.users_for_perms(
+            ['bbb'], db_session=db_session).all()
         assert len(users) == 2
         assert ['aaa', 'bbb'] == sorted([u.user_name for u in users])
         users = UserService.users_for_perms(['aaa', 'bbb', 'manage_apps'],
@@ -431,7 +447,8 @@ class TestUserPermissions(BaseTestCase):
                                    resource_name='group owned')
         self.group.resources.append(resource_g)
         db_session.flush()
-        perms = UserService.resources_with_possible_perms(self.user, db_session=db_session)
+        perms = UserService.resources_with_possible_perms(
+            self.user, db_session=db_session)
         second = [PermissionTuple(self.user, 'foo_perm', 'user', None,
                                   self.resource, False, True),
                   PermissionTuple(self.user, 'group_perm', 'group',
@@ -458,8 +475,9 @@ class TestUserPermissions(BaseTestCase):
         self.group.resource_permissions.append(perm2)
         self.group.users.append(user6)
         self.group.users.append(user7)
-        perms = ResourceService.users_for_perm(self.resource,
-                                               '__any_permission__', db_session=db_session)
+        perms = ResourceService.users_for_perm(
+            self.resource,
+            '__any_permission__', db_session=db_session)
         second = [
             PermissionTuple(self.user, 'group_perm', 'group', self.group,
                             self.resource, False, True),
@@ -495,9 +513,10 @@ class TestUserPermissions(BaseTestCase):
         self.group.resource_permissions.append(perm2)
         self.group.users.append(user6)
         self.group.users.append(user7)
-        perms = ResourceService.users_for_perm(self.resource,
-                                               '__any_permission__', limit_group_permissions=True,
-                                               db_session=db_session)
+        perms = ResourceService.users_for_perm(
+            self.resource,
+            '__any_permission__', limit_group_permissions=True,
+            db_session=db_session)
         second = [
             PermissionTuple(None, 'group_perm', 'group', self.group,
                             self.resource, False, True),
@@ -525,8 +544,9 @@ class TestUserPermissions(BaseTestCase):
         self.group.resource_permissions.append(perm2)
         self.group.users.append(user6)
         self.group.users.append(user7)
-        perms = ResourceService.groups_for_perm(self.resource,
-                                                '__any_permission__', db_session=db_session)
+        perms = ResourceService.groups_for_perm(
+            self.resource,
+            '__any_permission__', db_session=db_session)
         second = [
             PermissionTuple(self.user, 'group_perm', 'group', self.group,
                             self.resource, False, True),
@@ -559,9 +579,10 @@ class TestUserPermissions(BaseTestCase):
         self.group.resource_permissions.append(perm2)
         self.group.users.append(user6)
         self.group.users.append(user7)
-        perms = ResourceService.groups_for_perm(self.resource,
-                                                '__any_permission__', limit_group_permissions=True,
-                                                db_session=db_session)
+        perms = ResourceService.groups_for_perm(
+            self.resource,
+            '__any_permission__', limit_group_permissions=True,
+            db_session=db_session)
         second = [
             PermissionTuple(None, 'group_perm', 'group', self.group,
                             self.resource, False, True),
@@ -586,9 +607,10 @@ class TestUserPermissions(BaseTestCase):
         self.group.resource_permissions.append(perm2)
         self.group.users.append(user6)
         self.group.users.append(user7)
-        perms = ResourceService.users_for_perm(self.resource,
-                                               '__any_permission__', limit_group_permissions=True,
-                                               skip_group_perms=True, db_session=db_session)
+        perms = ResourceService.users_for_perm(
+            self.resource,
+            '__any_permission__', limit_group_permissions=True,
+            skip_group_perms=True, db_session=db_session)
         second = [
             PermissionTuple(self.user, 'test_perm2', 'user', None,
                             self.resource, False, True),
@@ -618,9 +640,10 @@ class TestUserPermissions(BaseTestCase):
             resource_id=self.resource.resource_id
         )
         group3.resource_permissions.append(perm3)
-        perms = ResourceService.groups_for_perm(self.resource,
-                                                '__any_permission__', limit_group_permissions=True,
-                                                db_session=db_session)
+        perms = ResourceService.groups_for_perm(
+            self.resource,
+            '__any_permission__', limit_group_permissions=True,
+            db_session=db_session)
 
         second = [
             PermissionTuple(None, 'group_perm', 'group', self.group,
@@ -655,9 +678,10 @@ class TestUserPermissions(BaseTestCase):
         )
         group3.resource_permissions.append(perm3)
 
-        perms = ResourceService.users_for_perm(self.resource,
-                                               '__any_permission__', limit_group_permissions=True,
-                                               db_session=db_session)
+        perms = ResourceService.users_for_perm(
+            self.resource,
+            '__any_permission__', limit_group_permissions=True,
+            db_session=db_session)
 
         second = [
             PermissionTuple(None, 'group_perm', 'group', self.group,
@@ -711,22 +735,25 @@ class TestGroupPermission(BaseTestCase):
 
     def test_by_group_and_perm(self, db_session):
         add_group(db_session, )
-        queried = GroupPermissionService.by_group_and_perm(1, 'manage_apps',
-                                                           db_session=db_session)
+        queried = GroupPermissionService.by_group_and_perm(
+            1, 'manage_apps',
+            db_session=db_session)
         assert queried.group_id == 1
         assert queried.perm_name == 'manage_apps'
 
     def test_by_group_and_perm_wrong_group(self, db_session):
         add_group(db_session, )
-        queried = GroupPermissionService.by_group_and_perm(2,
-                                                           'manage_apps',
-                                                           db_session=db_session)
+        queried = GroupPermissionService.by_group_and_perm(
+            2,
+            'manage_apps',
+            db_session=db_session)
         assert queried is None
 
     def test_by_group_and_perm_wrong_perm(self, db_session):
         add_group(db_session, )
-        queried = GroupPermissionService.by_group_and_perm(1, 'wrong_perm',
-                                                           db_session=db_session)
+        queried = GroupPermissionService.by_group_and_perm(
+            1, 'wrong_perm',
+            db_session=db_session)
         assert queried is None
 
     def test_resources_with_possible_perms(self, db_session):
@@ -816,22 +843,25 @@ class TestUserPermission(BaseTestCase):
 
     def test_by_user_and_perm(self, db_session):
         add_user(db_session)
-        user_permission = UserPermissionService.by_user_and_perm(1, 'root',
-                                                                 db_session=db_session)
+        user_permission = UserPermissionService.by_user_and_perm(
+            1, 'root',
+            db_session=db_session)
 
         assert user_permission.user_id == 1
         assert user_permission.perm_name == 'root'
 
     def test_by_user_and_perm_wrong_username(self, db_session):
         add_user(db_session)
-        user_permission = UserPermissionService.by_user_and_perm(999, 'root',
-                                                                 db_session=db_session)
+        user_permission = UserPermissionService.by_user_and_perm(
+            999, 'root',
+            db_session=db_session)
 
         assert user_permission is None
 
     def test_by_user_and_perm_wrong_permname(self, db_session):
         add_user(db_session)
-        user_permission = UserPermissionService.by_user_and_perm(1, 'wrong',
-                                                                 db_session=db_session)
+        user_permission = UserPermissionService.by_user_and_perm(
+            1, 'wrong',
+            db_session=db_session)
 
         assert user_permission is None

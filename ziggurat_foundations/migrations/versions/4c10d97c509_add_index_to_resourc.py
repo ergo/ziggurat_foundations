@@ -7,11 +7,11 @@ Create Date: 2012-06-27 03:09:12.392704
 """
 from __future__ import unicode_literals
 
+from alembic import op
+
 # revision identifiers, used by Alembic.
 revision = '4c10d97c509'
 down_revision = '3cfc41c4a5f0'
-
-from alembic import op
 
 
 def upgrade():

@@ -2,20 +2,16 @@
 from __future__ import unicode_literals
 
 import hashlib
-import random
-import string
 
 import six
 import sqlalchemy as sa
 
-from ziggurat_foundations.utils import generate_random_string
 from ziggurat_foundations.models.base import get_db_session
 from ziggurat_foundations.models.services import BaseService
-from ziggurat_foundations.permissions import (
-    ANY_PERMISSION,
-    ALL_PERMISSIONS,
-    PermissionTuple,
-    resource_permissions_for_users)
+from ziggurat_foundations.permissions import (ALL_PERMISSIONS, ANY_PERMISSION,
+                                              PermissionTuple,
+                                              resource_permissions_for_users)
+from ziggurat_foundations.utils import generate_random_string
 
 __all__ = ['UserService']
 
@@ -67,7 +63,8 @@ class UserService(BaseService):
                                 row.perm_name,
                                 row.type,
                                 groups_dict.get(
-                                    row.owner_id) if row.type == 'group' else None,
+                                    row.owner_id) if row.type == 'group'
+                                else None,
                                 None, False, True) for row in query]
 
     @classmethod
@@ -96,7 +93,8 @@ class UserService(BaseService):
             join_conditions = (
                 cls.models_proxy.GroupResourcePermission.group_id.in_(
                     group_ids),
-                cls.models_proxy.Resource.resource_id == cls.models_proxy.GroupResourcePermission.resource_id,
+                cls.models_proxy.Resource.resource_id ==
+                cls.models_proxy.GroupResourcePermission.resource_id,
                 cls.models_proxy.GroupResourcePermission.perm_name.in_(perms),)
             query = query.outerjoin(
                 (cls.models_proxy.GroupResourcePermission,
@@ -109,7 +107,8 @@ class UserService(BaseService):
             query = query.filter(sa.or_(
                 cls.models_proxy.Resource.owner_user_id == instance.id,
                 cls.models_proxy.Resource.owner_group_id.in_(group_ids),
-                cls.models_proxy.GroupResourcePermission.perm_name != None))
+                cls.models_proxy.GroupResourcePermission.perm_name != None) # noqa
+            )
         else:
             # filter just by username
             query = query.filter(cls.models_proxy.Resource.owner_user_id ==
@@ -119,8 +118,9 @@ class UserService(BaseService):
         query2 = query2.filter(
             cls.models_proxy.UserResourcePermission.user_id ==
             instance.id)
-        query2 = query2.filter(cls.models_proxy.Resource.resource_id ==
-                               cls.models_proxy.UserResourcePermission.resource_id)
+        query2 = query2.filter(
+            cls.models_proxy.Resource.resource_id ==
+            cls.models_proxy.UserResourcePermission.resource_id)
         query2 = query2.filter(
             cls.models_proxy.UserResourcePermission.perm_name.in_(perms))
         if resource_ids:
@@ -134,7 +134,8 @@ class UserService(BaseService):
                 cls.models_proxy.Resource.resource_type.in_(resource_types))
             query2 \
                 = query2.filter(
-                cls.models_proxy.Resource.resource_type.in_(resource_types))
+                    cls.models_proxy.Resource.resource_type.in_(resource_types)
+                )
         query = query.union(query2)
         query = query.order_by(cls.models_proxy.Resource.resource_name)
         return query
@@ -218,7 +219,8 @@ class UserService(BaseService):
         cls.regenerate_security_code(instance)
 
     @classmethod
-    def check_password(cls, instance, raw_password, enable_hash_migration=True):
+    def check_password(cls, instance, raw_password,
+                       enable_hash_migration=True):
         """
         checks string with users password hash using password manager
 
@@ -227,14 +229,16 @@ class UserService(BaseService):
         :param enable_hash_migration: if legacy hashes should be migrated
         :return:
         """
-        verified, replacement_hash = instance.passwordmanager.verify_and_update(raw_password, instance.user_password)
+        verified, replacement_hash = instance.passwordmanager \
+            .verify_and_update(
+                raw_password, instance.user_password
+            )
         if enable_hash_migration and replacement_hash:
             if six.PY2:
                 instance.user_password = replacement_hash.decode('utf8')
             else:
                 instance.user_password = replacement_hash
         return verified
-
 
     @classmethod
     def generate_random_pass(cls, chars=7):

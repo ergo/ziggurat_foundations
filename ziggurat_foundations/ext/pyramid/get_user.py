@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 import importlib
 import logging
 
-from ziggurat_foundations.exc import ZigguratException
 from ziggurat_foundations.models.base import get_db_session
 from ziggurat_foundations.models.services.user import UserService
 
@@ -33,7 +32,7 @@ def includeme(config):
     # do request.user
     def get_user(request):
         userid = request.unauthenticated_userid
-        if test_session_callable == None:
+        if test_session_callable is None:
             # set db_session to none to pass to the UserModel.by_id
             db_session = None
         else:

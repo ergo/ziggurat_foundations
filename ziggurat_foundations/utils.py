@@ -5,6 +5,7 @@ Utility functions.
 import random
 import string
 
+
 class PlaceholderPasswordChecker(object):
     """Match and return false on check() for '*' (a password hash
     consisting of a single asterisk.) DelegatingPasswordManager would

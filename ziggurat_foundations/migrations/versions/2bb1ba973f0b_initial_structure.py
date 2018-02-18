@@ -7,12 +7,12 @@ Create Date: 2011-11-10 22:32:14.464939
 """
 from __future__ import unicode_literals
 
+import sqlalchemy as sa
+from alembic import op
+
 # downgrade revision identifier, used by Alembic.
 revision = '2bb1ba973f0b'
 down_revision = None
-
-from alembic import op
-import sqlalchemy as sa
 
 
 def upgrade():
@@ -74,7 +74,8 @@ def upgrade():
     op.create_table('resources',
                     sa.Column('resource_id', sa.BigInteger(), primary_key=True,
                               nullable=False, autoincrement=True),
-                    sa.Column('resource_name', sa.Unicode(100), nullable=False),
+                    sa.Column('resource_name', sa.Unicode(
+                        100), nullable=False),
                     sa.Column('resource_type', sa.Unicode(30), nullable=False),
                     sa.Column('owner_group_name', sa.Unicode(50),
                               sa.ForeignKey('groups.group_name',

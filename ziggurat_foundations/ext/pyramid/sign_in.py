@@ -6,7 +6,6 @@ import logging
 
 import pyramid.security
 
-from ziggurat_foundations.exc import ZigguratException
 from ziggurat_foundations.models.base import get_db_session
 from ziggurat_foundations.models.services.user import UserService
 
@@ -56,7 +55,7 @@ def includeme(config):
     signin_password_key = settings.get('%s.sign_in.password_key' %
                                        CONFIG_KEY, 'password')
 
-    if not session_provider_callable:
+    if not session_provider_callable_config:
         def session_provider_callable(request):
             return get_db_session()
     else:
@@ -64,11 +63,12 @@ def includeme(config):
         _tmp = importlib.import_module(parts[0])
         session_provider_callable = getattr(_tmp, parts[1])
 
-    endpoint = ZigguratSignInProvider(settings=settings,
-                                      session_getter=session_provider_callable,
-                                      signin_came_from_key=signin_came_from_key,
-                                      signin_username_key=signin_username_key,
-                                      signin_password_key=signin_password_key)
+    endpoint = ZigguratSignInProvider(
+        settings=settings,
+        session_getter=session_provider_callable,
+        signin_came_from_key=signin_came_from_key,
+        signin_username_key=signin_username_key,
+        signin_password_key=signin_password_key)
 
     config.add_route('ziggurat.routes.sign_in', sign_in_path,
                      use_global_views=True,

@@ -17,8 +17,9 @@ class ExternalIdentityMixin(BaseModel):
     """
 
     __table_args__ = (
-        sa.PrimaryKeyConstraint('external_id', 'local_user_id', 'provider_name',
-                                name='pk_external_identities'),
+        sa.PrimaryKeyConstraint(
+            'external_id', 'local_user_id', 'provider_name',
+            name='pk_external_identities'),
         {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8',
          })
 
