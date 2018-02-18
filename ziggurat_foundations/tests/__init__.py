@@ -5,6 +5,7 @@ from ziggurat_foundations.tests.conftest import (
     User, Group, UserGroup, GroupPermission, UserPermission,
     UserResourcePermission, GroupResourcePermission, Resource,
     ExternalIdentity, TestResource, TestResourceB)
+from ziggurat_foundations.models.services.user import UserService
 
 
 def check_one_in_other(first, second):
@@ -18,7 +19,7 @@ def check_one_in_other(first, second):
 def add_user(db_session, user_name='username', email='email',
              perms=['root', 'alter_users']):
     user = User(user_name=user_name, email=email, status=0)
-    user.set_password('password')
+    UserService.set_password(user, 'password')
     for perm in perms:
         u_perm = UserPermission(perm_name=perm)
         user.user_permissions.append(u_perm)

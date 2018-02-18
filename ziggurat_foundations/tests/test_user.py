@@ -37,11 +37,11 @@ class TestUser(BaseTestCase):
 
     def test_check_password_correct(self, db_session):
         user = add_user(db_session)
-        assert user.check_password('password') is True
+        assert UserService.check_password(user, 'password') is True
 
     def test_check_password_wrong(self, db_session):
         user = add_user(db_session)
-        assert user.check_password('wrong_password') is False
+        assert UserService.check_password(user, 'wrong_password') is False
 
     def test_by_user_name_existing(self, db_session):
         created_user = add_user(db_session)
