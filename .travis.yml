@@ -36,10 +36,10 @@ matrix:
       env: BCRYPT="enabled" DB_STRING="postgres://postgres@127.0.0.1:5432/test"
 
     - python: "pypy"
-      env: DB_STRING="postgresql+psycopg2cffi://postgres@127.0.0.1:5432/test"
+      env:
 
     - python: "pypy3"
-      env: DB_STRING="postgresql+psycopg2cffi://postgres@127.0.0.1:5432/test"
+      env:
 
 services:
   - postgresql
