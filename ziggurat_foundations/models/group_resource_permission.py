@@ -6,8 +6,6 @@ from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import validates
 
 from ziggurat_foundations.models.base import BaseModel
-from ziggurat_foundations.models.services.group_resource_permission import \
-    GroupResourcePermissionService
 
 __all__ = ['GroupResourcePermissionMixin']
 

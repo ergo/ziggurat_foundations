@@ -3,12 +3,9 @@ from __future__ import unicode_literals
 
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
-from zope.deprecation import deprecation
 
 from ziggurat_foundations.models.base import BaseModel
-from ziggurat_foundations.models.base import get_db_session
-from ziggurat_foundations.models.services.external_identity import \
-    ExternalIdentityService
+
 
 __all__ = ['ExternalIdentityMixin']
 
@@ -59,45 +56,3 @@ class ExternalIdentityMixin(BaseModel):
     @declared_attr
     def token_secret(self):
         return sa.Column(sa.Unicode(512), default=u'')
-
-    @classmethod
-    @deprecation.deprecate("ExternalIdentity.by_external_id_and_provider "
-                           "will be removed in 0.8, use service instead")
-    def by_external_id_and_provider(cls, external_id, provider_name,
-                                    db_session=None):
-        """
-        Backwards compatible alias to
-        :class:`ziggurat_foundations.models.services.external_identity.ExternalIdentityService.by_external_id_and_provider`
-
-        .. deprecated:: 0.8
-
-        :param external_id:
-        :param provider_name:
-        :param db_session:
-        :return: ExternalIdentity
-        """
-        db_session = get_db_session(db_session)
-        return ExternalIdentityService.by_external_id_and_provider(
-            external_id=external_id, provider_name=provider_name,
-            db_session=db_session)
-
-    @classmethod
-    @deprecation.deprecate("ExternalIdentity.user_by_external_id_and_provider "
-                           "will be removed in 0.8, use service instead")
-    def user_by_external_id_and_provider(cls, external_id, provider_name,
-                                         db_session=None):
-        """
-        Backwards compatible alias to
-        :class:`ziggurat_foundations.models.services.external_identity.ExternalIdentityService.user_by_external_id_and_provider`
-
-        .. deprecated:: 0.8
-
-        :param external_id:
-        :param provider_name:
-        :param db_session:
-        :return: User
-        """
-        db_session = get_db_session(db_session)
-        return ExternalIdentityService.user_by_external_id_and_provider(
-            external_id=external_id, provider_name=provider_name,
-            db_session=db_session)
