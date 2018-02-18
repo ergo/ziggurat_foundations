@@ -8,6 +8,7 @@ import string
 import six
 import sqlalchemy as sa
 
+from ziggurat_foundations.utils import generate_random_string
 from ziggurat_foundations.models.base import get_db_session
 from ziggurat_foundations.models.services import BaseService
 from ziggurat_foundations.permissions import (
@@ -253,7 +254,7 @@ class UserService(BaseService):
         :param instance:
         :return:
         """
-        instance.security_code = instance.generate_random_string(64)
+        instance.security_code = cls.generate_random_string(64)
 
     @staticmethod
     def generate_random_string(chars=7):
@@ -262,8 +263,7 @@ class UserService(BaseService):
         :param chars:
         :return:
         """
-        return u''.join(random.sample(string.ascii_letters * 2 + string.digits,
-                                      chars))
+        return generate_random_string(chars)
 
     @classmethod
     def by_id(cls, user_id, db_session=None):

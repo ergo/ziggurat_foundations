@@ -2,7 +2,8 @@
 """
 Utility functions.
 """
-
+import random
+import string
 
 class PlaceholderPasswordChecker(object):
     """Match and return false on check() for '*' (a password hash
@@ -43,3 +44,13 @@ class NOOP(object):
 
 
 noop = NOOP()
+
+
+def generate_random_string(chars=7):
+    """
+
+    :param chars:
+    :return:
+    """
+    return u''.join(random.sample(string.ascii_letters * 2 + string.digits,
+                                  chars))
