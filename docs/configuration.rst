@@ -112,7 +112,7 @@ inside your models file, to extend your existing models (if following the basic 
     from ziggurat_foundations.models.user_resource_permission import UserResourcePermissionMixin
     from ziggurat_foundations import ziggurat_model_init
 
-    # this is needed for pylons 1.0 / akhet approach to db session
+    # this is needed for scoped session approach like in pylons 1.0
     ziggurat_foundations.models.DBSession = DBSession
     # optional for folks who pass request.db to model methods
 

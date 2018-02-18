@@ -18,8 +18,8 @@ email validation links). Whilst we are doing this, we can assign him a password
 
 .. code-block:: python
 
-    new_user.set_password("secretpassword")
-    new_user.regenerate_security_code()
+    UserService.set_password(new_user, "secretpassword")
+    UserService.regenerate_security_code(new_user)
 
 Now we have a user, lets create a group to store users in, lets say Joe is an admin user
 and so we will create a group called "admins" and add Joe to this group:
@@ -82,27 +82,27 @@ We can now fetch all resources with permissions "edit", "vote":
 .. code-block:: python
 
     # assuming "user" is a User() object as described as above
-    user.resources_with_perms(["edit","vote"])
+    UserService.resources_with_perms(user, ["edit","vote"])
 
 If we have a user object, we can fetch all non-resource based permissions for user:
 
 .. code-block:: python
 
-    user.permissions
+    permissions = UserService.permissions(user)
 
 Given a resource fetching all permissions for user, both direct and
 inherited from groups user belongs to:
 
 .. code-block:: python
 
-    resource.perms_for_user(user_instance)
+    ResourceService.perms_for_user(resource, user_instance)
 
 Checking "resourceless" permission like "user can access admin panel:
 
 .. code-block:: python
 
-    request.user.permissions
-    for perm_user, perm_name in request.user.permissions:
+    permissions = UserService.permissions(request.user)
+    for perm_user, perm_name in permissions:
         print(perm_user, perm_name)
 
 Checking all permissions user has to specific resource:
@@ -110,7 +110,7 @@ Checking all permissions user has to specific resource:
 .. no-code-block:: python
 
     resource = Resource.by_resource_id(rid)
-    for perm in resource.perms_for_user(user):
+    for perm in ResourceService.perms_for_user(resource, user_instance):
         print(perm.user, perm.perm_name, perm.type, perm.group, perm.resource, perm.owner)
         .... list acls ....
 

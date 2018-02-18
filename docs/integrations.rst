@@ -60,7 +60,8 @@ resources, you can configure your view to expect "edit" or "delete" permissions:
                 # append basic resource acl that gives all permissions to owner
                 self.__acl__ = self.resource.__acl__
                 # append permissions that current user may have for this context resource
-                permissions = self.resource.perms_for_user(request.user)
+                permissions = ResourceService.perms_for_user(
+                                              self.resource, request.user)
                 for outcome, perm_user, perm_name in permission_to_pyramid_acls(
                         permissions):
                     self.__acl__.append((outcome, perm_user, perm_name,))
