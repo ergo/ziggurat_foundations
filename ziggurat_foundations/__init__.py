@@ -1,37 +1,39 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
-__version__ = {'major': 0, 'minor': 7, 'patch': 3}
-
 from ziggurat_foundations.utils import ModelProxy, noop
-from ziggurat_foundations.models.services.user import UserService
-from ziggurat_foundations.models.services.group import GroupService
-from ziggurat_foundations.models.services.group_permission import \
-    GroupPermissionService
-from ziggurat_foundations.models.services.user_permission import \
-    UserPermissionService
-from ziggurat_foundations.models.services.user_resource_permission import \
-    UserResourcePermissionService
-from ziggurat_foundations.models.services.group_resource_permission import \
-    GroupResourcePermissionService
-from ziggurat_foundations.models.services.resource import ResourceService
-from ziggurat_foundations.models.services.resource_tree import \
-    ResourceTreeService
-from ziggurat_foundations.models.services.external_identity import \
-    ExternalIdentityService
 
-model_service_mapping = {
-    'User': [UserService],
-    'Group': [GroupService],
-    'GroupPermission': [GroupPermissionService],
-    'UserPermission': [UserPermissionService],
-    'UserResourcePermission': [
-        UserResourcePermissionService],
-    'GroupResourcePermission': [
-        GroupResourcePermissionService],
-    'Resource': [ResourceService, ResourceTreeService],
-    'ExternalIdentity': [ExternalIdentityService]
-}
+__version__ = {'major': 0, 'minor': 8, 'patch': 0}
+
+
+def import_model_service_mappings():
+    from ziggurat_foundations.models.services.user import UserService
+    from ziggurat_foundations.models.services.group import GroupService
+    from ziggurat_foundations.models.services.group_permission import \
+        GroupPermissionService
+    from ziggurat_foundations.models.services.user_permission import \
+        UserPermissionService
+    from ziggurat_foundations.models.services.user_resource_permission import \
+        UserResourcePermissionService
+    from ziggurat_foundations.models.services.group_resource_permission import \
+        GroupResourcePermissionService
+    from ziggurat_foundations.models.services.resource import ResourceService
+    from ziggurat_foundations.models.services.resource_tree import \
+        ResourceTreeService
+    from ziggurat_foundations.models.services.external_identity import \
+        ExternalIdentityService
+
+    return {
+        'User': [UserService],
+        'Group': [GroupService],
+        'GroupPermission': [GroupPermissionService],
+        'UserPermission': [UserPermissionService],
+        'UserResourcePermission': [
+            UserResourcePermissionService],
+        'GroupResourcePermission': [
+            GroupResourcePermissionService],
+        'Resource': [ResourceService, ResourceTreeService],
+        'ExternalIdentity': [ExternalIdentityService]
+    }
 
 
 def make_passwordmanager(schemes=None):
@@ -67,6 +69,8 @@ def ziggurat_model_init(*args, **kwargs):
     models = ModelProxy()
     for cls2 in args:
         models[cls2.__name__] = cls2
+
+    model_service_mapping = import_model_service_mappings()
 
     for cls in args:
         if cls.__name__ == 'User':
