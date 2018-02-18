@@ -173,7 +173,7 @@ class UserService(BaseService):
             perms.append(
                 PermissionTuple(instance, ALL_PERMISSIONS, 'user', None,
                                 resource, True, True))
-        for group in instance.groups_with_resources():
+        for group in cls.groups_with_resources(instance):
             for resource in group.resources:
                 perms.append(
                     PermissionTuple(instance, ALL_PERMISSIONS, 'group', group,
