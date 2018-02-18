@@ -1,6 +1,30 @@
 Changelog
 =========
 
+2018-02-19
+----------
+* Release 0.7.3
+* Use pbkdf2_sha256 by default (bcypt hashes will work and will be migrated on first login for users)
+
+** Important **
+By default `check_password` will migrate your existing bcrypt hashes to pbkdf2_sha256, if you want to keep bcrypt,
+you can either pass `passwordmanager_schemes` list to `ziggurat_model_init` or use your own passwordmanager.
+
+2018-02-17
+----------
+
+* Release 0.7.2
+* Fixed some minor issues that resulted in bad migrations when someone used `autogenerate in alembic`
+* Added a way to read sqlalchemy.url from environment variable (thanks René Jochum)
+
+2017-02-19
+----------
+
+* Release 0.7.1
+* fixed tree ordering for nested elements
+* fixed `perm_by_group_and_perm_name` method
+
+
 2016-11-25
 ----------
 

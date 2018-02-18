@@ -1,6 +1,15 @@
 Changelog
 =========
 
+2018-02-19
+----------
+* Release 0.7.3
+* Use pbkdf2_sha256 by default (bcypt hashes will work and will be migrated on first login for users)
+
+** Important **
+By default `check_password` will migrate your existing bcrypt hashes to pbkdf2_sha256, if you want to keep bcrypt,
+you can either pass `passwordmanager_schemes` list to `ziggurat_model_init` or use your own passwordmanager.
+
 2018-02-17
 ----------
 

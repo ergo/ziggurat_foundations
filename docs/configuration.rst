@@ -11,13 +11,6 @@ Install the package:
 
     $ pip install ziggurat_foundations
 
-You will also need to install one of supported bcrypt backends
-like `bcrypt` or `py-bcrypt` (this is default solution ziggurat_foundations
-expects).
-
-.. code-block:: bash
-
-    $ pip install bcrypt
 
 Now it's time to initialize your model structure with alembic.
 
@@ -191,6 +184,5 @@ inside your models file, to extend your existing models (if following the basic 
 
 .. hint::
 
-    Because some systems can't utilize bcypt password manager you can pass your own
-    passlib compatible password manager to ziggurat_model_init, it will be used
-    instead of creating default one.
+    Default password manager will use `pbkdf2_sha256`, but if you want different configuration
+    pass passlib compatible password manager to ziggurat_model_init.
