@@ -114,7 +114,7 @@ class UserMixin(BaseModel):
                                    passive_updates=True)
 
     @declared_attr
-    def resources(cls):
+    def resources(self):
         """ Returns all resources directly owned by user, can be used to assign
         ownership of new resources::
 

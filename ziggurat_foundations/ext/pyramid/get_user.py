@@ -14,16 +14,17 @@ log = logging.getLogger(__name__)
 
 def includeme(config):
     settings = config.registry.settings
-    session_provider_callable = settings.get(
+
+    session_provider_callable_config = settings.get(
         '%s.session_provider_callable' % CONFIG_KEY)
 
-    if not session_provider_callable:
+    if not session_provider_callable_config:
         def session_provider_callable(request):
             return get_db_session()
 
         test_session_callable = None
     else:
-        parts = session_provider_callable.split(':')
+        parts = session_provider_callable_config.split(':')
         _tmp = importlib.import_module(parts[0])
         session_provider_callable = getattr(_tmp, parts[1])
         test_session_callable = "session exists"

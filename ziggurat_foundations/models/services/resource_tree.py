@@ -7,6 +7,8 @@ __all__ = ['ResourceTreeService']
 
 
 class ResourceTreeService(object):
+    model = None
+
     def __init__(self, service_cls):
         service_cls.model = self.model
         self.service = service_cls

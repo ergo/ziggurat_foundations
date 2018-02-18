@@ -6,7 +6,7 @@ from ziggurat_foundations.models.base import get_db_session
 
 class BaseService(object):
     model = None
-    model_proxy = None
+    models_proxy = None
 
     @classmethod
     def all(cls, klass, db_session=None):

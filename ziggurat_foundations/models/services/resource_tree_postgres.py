@@ -18,6 +18,8 @@ __all__ = ['ResourceTreeServicePostgreSQL']
 
 
 class ResourceTreeServicePostgreSQL(object):
+    model = None
+
     @classmethod
     def from_resource_deeper(cls, resource_id=None, limit_depth=1000000,
                              db_session=None, *args, **kwargs):
@@ -138,7 +140,7 @@ class ResourceTreeServicePostgreSQL(object):
         root_elem = {'node': None, 'children': OrderedDict()}
         if len(items) == 0:
             return root_elem
-        for i, node in enumerate(items):
+        for _, node in enumerate(items):
             new_elem = {'node': node.Resource, 'children': OrderedDict()}
             path = list(map(int, node.path.split('/')))
             parent_node = root_elem
@@ -196,7 +198,7 @@ class ResourceTreeServicePostgreSQL(object):
         resource = ResourceService.lock_resource_for_update(
             resource_id=resource_id,
             db_session=db_session)
-        parent = ResourceService.lock_resource_for_update(
+        ResourceService.lock_resource_for_update(
             resource_id=resource.parent_id,
             db_session=db_session)
         same_branch = False

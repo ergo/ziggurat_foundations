@@ -35,8 +35,8 @@ class TestResources(BaseTestCase):
         pprint.pprint(tree_struct)
         assert tree_struct['node'].resource_id == -1
         l1_nodes = [n for n in tree_struct['children'].values()]
-        a_node = tree_struct['children'][1];
-        b_node = tree_struct['children'][2];
+        a_node = tree_struct['children'][1]
+        b_node = tree_struct['children'][2]
         ac_node = a_node['children'][7]
         l_a_nodes = [n for n in a_node['children'].values()]
         l_b_nodes = [n for n in b_node['children'].values()]
@@ -163,7 +163,7 @@ class TestResources(BaseTestCase):
 
     @pytest.mark.skipif(not_postgres, reason="requires postgres")
     def test_move_down_on_same_branch_last_on_root(self, db_session):
-        root = create_default_tree(db_session=db_session)[0]
+        create_default_tree(db_session=db_session)[0]
         tree_service.move_to_position(-2, to_position=3,
                                       db_session=db_session)
         result = tree_service.from_parent_deeper(

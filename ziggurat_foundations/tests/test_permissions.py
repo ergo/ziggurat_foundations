@@ -72,8 +72,8 @@ class TestUserPermissions(BaseTestCase):
         resource.user_permissions.append(permission)
         resource2 = add_resource(db_session, 2, 'test_resource')
         created_user.resources.append(resource2)
-        resource3 = add_resource(db_session, 3, 'test_resource')
-        resource4 = add_resource_b(db_session, 4, 'test_resource')
+        add_resource(db_session, 3, 'test_resource')
+        add_resource_b(db_session, 4, 'test_resource')
         db_session.flush()
         resources = UserService.resources_with_perms(
             created_user, ['test_perm'], db_session=db_session).all()
@@ -761,7 +761,7 @@ class TestGroupPermission(BaseTestCase):
 
     def test_group_resource_permission(self, db_session):
         self.set_up_user_group_and_perms(db_session)
-        resource3 = add_resource_b(db_session, 3, 'other resource')
+        add_resource_b(db_session, 3, 'other resource')
         db_session.flush()
         group_permission2 = GroupResourcePermission(
             perm_name='group_perm2',
@@ -788,7 +788,7 @@ class TestGroupPermission(BaseTestCase):
         )
         assert perm is None
 
-    def test_group_resource_permission(self, db_session):
+    def test_group_resource_permission2(self, db_session):
         self.set_up_user_group_and_perms(db_session)
         perm_name = 'group_perm'
         perm = ResourceService.perm_by_group_and_perm_name(

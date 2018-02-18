@@ -14,6 +14,16 @@ version = '{}.{}.{}'.format(__version__['major'],
                             __version__['minor'],
                             __version__['patch'])
 
+test_deps = [
+    "coverage",
+    "flake8",
+    "pylint",
+    "pyramid",
+    "pytest",
+    "pytest-cov",
+    "rstcheck"
+]
+
 setup(
     name='ziggurat_foundations',
     version=version,
@@ -40,12 +50,7 @@ setup(
     zip_safe=True,
     include_package_data=True,
     test_suite='ziggurat_foundations.tests',
-    tests_require=[
-        "coverage",
-        "pytest",
-        "psycopg2",
-        "pytest-cov"
-    ],
+    tests_require=test_deps,
     install_requires=[
         "sqlalchemy",
         "passlib>=1.6.1",
@@ -53,5 +58,8 @@ setup(
         "paginate_sqlalchemy",
         "alembic",
         'zope.deprecation >= 3.5.0',
-        "six"]
+        "six"],
+    extras_require = {
+        'test': test_deps,
+    }
 )

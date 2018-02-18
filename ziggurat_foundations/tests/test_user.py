@@ -195,7 +195,9 @@ class TestUser(BaseTestCase):
                                       'cbb6777e4a7ec0d96b33d2033e59fec6?d=mm'
 
     def test_gravatar_url_with_params(self, db_session):
+        # pylint: disable=E0401
         import six.moves.urllib.parse as parser
+        # pylint: enable=E0401
         user = add_user(db_session)
         user.email = 'arkadiy@bk.r'
         gravatar_url = UserService.gravatar_url(user, s=100, r='pg')

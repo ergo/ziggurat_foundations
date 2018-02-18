@@ -47,7 +47,7 @@ def includeme(config):
                                 '/sign_in')
     sign_out_path = settings.get('%s.sign_in.sign_out_pattern' % CONFIG_KEY,
                                  '/sign_out')
-    session_provider_callable = settings.get(
+    session_provider_callable_config = settings.get(
         '%s.session_provider_callable' % CONFIG_KEY)
     signin_came_from_key = settings.get('%s.sign_in.came_from_key' %
                                         CONFIG_KEY, 'came_from')
@@ -60,7 +60,7 @@ def includeme(config):
         def session_provider_callable(request):
             return get_db_session()
     else:
-        parts = session_provider_callable.split(':')
+        parts = session_provider_callable_config.split(':')
         _tmp = importlib.import_module(parts[0])
         session_provider_callable = getattr(_tmp, parts[1])
 
@@ -79,6 +79,11 @@ def includeme(config):
 
 
 class ZigguratSignInProvider(object):
+    signin_came_from_key = None
+    signin_username_key = None
+    signin_password_key = None
+    UserModel = None
+
     def __init__(self, *args, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)
@@ -107,3 +112,6 @@ class ZigguratSignInProvider(object):
     def sign_out(self, request):
         headers = pyramid.security.forget(request)
         return ZigguratSignOut(headers=headers)
+
+    def session_getter(self, request):
+        raise NotImplementedError()
