@@ -20,14 +20,20 @@ class NOOP(object):
 noop = NOOP()
 
 
-def make_passwordmanager():
+def make_passwordmanager(schemes=None):
+    """
+        schemes contains a list of replace this list with the hash(es) you wish to support.
+        this example sets pbkdf2_sha256 as the default,
+        with support for legacy bcrypt hashes.
+    :param schemes:
+    :return: CryptContext()
+    """
     from passlib.context import CryptContext
+    if not schemes:
+        schemes = ["pbkdf2_sha256", "bcrypt"]
     pwd_context = CryptContext(
-        # replace this list with the hash(es) you wish to support.
-        # this example sets pbkdf2_sha256 as the default,
-        # with support for legacy des_crypt hashes.
-        schemes=["bcrypt", "pbkdf2_sha256"],
-        default="bcrypt"
+        schemes=schemes,
+        deprecated="auto"
     )
     return pwd_context
 
@@ -40,6 +46,8 @@ def ziggurat_model_init(*args, **kwargs):
 
     :param args:
     :param kwargs:
+    :param passwordmanager, the password manager to override default one
+    :param passwordmanager_schemes, list of schemes for default passwordmanager to use
     :return:
     """
     models = ModelProxy()
@@ -51,7 +59,7 @@ def ziggurat_model_init(*args, **kwargs):
             if kwargs.get('passwordmanager'):
                 cls.passwordmanager = kwargs['passwordmanager']
             else:
-                cls.passwordmanager = make_passwordmanager()
+                cls.passwordmanager = make_passwordmanager(kwargs.get('passwordmanager_schemes'))
 
         for cls2 in args:
             setattr(models, cls2.__name__, cls2)
