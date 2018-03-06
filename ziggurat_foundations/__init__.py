@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from ziggurat_foundations.utils import ModelProxy
+from ziggurat_foundations.utils import ModelProxy, noop  # noqa
 
 __version__ = {'major': 0, 'minor': 8, 'patch': 0}
 
@@ -14,7 +14,7 @@ def import_model_service_mappings():
         UserPermissionService
     from ziggurat_foundations.models.services.user_resource_permission import \
         UserResourcePermissionService
-    from ziggurat_foundations.models.services.group_resource_permission import GroupResourcePermissionService # noqa
+    from ziggurat_foundations.models.services.group_resource_permission import GroupResourcePermissionService  # noqa
     from ziggurat_foundations.models.services.resource import ResourceService
     from ziggurat_foundations.models.services.resource_tree import \
         ResourceTreeService

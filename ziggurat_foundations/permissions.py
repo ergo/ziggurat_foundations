@@ -21,7 +21,7 @@ except ImportError as e:
         """ Stand in 'permission list' to represent all permissions """
 
         def __iter__(self):
-            yield
+            return ()
 
         def __contains__(self, other):
             return True

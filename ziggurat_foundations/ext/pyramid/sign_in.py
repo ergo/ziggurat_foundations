@@ -79,10 +79,6 @@ def includeme(config):
 
 
 class ZigguratSignInProvider(object):
-    signin_came_from_key = None
-    signin_username_key = None
-    signin_password_key = None
-    UserModel = None
 
     def __init__(self, *args, **kwargs):
         for k, v in kwargs.items():
