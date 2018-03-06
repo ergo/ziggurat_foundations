@@ -27,8 +27,8 @@ test_deps = [
 setup(
     name='ziggurat_foundations',
     version=version,
-    description=""" Set of classes that are reusable across various types of
-    web apps, base user object, auth relationships + structured resource tree
+    description=""" Set of SQLAlchemy mixins that make application building an easy task. Provides users, groups, 
+    permissions, resource tree handling and authorization solutions for Pyramid and Flask frameworks.
     """,
     long_description=README,
     author='Marcin Lulek',
