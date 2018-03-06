@@ -123,7 +123,7 @@ class TestUser(BaseTestCase):
         user3 = add_user(db_session, 'user3', 'email3')
 
         queried_users = UserService.by_user_names(
-            ['user1', None, 'user3'],db_session=db_session).all()
+            ['user1', None, 'user3'], db_session=db_session).all()
 
         assert len(queried_users) == 2
         assert user1 == queried_users[0]
@@ -158,7 +158,9 @@ class TestUser(BaseTestCase):
 
     def test_by_email_wrong_email(self, db_session):
         add_user(db_session)
-        queried_user = UserService.by_email('wrong_email', db_session=db_session)
+        queried_user = UserService.by_email(
+            'wrong_email', db_session=db_session
+        )
 
         assert queried_user is None
 
@@ -191,11 +193,14 @@ class TestUser(BaseTestCase):
     def test_gravatar_url(self, db_session):
         user = add_user(db_session)
         user.email = 'arkadiy@bk.ru'
-        assert UserService.gravatar_url(user) == 'https://secure.gravatar.com/avatar/' \
-                                      'cbb6777e4a7ec0d96b33d2033e59fec6?d=mm'
+        assert UserService.gravatar_url(user) == 'https://' \
+            'secure.gravatar.com/avatar/' \
+            'cbb6777e4a7ec0d96b33d2033e59fec6?d=mm'
 
     def test_gravatar_url_with_params(self, db_session):
+        # pylint: disable=E0401
         import six.moves.urllib.parse as parser
+        # pylint: enable=E0401
         user = add_user(db_session)
         user.email = 'arkadiy@bk.r'
         gravatar_url = UserService.gravatar_url(user, s=100, r='pg')

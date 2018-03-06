@@ -167,16 +167,17 @@ class ResourceService(BaseService):
         :param skip_group_perms: do not attach group permissions to the resultset
         :param db_session:
         :return:
-        """
+        """  # noqa
         db_session = get_db_session(db_session, instance)
-        users_perms = resource_permissions_for_users(cls.models_proxy,
-                                                     [perm_name],
-                                                     [instance.resource_id],
-                                                     user_ids=user_ids,
-                                                     group_ids=group_ids,
-                                                     limit_group_permissions=limit_group_permissions,
-                                                     skip_group_perms=skip_group_perms,
-                                                     db_session=db_session)
+        users_perms = resource_permissions_for_users(
+            cls.models_proxy,
+            [perm_name],
+            [instance.resource_id],
+            user_ids=user_ids,
+            group_ids=group_ids,
+            limit_group_permissions=limit_group_permissions,
+            skip_group_perms=skip_group_perms,
+            db_session=db_session)
         if instance.owner_user_id:
             users_perms.append(
                 PermissionTuple(instance.owner,
@@ -224,7 +225,8 @@ class ResourceService(BaseService):
         query = query.filter(
             cls.models_proxy.GroupResourcePermission.perm_name == perm_name)
         query = query.filter(
-            cls.models_proxy.GroupResourcePermission.resource_id == resource_id)
+            cls.models_proxy.GroupResourcePermission.resource_id ==
+            resource_id)
         return query.first()
 
     @classmethod
@@ -244,15 +246,16 @@ class ResourceService(BaseService):
         issues for big groups
         :param db_session:
         :return:
-        """
+        """  # noqa
         db_session = get_db_session(db_session, instance)
-        group_perms = resource_permissions_for_users(cls.models_proxy,
-                                                     [perm_name],
-                                                     [instance.resource_id],
-                                                     group_ids=group_ids,
-                                                     limit_group_permissions=limit_group_permissions,
-                                                     skip_user_perms=True,
-                                                     db_session=db_session)
+        group_perms = resource_permissions_for_users(
+            cls.models_proxy,
+            [perm_name],
+            [instance.resource_id],
+            group_ids=group_ids,
+            limit_group_permissions=limit_group_permissions,
+            skip_user_perms=True,
+            db_session=db_session)
         if instance.owner_group_id:
             for user in instance.owner_group.users:
                 group_perms.append(

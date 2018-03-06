@@ -63,7 +63,7 @@ class TestModel(BaseTestCase):
         created_user.populate_obj(app_struct,
                                   exclude_keys=['user_password'])
         assert created_user.user_name == app_struct['user_name']
-        assert created_user.user_password == None
+        assert created_user.user_password is None
         assert created_user.email == app_struct['email']
 
     def test_populate_obj_appstruct_include(self, db_session):
@@ -97,7 +97,7 @@ class TestModel(BaseTestCase):
         created_user.populate_obj_from_obj(test_obj,
                                            exclude_keys=['user_password'])
         assert created_user.user_name == test_obj.user_name
-        assert created_user.user_password == None
+        assert created_user.user_password is None
         assert created_user.email == test_obj.email
 
     def test_populate_obj_obj_include(self, db_session):

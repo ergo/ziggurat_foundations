@@ -13,7 +13,6 @@ except ImportError as e:
     Allow = 'Allow'
     Deny = 'Deny'
 
-
     # borrowed directly from pyramid - to avoid dependency on pyramid itself
     # source https://github.com/Pylons/pyramid/blob/master/pyramid/security.py
 
@@ -22,14 +21,13 @@ except ImportError as e:
         """ Stand in 'permission list' to represent all permissions """
 
         def __iter__(self):
-            return ()
+            yield
 
         def __contains__(self, other):
             return True
 
         def __eq__(self, other):
             return isinstance(other, self.__class__)
-
 
     ALL_PERMISSIONS = AllPermissionsList()
 
@@ -88,7 +86,7 @@ def resource_permissions_for_users(models_proxy, perm_names, resource_ids=None,
                        models_proxy.GroupResourcePermission.resource_id)
     if limit_group_permissions:
         query = query.outerjoin(models_proxy.User,
-                                models_proxy.User.id == None)
+                                models_proxy.User.id == None) # noqa
     else:
         query = query.join(models_proxy.UserGroup,
                            models_proxy.UserGroup.group_id ==
@@ -131,7 +129,7 @@ def resource_permissions_for_users(models_proxy, perm_names, resource_ids=None,
 
     # group needs to be present to work for union, but never actually matched
     query2 = query2.outerjoin(models_proxy.Group,
-                              models_proxy.Group.id == None)
+                              models_proxy.Group.id == None) # noqa
     if (perm_names not in ([ANY_PERMISSION], ANY_PERMISSION) and perm_names):
         query2 = query2.filter(
             models_proxy.UserResourcePermission.perm_name.in_(perm_names))

@@ -7,6 +7,8 @@ __all__ = ['ResourceTreeService']
 
 
 class ResourceTreeService(object):
+    model = None
+
     def __init__(self, service_cls):
         service_cls.model = self.model
         self.service = service_cls
@@ -63,8 +65,8 @@ class ResourceTreeService(object):
         """
         return self.service.build_subtree_strut(result=result, *args, **kwargs)
 
-    def path_upper(self, object_id, limit_depth=1000000, db_session=None, *args,
-                   **kwargs):
+    def path_upper(self, object_id, limit_depth=1000000, db_session=None,
+                   *args, **kwargs):
         """
         This returns you path to root node starting from object_id
             currently only for postgresql
@@ -75,7 +77,8 @@ class ResourceTreeService(object):
         :return:
         """
         return self.service.path_upper(
-            object_id=object_id, limit_depth=limit_depth, db_session=db_session,
+            object_id=object_id, limit_depth=limit_depth,
+            db_session=db_session,
             *args, **kwargs)
 
     def move_to_position(self, resource_id, to_position, new_parent_id=noop,
@@ -91,7 +94,8 @@ class ResourceTreeService(object):
         """
         return self.service.move_to_position(
             resource_id=resource_id, to_position=to_position,
-            new_parent_id=new_parent_id, db_session=db_session, *args, **kwargs)
+            new_parent_id=new_parent_id, db_session=db_session,
+            *args, **kwargs)
 
     def shift_ordering_down(self, parent_id, position, db_session=None,
                             *args, **kwargs):

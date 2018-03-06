@@ -2,9 +2,9 @@
 from __future__ import with_statement, unicode_literals
 
 from ziggurat_foundations.tests.conftest import (
-    User, Group, UserGroup, GroupPermission, UserPermission,
+    User, Group, GroupPermission, UserPermission,
     UserResourcePermission, GroupResourcePermission, Resource,
-    ExternalIdentity, TestResource, TestResourceB)
+    TestResource, TestResourceB)
 from ziggurat_foundations.models.services.user import UserService
 
 
@@ -71,27 +71,27 @@ def create_default_tree(db_session):
         db_session, -1, 'root a', ordering=1)
     res_a = add_resource(
         db_session, 1, 'a', parent_id=root.resource_id, ordering=1)
-    res_aa = add_resource(
+    add_resource(
         db_session, 5, 'aa', parent_id=res_a.resource_id, ordering=1)
-    res_ab = add_resource(
+    add_resource(
         db_session, 6, 'ab', parent_id=res_a.resource_id, ordering=2)
     res_ac = add_resource(
         db_session, 7, 'ac', parent_id=res_a.resource_id, ordering=3)
     res_aca = add_resource(
         db_session, 9, 'aca', parent_id=res_ac.resource_id, ordering=1)
-    res_acaa = add_resource(
+    add_resource(
         db_session, 12, 'acaa', parent_id=res_aca.resource_id, ordering=1)
-    res_ad = add_resource(
+    add_resource(
         db_session, 8, 'ad', parent_id=res_a.resource_id, ordering=4)
     res_b = add_resource(
         db_session, 2, 'b', parent_id=root.resource_id, ordering=2)
-    res_ba = add_resource(
+    add_resource(
         db_session, 4, 'ba', parent_id=res_b.resource_id, ordering=1)
-    res_c = add_resource(
+    add_resource(
         db_session, 3, 'c', parent_id=root.resource_id, ordering=3)
-    res_d = add_resource(
+    add_resource(
         db_session, 10, 'd', parent_id=root.resource_id, ordering=4)
-    res_e = add_resource(
+    add_resource(
         db_session, 11, 'e', parent_id=root.resource_id, ordering=5)
     root_b = add_resource(
         db_session, -2, 'root b', ordering=2)

@@ -7,15 +7,15 @@ Create Date: 2012-06-27 02:15:58.776223
 """
 from __future__ import unicode_literals
 
+import sqlalchemy as sa
+from alembic import op
+from alembic.context import get_context
+from sqlalchemy.dialects.mysql.base import MySQLDialect
+from sqlalchemy.engine.reflection import Inspector
+
 # revision identifiers, used by Alembic.
 revision = '3cfc41c4a5f0'
 down_revision = '53927300c277'
-
-from alembic import op
-import sqlalchemy as sa
-from sqlalchemy.dialects.mysql.base import MySQLDialect
-from alembic.context import get_context
-from sqlalchemy.engine.reflection import Inspector
 
 
 def upgrade():

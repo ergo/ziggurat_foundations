@@ -3,14 +3,9 @@ from __future__ import unicode_literals
 
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declared_attr
-from zope.deprecation import deprecation
 
 from ziggurat_foundations.exc import ZigguratException
 from ziggurat_foundations.models.base import BaseModel
-from ziggurat_foundations.models.base import get_db_session
-from ziggurat_foundations.models.services.resource import ResourceService
-from ziggurat_foundations.models.services.resource_tree import \
-    ResourceTreeService
 
 __all__ = ['ResourceMixin']
 
@@ -108,7 +103,7 @@ class ResourceMixin(BaseModel):
 
     @sa.orm.validates('user_permissions', 'group_permissions')
     def validate_permission(self, key, permission):
-        """ validate if resouce can have specific permission """
+        """ validate if resource can have specific permission """
         if permission.perm_name not in self.__possible_permissions__:
             raise AssertionError('perm_name is not one of {}'.format(
                 self.__possible_permissions__))

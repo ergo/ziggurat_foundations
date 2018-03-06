@@ -44,10 +44,10 @@ class BaseModel(object):
     def get_appstruct(self):
         """ return list of tuples keys and values corresponding to this model's
         data """
-        l = []
+        result = []
         for k in self._get_keys():
-            l.append((k, getattr(self, k),))
-        return l
+            result.append((k, getattr(self, k),))
+        return result
 
     def populate_obj(self, appstruct, exclude_keys=None, include_keys=None):
         """

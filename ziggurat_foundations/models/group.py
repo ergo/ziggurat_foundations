@@ -77,7 +77,7 @@ class GroupMixin(BaseModel):
                                    passive_updates=True)
 
     @declared_attr
-    def resources(cls):
+    def resources(self):
         """ Returns all resources directly owned by group, can be used to assign
         ownership of new resources::
 
@@ -89,7 +89,7 @@ class GroupMixin(BaseModel):
                                    backref='owner_group')
 
     @declared_attr
-    def resources_dynamic(cls):
+    def resources_dynamic(self):
         """ Returns all resources directly owned by group, can be used to assign
         ownership of new resources::
 

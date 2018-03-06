@@ -17,7 +17,7 @@ class GroupResourcePermissionMixin(BaseModel):
     __table_args__ = (sa.PrimaryKeyConstraint(
         'group_id', 'resource_id', 'perm_name',
         name='pk_users_resources_permissions '),
-                      {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'})
+        {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'})
 
     @declared_attr
     def __tablename__(self):
@@ -50,6 +50,7 @@ class GroupResourcePermissionMixin(BaseModel):
         return value
 
     def __repr__(self):
-        return '<GroupResourcePermission: g:%s, %s, r:%s>' % (self.group_id,
-                                                              self.perm_name,
-                                                              self.resource_id,)
+        return '<GroupResourcePermission: g:%s, %s, r:%s>' % (
+            self.group_id,
+            self.perm_name,
+            self.resource_id,)

@@ -18,6 +18,8 @@ __all__ = ['ResourceTreeServicePostgreSQL']
 
 
 class ResourceTreeServicePostgreSQL(object):
+    model = None
+
     @classmethod
     def from_resource_deeper(cls, resource_id=None, limit_depth=1000000,
                              db_session=None, *args, **kwargs):
@@ -44,7 +46,7 @@ class ResourceTreeServicePostgreSQL(object):
                     WHERE res_u.parent_id = st.resource_id
             )
             SELECT * FROM subtree WHERE depth<=:depth ORDER BY sorting;
-        """.format(tablename=tablename)
+        """.format(tablename=tablename) # noqa
         db_session = get_db_session(db_session)
         text_obj = sa.text(raw_q)
         query = db_session.query(cls.model, 'depth', 'sorting', 'path')
@@ -79,7 +81,7 @@ class ResourceTreeServicePostgreSQL(object):
                     WHERE res_u.parent_id = st.resource_id
             )
             DELETE FROM resources where resource_id in (select * from subtree);
-        """.format(tablename=tablename)
+        """.format(tablename=tablename) # noqa
         db_session = get_db_session(db_session)
         text_obj = sa.text(raw_q)
         db_session.execute(text_obj, params={'resource_id': resource_id})
@@ -117,7 +119,7 @@ class ResourceTreeServicePostgreSQL(object):
                     WHERE res_u.parent_id = st.resource_id
             )
             SELECT * FROM subtree WHERE depth<=:depth ORDER BY sorting;
-        """.format(tablename=tablename, limiting_clause=limiting_clause)
+        """.format(tablename=tablename, limiting_clause=limiting_clause) # noqa
         db_session = get_db_session(db_session)
         text_obj = sa.text(raw_q)
         query = db_session.query(cls.model, 'depth', 'sorting', 'path')
@@ -138,7 +140,7 @@ class ResourceTreeServicePostgreSQL(object):
         root_elem = {'node': None, 'children': OrderedDict()}
         if len(items) == 0:
             return root_elem
-        for i, node in enumerate(items):
+        for _, node in enumerate(items):
             new_elem = {'node': node.Resource, 'children': OrderedDict()}
             path = list(map(int, node.path.split('/')))
             parent_node = root_elem
@@ -196,7 +198,7 @@ class ResourceTreeServicePostgreSQL(object):
         resource = ResourceService.lock_resource_for_update(
             resource_id=resource_id,
             db_session=db_session)
-        parent = ResourceService.lock_resource_for_update(
+        ResourceService.lock_resource_for_update(
             resource_id=resource.parent_id,
             db_session=db_session)
         same_branch = False

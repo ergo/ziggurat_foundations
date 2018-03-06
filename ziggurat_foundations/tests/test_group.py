@@ -7,7 +7,6 @@ from ziggurat_foundations.tests import (
     BaseTestCase)
 from ziggurat_foundations.tests.conftest import (
     Group)
-from ziggurat_foundations.models.services.group import GroupService
 
 
 class TestGroup(BaseTestCase):
@@ -92,7 +91,8 @@ class TestGroup(BaseTestCase):
         users_count = len(group.users)
         get_params = {'foo': 'bar', 'baz': 'xxx'}
 
-        paginator = GroupService.get_user_paginator(group, 1, users_count, GET_params=get_params)
+        paginator = GroupService.get_user_paginator(
+            group, 1, users_count, GET_params=get_params)
 
         assert paginator.page == 1
         assert paginator.first_item == 1
