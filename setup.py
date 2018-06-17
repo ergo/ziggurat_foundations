@@ -14,16 +14,6 @@ version = '{}.{}.{}'.format(__version__['major'],
                             __version__['minor'],
                             __version__['patch'])
 
-test_deps = [
-    "coverage",
-    "flake8",
-    "pylint",
-    "pyramid",
-    "pytest",
-    "pytest-cov",
-    "rstcheck"
-]
-
 setup(
     name='ziggurat_foundations',
     version=version,
@@ -61,7 +51,7 @@ setup(
         "six"],
     setup_requires=["pytest-runner"],
     extras_require={
-        'dev': ['coverage', 'pytest', 'pytest-cov', 'tox', 'mock'],
+        'test': ['coverage', 'pytest', 'pytest-cov', 'tox', 'mock'],
         'lint': ['black', 'pylint', 'rstcheck', 'flake8'],
     }
 )

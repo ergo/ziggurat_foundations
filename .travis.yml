@@ -67,7 +67,7 @@ script:
   - if [ -n "$PYBCRYPT" ]; then pip install psycopg2cffi; fi
   - if [ -n "$MYSQL" ]; then pip install http://cdn.mysql.com/Downloads/Connector-Python/mysql-connector-python-2.0.4.zip#md5=3df394d89300db95163f17c843ef49df; fi
 
-  - if [ -n "$LINT" ]; then pip install black ; fi
+  - if [ -n "$LINT" ]; then pip install -e ".[lint]" ; fi
   # PyLint
   - if [ -n "$LINT" ]; then pylint --disable=all --enable=F,unreachable,duplicate-key,unnecessary-semicolon,global-variable-not-assigned,unused-variable,binary-op-exception,bad-format-string,anomalous-backslash-in-string,bad-open-mode,jobs=4 ziggurat_foundations/ ; fi
 
