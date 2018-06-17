@@ -23,6 +23,9 @@ matrix:
     - python: "3.5"
       env:
 
+    - python: "3.6"
+      env: LINT=1
+
     - python: "3.3"
       env: BCRYPT="enabled" DB_STRING="postgres://postgres@127.0.0.1:5432/test"
 
@@ -64,9 +67,11 @@ script:
   - if [ -n "$PYBCRYPT" ]; then pip install psycopg2cffi; fi
   - if [ -n "$MYSQL" ]; then pip install http://cdn.mysql.com/Downloads/Connector-Python/mysql-connector-python-2.0.4.zip#md5=3df394d89300db95163f17c843ef49df; fi
 
+  - if [ -n "$LINT" ]; then pip install black ; fi
   # PyLint
-  # - pylint --disable=all --enable=F,E,unreachable,duplicate-key,unnecessary-semicolon,global-variable-not-assigned,unused-variable,binary-op-exception,bad-format-string,anomalous-backslash-in-string,bad-open-mode,jobs=4 ziggurat_foundations/
+  - if [ -n "$LINT" ]; then pylint --disable=all --enable=F,unreachable,duplicate-key,unnecessary-semicolon,global-variable-not-assigned,unused-variable,binary-op-exception,bad-format-string,anomalous-backslash-in-string,bad-open-mode,jobs=4 ziggurat_foundations/ ; fi
 
+  - if [ -n "$LINT" ]; then  black --check --verbose ziggurat_foundations ; fi
   - py.test ziggurat_foundations/tests/
 
   # flake8 and rstcheck
