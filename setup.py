@@ -59,7 +59,9 @@ setup(
         "alembic",
         'zope.deprecation >= 3.5.0',
         "six"],
-    extras_require = {
-        'test': test_deps,
+    setup_requires=["pytest-runner"],
+    extras_require={
+        'dev': ['coverage', 'pytest', 'pytest-cov', 'tox', 'mock'],
+        'lint': ['black', 'pylint', 'rstcheck', 'flake8'],
     }
 )
