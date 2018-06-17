@@ -12,22 +12,33 @@ from alembic import op
 from sqlalchemy.dialects.postgresql.base import PGDialect
 
 # revision identifiers, used by Alembic.
-revision = '54d08f9adc8c'
-down_revision = '2d472fe79b95'
+revision = "54d08f9adc8c"
+down_revision = "2d472fe79b95"
 
 
 def upgrade():
     from alembic.context import get_context
+
     c = get_context()
     if isinstance(c.connection.engine.dialect, PGDialect):
-        op.add_column('users', sa.Column('registered_date',
-                                         sa.TIMESTAMP(timezone=False),
-                                         default=sa.sql.func.now(),
-                                         server_default=sa.func.now()))
+        op.add_column(
+            "users",
+            sa.Column(
+                "registered_date",
+                sa.TIMESTAMP(timezone=False),
+                default=sa.sql.func.now(),
+                server_default=sa.func.now(),
+            ),
+        )
     else:
-        op.add_column('users', sa.Column('registered_date',
-                                         sa.TIMESTAMP(timezone=False),
-                                         default=sa.sql.func.now()))
+        op.add_column(
+            "users",
+            sa.Column(
+                "registered_date",
+                sa.TIMESTAMP(timezone=False),
+                default=sa.sql.func.now(),
+            ),
+        )
 
 
 def downgrade():

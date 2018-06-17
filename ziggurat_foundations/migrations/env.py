@@ -21,13 +21,15 @@ if config.config_file_name:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 
-target_metadata = MetaData(naming_convention={
-    "ix": 'ix_%(column_0_label)s',
-    "uq": "uq_%(table_name)s_%(column_0_name)s",
-    "ck": "ck_%(table_name)s_%(constraint_name)s",
-    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
-    "pk": "pk_%(table_name)s"
-})
+target_metadata = MetaData(
+    naming_convention={
+        "ix": "ix_%(column_0_label)s",
+        "uq": "uq_%(table_name)s_%(column_0_name)s",
+        "ck": "ck_%(table_name)s_%(constraint_name)s",
+        "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+        "pk": "pk_%(table_name)s",
+    }
+)
 
 
 def get_url():
@@ -36,6 +38,7 @@ def get_url():
         url = config.get_main_option("sqlalchemy.url")
 
     return url
+
 
 # target_metadata = None
 
@@ -58,10 +61,11 @@ def run_migrations_offline():
 
     """
     url = get_url()
-    context.configure(url=url,
-                      version_table='alembic_ziggurat_foundations_version',
-                      transaction_per_migration=True,
-                      )
+    context.configure(
+        url=url,
+        version_table="alembic_ziggurat_foundations_version",
+        transaction_per_migration=True,
+    )
 
     with context.begin_transaction():
         context.run_migrations()
@@ -80,8 +84,8 @@ def run_migrations_online():
     context.configure(
         connection=connection,
         target_metadata=target_metadata,
-        version_table='alembic_ziggurat_foundations_version',
-        transaction_per_migration=True
+        version_table="alembic_ziggurat_foundations_version",
+        transaction_per_migration=True,
     )
 
     try:

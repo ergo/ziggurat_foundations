@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from ziggurat_foundations.models.base import get_db_session
 from ziggurat_foundations.models.services import BaseService
 
-__all__ = ['GroupPermissionService']
+__all__ = ["GroupPermissionService"]
 
 
 class GroupPermissionService(BaseService):
@@ -33,7 +33,6 @@ class GroupPermissionService(BaseService):
         :return:
         """
         db_session = get_db_session(db_session)
-        query = db_session.query(cls.model).filter(
-            cls.model.group_id == group_id)
+        query = db_session.query(cls.model).filter(cls.model.group_id == group_id)
         query = query.filter(cls.model.perm_name == perm_name)
         return query.first()

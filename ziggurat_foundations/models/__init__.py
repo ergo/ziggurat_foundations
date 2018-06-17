@@ -12,7 +12,7 @@ def groupfinder(userid, request):
     :param request:
     :return:
     """
-    if userid and hasattr(request, 'user') and request.user:
-        groups = ['group:%s' % g.id for g in request.user.groups]
+    if userid and hasattr(request, "user") and request.user:
+        groups = ["group:%s" % g.id for g in request.user.groups]
         return groups
     return []

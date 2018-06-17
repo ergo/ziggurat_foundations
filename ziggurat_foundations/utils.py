@@ -13,7 +13,7 @@ class PlaceholderPasswordChecker(object):
     """
 
     def match(self, encoded):
-        return encoded == '*'
+        return encoded == "*"
 
     def check(self, encoded, password):
         return False
@@ -53,5 +53,4 @@ def generate_random_string(chars=7):
     :param chars:
     :return:
     """
-    return u''.join(random.sample(string.ascii_letters * 2 + string.digits,
-                                  chars))
+    return u"".join(random.sample(string.ascii_letters * 2 + string.digits, chars))

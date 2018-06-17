@@ -11,15 +11,17 @@ import sqlalchemy as sa
 from alembic import op
 
 # downgrade revision identifier, used by Alembic.
-revision = '46a9c4fb9560'
-down_revision = '5c84d7260c5'
+revision = "46a9c4fb9560"
+down_revision = "5c84d7260c5"
 
 
 def upgrade():
-    op.alter_column('users', 'user_password',
-                    type_=sa.Unicode(256), existing_type=sa.Unicode(40))
-    op.alter_column('users', 'security_code',
-                    type_=sa.Unicode(256), existing_type=sa.Unicode(40))
+    op.alter_column(
+        "users", "user_password", type_=sa.Unicode(256), existing_type=sa.Unicode(40)
+    )
+    op.alter_column(
+        "users", "security_code", type_=sa.Unicode(256), existing_type=sa.Unicode(40)
+    )
 
 
 def downgrade():

@@ -9,9 +9,10 @@ from ziggurat_foundations.permissions import (
     ANY_PERMISSION,
     ALL_PERMISSIONS,
     PermissionTuple,
-    resource_permissions_for_users)
+    resource_permissions_for_users,
+)
 
-__all__ = ['ResourceService']
+__all__ = ["ResourceService"]
 
 
 class ResourceService(BaseService):
@@ -41,49 +42,66 @@ class ResourceService(BaseService):
         """
         db_session = get_db_session(db_session, instance)
         query = db_session.query(
-            cls.models_proxy.GroupResourcePermission.group_id.label(
-                'owner_id'),
+            cls.models_proxy.GroupResourcePermission.group_id.label("owner_id"),
             cls.models_proxy.GroupResourcePermission.perm_name,
-            sa.literal('group').label('type'))
+            sa.literal("group").label("type"),
+        )
         query = query.filter(
             cls.models_proxy.GroupResourcePermission.group_id.in_(
                 [gr.id for gr in user.groups]
             )
         )
         query = query.filter(
-            cls.models_proxy.GroupResourcePermission.resource_id ==
-            instance.resource_id)
+            cls.models_proxy.GroupResourcePermission.resource_id == instance.resource_id
+        )
 
         query2 = db_session.query(
-            cls.models_proxy.UserResourcePermission.user_id.label('owner_id'),
+            cls.models_proxy.UserResourcePermission.user_id.label("owner_id"),
             cls.models_proxy.UserResourcePermission.perm_name,
-            sa.literal('user').label('type'))
+            sa.literal("user").label("type"),
+        )
         query2 = query2.filter(
-            cls.models_proxy.UserResourcePermission.user_id ==
-            user.id)
+            cls.models_proxy.UserResourcePermission.user_id == user.id
+        )
         query2 = query2.filter(
-            cls.models_proxy.UserResourcePermission.resource_id ==
-            instance.resource_id)
+            cls.models_proxy.UserResourcePermission.resource_id == instance.resource_id
+        )
         query = query.union(query2)
 
         groups_dict = dict([(g.id, g) for g in user.groups])
-        perms = [PermissionTuple(user,
-                                 row.perm_name,
-                                 row.type,
-                                 groups_dict.get(row.owner_id) if
-                                 row.type == 'group' else None,
-                                 instance, False, True) for row in query]
+        perms = [
+            PermissionTuple(
+                user,
+                row.perm_name,
+                row.type,
+                groups_dict.get(row.owner_id) if row.type == "group" else None,
+                instance,
+                False,
+                True,
+            )
+            for row in query
+        ]
 
         # include all perms if user is the owner of this resource
         if instance.owner_user_id == user.id:
-            perms.append(PermissionTuple(user, ALL_PERMISSIONS, 'user',
-                                         None, instance, True, True))
+            perms.append(
+                PermissionTuple(
+                    user, ALL_PERMISSIONS, "user", None, instance, True, True
+                )
+            )
         groups_dict = dict([(g.id, g) for g in user.groups])
         if instance.owner_group_id in groups_dict:
-            perms.append(PermissionTuple(user, ALL_PERMISSIONS, 'group',
-                                         groups_dict.get(
-                                             instance.owner_group_id),
-                                         instance, True, True))
+            perms.append(
+                PermissionTuple(
+                    user,
+                    ALL_PERMISSIONS,
+                    "group",
+                    groups_dict.get(instance.owner_group_id),
+                    instance,
+                    True,
+                    True,
+                )
+            )
 
         return perms
 
@@ -101,23 +119,23 @@ class ResourceService(BaseService):
         db_session = get_db_session(db_session, instance)
         query = db_session.query(
             cls.models_proxy.UserResourcePermission.user_id,
-            cls.models_proxy.UserResourcePermission.perm_name)
-        query = query.filter(cls.models_proxy.UserResourcePermission.user_id ==
-                             user.id)
+            cls.models_proxy.UserResourcePermission.perm_name,
+        )
+        query = query.filter(cls.models_proxy.UserResourcePermission.user_id == user.id)
         query = query.filter(
-            cls.models_proxy.UserResourcePermission.resource_id ==
-            instance.resource_id)
+            cls.models_proxy.UserResourcePermission.resource_id == instance.resource_id
+        )
 
-        perms = [PermissionTuple(user,
-                                 row.perm_name,
-                                 'user',
-                                 None,
-                                 instance, False, True) for row in query]
+        perms = [
+            PermissionTuple(user, row.perm_name, "user", None, instance, False, True)
+            for row in query
+        ]
 
         # include all perms if user is the owner of this resource
         if instance.owner_user_id == user.id:
-            perms.append(PermissionTuple(user, ALL_PERMISSIONS, 'user',
-                                         None, instance, True))
+            perms.append(
+                PermissionTuple(user, ALL_PERMISSIONS, "user", None, instance, True)
+            )
         return perms
 
     @classmethod
@@ -132,26 +150,41 @@ class ResourceService(BaseService):
         :return:
         """
         db_session = get_db_session(db_session, instance)
-        perms = resource_permissions_for_users(cls.models_proxy,
-                                               ANY_PERMISSION,
-                                               resource_ids=[
-                                                   instance.resource_id],
-                                               user_ids=[user.id],
-                                               db_session=db_session)
-        perms = [p for p in perms if p.type == 'group']
+        perms = resource_permissions_for_users(
+            cls.models_proxy,
+            ANY_PERMISSION,
+            resource_ids=[instance.resource_id],
+            user_ids=[user.id],
+            db_session=db_session,
+        )
+        perms = [p for p in perms if p.type == "group"]
         # include all perms if user is the owner of this resource
         groups_dict = dict([(g.id, g) for g in user.groups])
         if instance.owner_group_id in groups_dict:
-            perms.append(PermissionTuple(user, ALL_PERMISSIONS, 'group',
-                                         groups_dict.get(
-                                             instance.owner_group_id),
-                                         instance, True, True))
+            perms.append(
+                PermissionTuple(
+                    user,
+                    ALL_PERMISSIONS,
+                    "group",
+                    groups_dict.get(instance.owner_group_id),
+                    instance,
+                    True,
+                    True,
+                )
+            )
         return perms
 
     @classmethod
-    def users_for_perm(cls, instance, perm_name, user_ids=None, group_ids=None,
-                       limit_group_permissions=False, skip_group_perms=False,
-                       db_session=None):
+    def users_for_perm(
+        cls,
+        instance,
+        perm_name,
+        user_ids=None,
+        group_ids=None,
+        limit_group_permissions=False,
+        skip_group_perms=False,
+        db_session=None,
+    ):
         """
         return PermissionTuples for users AND groups that have given
         permission for the resource, perm_name is __any_permission__ then
@@ -177,18 +210,27 @@ class ResourceService(BaseService):
             group_ids=group_ids,
             limit_group_permissions=limit_group_permissions,
             skip_group_perms=skip_group_perms,
-            db_session=db_session)
+            db_session=db_session,
+        )
         if instance.owner_user_id:
             users_perms.append(
-                PermissionTuple(instance.owner,
-                                ALL_PERMISSIONS, 'user', None, instance, True,
-                                True))
+                PermissionTuple(
+                    instance.owner, ALL_PERMISSIONS, "user", None, instance, True, True
+                )
+            )
         if instance.owner_group_id and not skip_group_perms:
             for user in instance.owner_group.users:
                 users_perms.append(
-                    PermissionTuple(user, ALL_PERMISSIONS, 'group',
-                                    instance.owner_group, instance, True,
-                                    True))
+                    PermissionTuple(
+                        user,
+                        ALL_PERMISSIONS,
+                        "group",
+                        instance.owner_group,
+                        instance,
+                        True,
+                        True,
+                    )
+                )
 
         return users_perms
 
@@ -202,13 +244,15 @@ class ResourceService(BaseService):
         :return:
         """
         db_session = get_db_session(db_session)
-        query = db_session.query(cls.model).filter(cls.model.resource_id ==
-                                                   int(resource_id))
+        query = db_session.query(cls.model).filter(
+            cls.model.resource_id == int(resource_id)
+        )
         return query.first()
 
     @classmethod
-    def perm_by_group_and_perm_name(cls, resource_id, group_id, perm_name,
-                                    db_session=None):
+    def perm_by_group_and_perm_name(
+        cls, resource_id, group_id, perm_name, db_session=None
+    ):
         """
         fetch permissions by group and permission name
 
@@ -221,18 +265,25 @@ class ResourceService(BaseService):
         db_session = get_db_session(db_session)
         query = db_session.query(cls.models_proxy.GroupResourcePermission)
         query = query.filter(
-            cls.models_proxy.GroupResourcePermission.group_id == group_id)
+            cls.models_proxy.GroupResourcePermission.group_id == group_id
+        )
         query = query.filter(
-            cls.models_proxy.GroupResourcePermission.perm_name == perm_name)
+            cls.models_proxy.GroupResourcePermission.perm_name == perm_name
+        )
         query = query.filter(
-            cls.models_proxy.GroupResourcePermission.resource_id ==
-            resource_id)
+            cls.models_proxy.GroupResourcePermission.resource_id == resource_id
+        )
         return query.first()
 
     @classmethod
-    def groups_for_perm(cls, instance, perm_name, group_ids=None,
-                        limit_group_permissions=False,
-                        db_session=None):
+    def groups_for_perm(
+        cls,
+        instance,
+        perm_name,
+        group_ids=None,
+        limit_group_permissions=False,
+        db_session=None,
+    ):
         """
         return PermissionTuples for groups that have given
         permission for the resource, perm_name is __any_permission__ then
@@ -255,13 +306,21 @@ class ResourceService(BaseService):
             group_ids=group_ids,
             limit_group_permissions=limit_group_permissions,
             skip_user_perms=True,
-            db_session=db_session)
+            db_session=db_session,
+        )
         if instance.owner_group_id:
             for user in instance.owner_group.users:
                 group_perms.append(
-                    PermissionTuple(user, ALL_PERMISSIONS, 'group',
-                                    instance.owner_group, instance, True,
-                                    True))
+                    PermissionTuple(
+                        user,
+                        ALL_PERMISSIONS,
+                        "group",
+                        instance.owner_group,
+                        instance,
+                        True,
+                        True,
+                    )
+                )
 
         return group_perms
 

@@ -2,36 +2,39 @@
 from __future__ import unicode_literals
 from ziggurat_foundations.utils import ModelProxy, noop  # noqa
 
-__version__ = {'major': 0, 'minor': 8, 'patch': 0}
+__version__ = {"major": 0, "minor": 8, "patch": 0}
 
 
 def import_model_service_mappings():
     from ziggurat_foundations.models.services.user import UserService
     from ziggurat_foundations.models.services.group import GroupService
-    from ziggurat_foundations.models.services.group_permission import \
+    from ziggurat_foundations.models.services.group_permission import (
         GroupPermissionService
-    from ziggurat_foundations.models.services.user_permission import \
+    )
+    from ziggurat_foundations.models.services.user_permission import (
         UserPermissionService
-    from ziggurat_foundations.models.services.user_resource_permission import \
+    )
+    from ziggurat_foundations.models.services.user_resource_permission import (
         UserResourcePermissionService
-    from ziggurat_foundations.models.services.group_resource_permission import GroupResourcePermissionService  # noqa
+    )
+    from ziggurat_foundations.models.services.group_resource_permission import (
+        GroupResourcePermissionService
+    )  # noqa
     from ziggurat_foundations.models.services.resource import ResourceService
-    from ziggurat_foundations.models.services.resource_tree import \
-        ResourceTreeService
-    from ziggurat_foundations.models.services.external_identity import \
+    from ziggurat_foundations.models.services.resource_tree import ResourceTreeService
+    from ziggurat_foundations.models.services.external_identity import (
         ExternalIdentityService
+    )
 
     return {
-        'User': [UserService],
-        'Group': [GroupService],
-        'GroupPermission': [GroupPermissionService],
-        'UserPermission': [UserPermissionService],
-        'UserResourcePermission': [
-            UserResourcePermissionService],
-        'GroupResourcePermission': [
-            GroupResourcePermissionService],
-        'Resource': [ResourceService, ResourceTreeService],
-        'ExternalIdentity': [ExternalIdentityService]
+        "User": [UserService],
+        "Group": [GroupService],
+        "GroupPermission": [GroupPermissionService],
+        "UserPermission": [UserPermissionService],
+        "UserResourcePermission": [UserResourcePermissionService],
+        "GroupResourcePermission": [GroupResourcePermissionService],
+        "Resource": [ResourceService, ResourceTreeService],
+        "ExternalIdentity": [ExternalIdentityService],
     }
 
 
@@ -46,12 +49,10 @@ def make_passwordmanager(schemes=None):
     :return: CryptContext()
     """
     from passlib.context import CryptContext
+
     if not schemes:
         schemes = ["pbkdf2_sha256", "bcrypt"]
-    pwd_context = CryptContext(
-        schemes=schemes,
-        deprecated="auto"
-    )
+    pwd_context = CryptContext(schemes=schemes, deprecated="auto")
     return pwd_context
 
 
@@ -75,12 +76,13 @@ def ziggurat_model_init(*args, **kwargs):
     model_service_mapping = import_model_service_mappings()
 
     for cls in args:
-        if cls.__name__ == 'User':
-            if kwargs.get('passwordmanager'):
-                cls.passwordmanager = kwargs['passwordmanager']
+        if cls.__name__ == "User":
+            if kwargs.get("passwordmanager"):
+                cls.passwordmanager = kwargs["passwordmanager"]
             else:
                 cls.passwordmanager = make_passwordmanager(
-                    kwargs.get('passwordmanager_schemes'))
+                    kwargs.get("passwordmanager_schemes")
+                )
 
         for cls2 in args:
             setattr(models, cls2.__name__, cls2)
@@ -89,5 +91,5 @@ def ziggurat_model_init(*args, **kwargs):
         # if model has a manager attached attached the class also to manager
         services = model_service_mapping.get(cls.__name__, [])
         for service in services:
-            setattr(service, 'model', cls)
-            setattr(service, 'models_proxy', models)
+            setattr(service, "model", cls)
+            setattr(service, "models_proxy", models)

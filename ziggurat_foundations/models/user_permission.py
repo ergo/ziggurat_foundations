@@ -7,36 +7,40 @@ from sqlalchemy.orm import validates
 
 from ziggurat_foundations.models.base import BaseModel
 
-__all__ = ['UserPermissionMixin']
+__all__ = ["UserPermissionMixin"]
 
 
 class UserPermissionMixin(BaseModel):
     """
     Mixin for UserPermission model
     """
-    __table_args__ = (sa.PrimaryKeyConstraint('user_id', 'perm_name',
-                                              name='pk_users_permissions'),
-                      {'mysql_engine': 'InnoDB', 'mysql_charset': 'utf8'})
+
+    __table_args__ = (
+        sa.PrimaryKeyConstraint("user_id", "perm_name", name="pk_users_permissions"),
+        {"mysql_engine": "InnoDB", "mysql_charset": "utf8"},
+    )
 
     @declared_attr
     def __tablename__(self):
-        return 'users_permissions'
+        return "users_permissions"
 
     @declared_attr
     def user_id(self):
-        return sa.Column(sa.Integer,
-                         sa.ForeignKey('users.id', onupdate='CASCADE',
-                                       ondelete='CASCADE'), primary_key=True)
+        return sa.Column(
+            sa.Integer,
+            sa.ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"),
+            primary_key=True,
+        )
 
     @declared_attr
     def perm_name(self):
         return sa.Column(sa.Unicode(64), primary_key=True)
 
-    @validates('perm_name')
+    @validates("perm_name")
     def validate_perm_name(self, key, value):
         if value != value.lower():
-            raise AssertionError('perm_name needs to be lowercase')
+            raise AssertionError("perm_name needs to be lowercase")
         return value
 
     def __repr__(self):
-        return '<UserPermission: %s>' % self.perm_name
+        return "<UserPermission: %s>" % self.perm_name
