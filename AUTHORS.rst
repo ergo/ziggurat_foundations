@@ -6,21 +6,15 @@ The submitter agrees by adding his or her name within the section below named
 canonical shared repository location for this software project (whether
 directly, as a user with "direct commit access", or via a "pull request"), he
 or she is signing a contract electronically.  The submitter becomes a
-Contributor after a) he or she signs this document by adding their name
+Contributor after a) he or she signs this document by adding their name (and company name)
 beneath the "Contributors" section below, and b) the resulting document is
 accepted into the canonical version control repository.
 
-By submitting any code, documentation, modifications, or other contributions
-(each a “Contribution”) to the project, you represent, warrant and agree that:
-1. The Contributions are hereby licensed to the under the terms of the
-   BSD 2-clause License (https://opensource.org/licenses/BSD-2-Clause).
-2. You are the sole author and owner of each of your Contributions, you have
-   the right to grant the license in Section 1, and projects exercise of such
-   license will not infringe your or, to your knowledge, any other
-   party’s intellectual property rights.
-3. Project may freely assign and transfer this Contributor License Agreement
-   to any third party.
+(http://www.harmonyagreements.org)
 
+CLA_INDIVIDUAL.md is the text for contributions from individuals.
+
+CLA_ENTITY.md is the text for contributions from legal entities.
 
 List of Contributors
 ====================
