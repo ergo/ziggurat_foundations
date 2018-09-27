@@ -1,6 +1,6 @@
 # Ziggurat Foundations
 
-![Build Status] [![logo]](https://gitter.im/ergo/ziggurat_foundations)
+[![Build Status]](https://travis-ci.org/ergo/ziggurat_foundations) [![logo]](https://gitter.im/ergo/ziggurat_foundations)
 
 **DOCUMENTATION**: http://readthedocs.org/docs/ziggurat-foundations/en/latest/
 
