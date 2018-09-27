@@ -5,11 +5,11 @@ import pytest
 
 from ziggurat_foundations.models.services.group_permission import GroupPermissionService
 from ziggurat_foundations.models.services.group_resource_permission import (
-    GroupResourcePermissionService
+    GroupResourcePermissionService,
 )
 from ziggurat_foundations.models.services.user_permission import UserPermissionService
 from ziggurat_foundations.models.services.user_resource_permission import (
-    UserResourcePermissionService
+    UserResourcePermissionService,
 )
 
 from ziggurat_foundations.models.services.resource import ResourceService

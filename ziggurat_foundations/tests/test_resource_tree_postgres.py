@@ -8,7 +8,7 @@ import pytest
 from ziggurat_foundations.models.services.resource import ResourceService
 from ziggurat_foundations.models.services.resource_tree import ResourceTreeService
 from ziggurat_foundations.models.services.resource_tree_postgres import (
-    ResourceTreeServicePostgreSQL
+    ResourceTreeServicePostgreSQL,
 )
 from ziggurat_foundations.tests import add_resource, BaseTestCase, create_default_tree
 from ziggurat_foundations.tests.conftest import not_postgres

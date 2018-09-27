@@ -9,21 +9,21 @@ def import_model_service_mappings():
     from ziggurat_foundations.models.services.user import UserService
     from ziggurat_foundations.models.services.group import GroupService
     from ziggurat_foundations.models.services.group_permission import (
-        GroupPermissionService
+        GroupPermissionService,
     )
     from ziggurat_foundations.models.services.user_permission import (
-        UserPermissionService
+        UserPermissionService,
     )
     from ziggurat_foundations.models.services.user_resource_permission import (
-        UserResourcePermissionService
+        UserResourcePermissionService,
     )
     from ziggurat_foundations.models.services.group_resource_permission import (
-        GroupResourcePermissionService
+        GroupResourcePermissionService,
     )  # noqa
     from ziggurat_foundations.models.services.resource import ResourceService
     from ziggurat_foundations.models.services.resource_tree import ResourceTreeService
     from ziggurat_foundations.models.services.external_identity import (
-        ExternalIdentityService
+        ExternalIdentityService,
     )
 
     return {

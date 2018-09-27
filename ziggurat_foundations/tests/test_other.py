@@ -2,7 +2,7 @@
 from __future__ import with_statement, unicode_literals
 
 from ziggurat_foundations.models.services.external_identity import (
-    ExternalIdentityService
+    ExternalIdentityService,
 )
 from ziggurat_foundations.tests import add_user, add_resource, BaseTestCase
 from ziggurat_foundations.tests.conftest import (
