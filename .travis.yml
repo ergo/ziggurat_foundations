@@ -26,9 +26,6 @@ matrix:
     - python: "3.6"
       env: LINT=1
 
-    - python: "3.3"
-      env: BCRYPT="enabled" DB_STRING="postgres://postgres@127.0.0.1:5432/test"
-
     - python: "3.4"
       env: BCRYPT="enabled" DB_STRING="postgres://postgres@127.0.0.1:5432/test"
 
