@@ -1,2 +1,2 @@
-include *.rst LICENSE
+include *.rst *.md LICENSE
 recursive-include ziggurat_foundations/migrations *.py
