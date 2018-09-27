@@ -5,9 +5,9 @@ from setuptools import setup, find_packages
 from ziggurat_foundations import __version__
 
 here = os.path.abspath(os.path.dirname(__file__))
-with open(os.path.join(here, 'README.rst')) as f:
+with open(os.path.join(here, 'README.md')) as f:
     README = f.read()
-with open(os.path.join(here, 'CHANGES.rst')) as f:
+with open(os.path.join(here, 'CHANGES.md')) as f:
     CHANGES = f.read()
 
 version = '{}.{}.{}'.format(__version__['major'],
@@ -28,6 +28,7 @@ setup(
     description=""" Set of SQLAlchemy mixins that make application building an easy task. Provides users, groups, 
     permissions, resource tree handling and authorization solutions for Pyramid and Flask frameworks.
     """,
+    long_description_content_type="text/markdown",
     long_description=README,
     author='Marcin Lulek',
     author_email='info@webreactor.eu',
@@ -39,10 +40,8 @@ setup(
         'Framework :: Pylons',
         'Framework :: Pyramid',
         'License :: OSI Approved :: BSD License',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5'
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 3'
     ],
     packages=find_packages(),
     zip_safe=True,

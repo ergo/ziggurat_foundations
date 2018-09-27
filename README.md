@@ -1,11 +1,6 @@
-|Build Status| |Coverage Status|
+# Ziggurat Foundations
 
-Ziggurat Foundations
-=====================
-
-.. image:: https://badges.gitter.im/ergo/ziggurat_foundations.svg
-   :alt: Join the chat at https://gitter.im/ergo/ziggurat_foundations
-   :target: https://gitter.im/ergo/ziggurat_foundations?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+![Build Status] [![logo]](https://gitter.im/ergo/ziggurat_foundations)
 
 **DOCUMENTATION**: http://readthedocs.org/docs/ziggurat-foundations/en/latest/
 
@@ -25,7 +20,7 @@ on pin-point accuracy for a users location. Zigg has been designed to work for
 high end environments, where the user(s) are at the main focus of the application
 (for example Zigg could become the backbone for a social media style application).
 
-Zigg supplies a set of *sqlalchemy mixins* that can be used to extend
+Zigg supplies a set of **SQLAlchemy mixins** that can be used to extend
 models in your application built in pyramid/flask/(your-favourite-framework-here).
 The aim of this project is to supply set of generic models that cover the most
 common needs in application development when it comes to authorization - using
@@ -51,12 +46,10 @@ Zigg provides standard functions that let you:
 - Assign a user o an external identity (such as facebook/twitter)
 - Manage the sign in/sign out process
 - Change users password and generate security codes
-- Example root factory for assiginging permissions per request
+- Example root factory for assigning permissions per request
 
 
 Ziggurat Foundations is BSD Licensed
 
-.. |Build Status| image:: https://travis-ci.org/ergo/ziggurat_foundations.svg?branch=master
-   :target: https://travis-ci.org/ergo/ziggurat_foundations
-.. |Coverage Status| image:: https://coveralls.io/repos/ergo/ziggurat_foundations/badge.png?branch=master
-   :target: https://coveralls.io/r/ergo/ziggurat_foundations?branch=master
+[Build Status]: https://travis-ci.org/ergo/ziggurat_foundations.svg?branch=master
+[logo]: https://badges.gitter.im/ergo/ziggurat_foundations.svg
