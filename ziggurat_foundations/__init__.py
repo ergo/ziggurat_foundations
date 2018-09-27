@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
 from ziggurat_foundations.utils import ModelProxy, noop  # noqa
 
 __version__ = {"major": 0, "minor": 8, "patch": 0}
@@ -56,9 +57,19 @@ def make_passwordmanager(schemes=None):
     return pwd_context
 
 
-def ziggurat_model_init(user=None, group=None, user_group=None, group_permission=None, user_permission=None,
-                        user_resource_permission=None, group_resource_permission=None, resource=None,
-                        external_identity=None, *args, **kwargs):
+def ziggurat_model_init(
+    user=None,
+    group=None,
+    user_group=None,
+    group_permission=None,
+    user_permission=None,
+    user_resource_permission=None,
+    group_resource_permission=None,
+    resource=None,
+    external_identity=None,
+    *args,
+    **kwargs
+):
     """
     This function handles attaching model to service if model has one specified
     as `_ziggurat_service`, Also attached a proxy object holding all model
