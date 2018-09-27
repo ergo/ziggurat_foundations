@@ -56,7 +56,9 @@ def make_passwordmanager(schemes=None):
     return pwd_context
 
 
-def ziggurat_model_init(*args, **kwargs):
+def ziggurat_model_init(user=None, group=None, user_group=None, group_permission=None, user_permission=None,
+                        user_resource_permission=None, group_resource_permission=None, resource=None,
+                        external_identity=None, *args, **kwargs):
     """
     This function handles attaching model to service if model has one specified
     as `_ziggurat_service`, Also attached a proxy object holding all model
@@ -70,26 +72,28 @@ def ziggurat_model_init(*args, **kwargs):
     :return:
     """
     models = ModelProxy()
-    for cls2 in args:
-        models[cls2.__name__] = cls2
+    models.User = user
+    models.Group = group
+    models.UserGroup = user_group
+    models.GroupPermission = group_permission
+    models.UserPermission = user_permission
+    models.UserResourcePermission = user_resource_permission
+    models.GroupResourcePermission = group_resource_permission
+    models.Resource = resource
+    models.ExternalIdentity = external_identity
 
     model_service_mapping = import_model_service_mappings()
 
-    for cls in args:
-        if cls.__name__ == "User":
-            if kwargs.get("passwordmanager"):
-                cls.passwordmanager = kwargs["passwordmanager"]
-            else:
-                cls.passwordmanager = make_passwordmanager(
-                    kwargs.get("passwordmanager_schemes")
-                )
+    if kwargs.get("passwordmanager"):
+        user.passwordmanager = kwargs["passwordmanager"]
+    else:
+        user.passwordmanager = make_passwordmanager(
+            kwargs.get("passwordmanager_schemes")
+        )
 
-        for cls2 in args:
-            setattr(models, cls2.__name__, cls2)
-
-        setattr(cls, "_ziggurat_models", models)
+    for name, cls in models.items():
         # if model has a manager attached attached the class also to manager
-        services = model_service_mapping.get(cls.__name__, [])
+        services = model_service_mapping.get(name, [])
         for service in services:
             setattr(service, "model", cls)
             setattr(service, "models_proxy", models)
