@@ -8,7 +8,8 @@
 
 Top layer to make authentication, resource ownership and permission management
 fast, simple and easy. In summary, Ziggurat Foundations (Zigg), is a set of framework agnostic
-set of sqlalchemy classes. It is the perfect solution for handling complex login and user
+set of SQLAalchemy classes, so it can be used with Flask, Pyramid or other popular frameworks.
+It is the perfect solution for handling complex login and user
 management systems, from e-commerce systems, to private intranets or large (and small)
 CMS systems.  It can easily be extended to support any additional features you may need (explained
 further in the documentation)
@@ -19,8 +20,7 @@ on pin-point accuracy for a users location. Zigg has been designed to work for
 high end environments, where the user(s) are at the main focus of the application
 (for example Zigg could become the backbone for a social media style application).
 
-Zigg supplies a set of **SQLAlchemy mixins** that can be used to extend
-models in your application built in pyramid/flask/(your-favourite-framework-here).
+
 The aim of this project is to supply set of generic models that cover the most
 common needs in application development when it comes to authorization - using
 flat and tree like data structures. We provide nearly every feature you will need in
