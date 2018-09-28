@@ -15,8 +15,8 @@ ziggurat_foundations
 
 Top layer to make authentication, resource ownership and permission management
 fast, simple and easy. In summary, Ziggurat Foundations (Zigg), is a set of framework agnostic 
-set of sqlalchemy classes, but most of the documentation refers to using it
-within pyramid. It is the perfect solution for handling complex login and user
+set of sqlalchemy classes, so it can be used with Flask, Pyramid or other popular frameworks.
+It is the perfect solution for handling complex login and user
 management systems, from e-commerce systems, to private intranets or large (and small)
 CMS systems.  It can easily be extended to support any additional features you may need (explained
 further in the documentation)
@@ -52,7 +52,7 @@ Contents:
 
     By default ziggurat aims at **postgresql 8.4+** (CTE support) as main RDBMS system,
     but currently *everything* except recursive queries(for **optional** resource tree structures) 
-    is tested using sqlite, and will run on other popular database systems including mysql.
+    is tested using sqlite, and will run on other popular database systems including **mysql**.
     **For other database systems that don't support CTE's fallbacks will be supplied.**
 
 Indices and tables
