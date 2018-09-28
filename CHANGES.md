@@ -3,7 +3,7 @@ Changelog
 
 2018-09-28
 ----------
-* Release 0.8
+* Release 0.8 and 0.8.1 (pypi readme rendering fix)
 * Most of deprecated model methods got removed, please use services instead
 * ziggurat_model_init has now explicit order of model classes set
 

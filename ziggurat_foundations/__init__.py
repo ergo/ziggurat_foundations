@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from ziggurat_foundations.utils import ModelProxy, noop  # noqa
 
-__version__ = {"major": 0, "minor": 8, "patch": 0}
+__version__ = {"major": 0, "minor": 8, "patch": 1}
 
 
 def import_model_service_mappings():
