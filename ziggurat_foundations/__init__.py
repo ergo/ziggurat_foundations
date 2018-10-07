@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import pkg_resources
 
 from ziggurat_foundations.utils import ModelProxy, noop  # noqa
 
-__version__ = {"major": 0, "minor": 8, "patch": 1}
+__version__ = pkg_resources.get_distribution("ziggurat_foundations").parsed_version
 
 
 def import_model_service_mappings():

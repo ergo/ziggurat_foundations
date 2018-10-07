@@ -2,17 +2,11 @@ import os
 
 from setuptools import setup, find_packages
 
-from ziggurat_foundations import __version__
-
 here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, 'README.md')) as f:
     README = f.read()
 with open(os.path.join(here, 'CHANGES.md')) as f:
     CHANGES = f.read()
-
-version = '{}.{}.{}'.format(__version__['major'],
-                            __version__['minor'],
-                            __version__['patch'])
 
 test_deps = [
     "coverage", 
@@ -24,7 +18,7 @@ test_deps = [
 
 setup(
     name='ziggurat_foundations',
-    version=version,
+    version='0.8.2',
     description=""" Set of SQLAlchemy mixins that make application building an easy task. Provides users, groups, 
     permissions, resource tree handling and authorization solutions for Pyramid and Flask frameworks.
     """,
