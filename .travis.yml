@@ -20,7 +20,7 @@ matrix:
     - python: 3.6
       env: TOXENV=py36 BCRYPT="enabled" DB_STRING="mysql+mysqlconnector://travis@localhost/test" MYSQL=1
     - python: 3.6
-      env: TOXENV=py36 BCRYPT="enabled" DB_STRING="mysql+mysqlclient://travis@localhost/test" MYSQL=1
+      env: TOXENV=py36 BCRYPT="enabled" DB_STRING="mysql+mysqldb://travis@localhost/test" MYSQL=1
     - python: 3.6
       env: TOXENV=py36
     - python: 3.6
