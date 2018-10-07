@@ -1,79 +1,50 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-# vim:fenc=utf-8
-#
-# Copyright © 2014 uralbash <root@uralbash.ru>
-#
-# Distributed under terms of the MIT license.
-sudo: false
 language: python
+sudo: false
 
 notifications:
     on_success: change
     on_failure: always
 
 matrix:
-  include:
-    - python: "2.7"
-      env: BCRYPT="enabled" DB_STRING="postgres://postgres@127.0.0.1:5432/test"
+    include:
+    - python: 2.7
+      env: TOXENV=py27
+    - python: 2.7
+      env: TOXENV=py27 BCRYPT="enabled" DB_STRING="postgres://postgres@127.0.0.1:5432/test" POSTGRESQL=1
+    - python: 3.4
+      env: TOXENV=py34
+    - python: 3.5
+      env: TOXENV=py35
+    - python: 3.6
+      env: TOXENV=py36 BCRYPT="enabled" DB_STRING="postgres://postgres@127.0.0.1:5432/test" POSTGRESQL=1
+    - python: 3.6
+      env: TOXENV=py36 BCRYPT="enabled" DB_STRING="mysql+mysqlconnector://travis@localhost/test" MYSQL=1
+    - python: 3.6
+      env: TOXENV=py36 BCRYPT="enabled" DB_STRING="mysql+mysqlclient://travis@localhost/test" MYSQL=1
+    - python: 3.6
+      env: TOXENV=py36
+    - python: 3.6
+      env: TOXENV=py36
+    - python: 3.6
+      env: TOXENV=lint
+    - python: nightly
+      env: TOXENV=py37
 
-    - python: "2.7"
-      env:
+install:
+- travis_retry pip install -U setuptools pip tox
 
-    - python: "3.5"
-      env:
-
-    - python: "3.6"
-      env: LINT=1
-
-    - python: "3.4"
-      env: BCRYPT="enabled" DB_STRING="postgres://postgres@127.0.0.1:5432/test"
-
-    - python: "3.4"
-      env: BCRYPT="enabled" DB_STRING="mysql+mysqlconnector://travis@localhost/test" MYSQL=1
-
-    - python: "3.5"
-      env: BCRYPT="enabled" DB_STRING="postgres://postgres@127.0.0.1:5432/test"
-
-    - python: "3.6"
-      env: BCRYPT="enabled" DB_STRING="postgres://postgres@127.0.0.1:5432/test"
-
-    - python: "pypy"
-      env:
-
-    - python: "pypy3"
-      env:
+script:
+- travis_retry tox
 
 services:
-  - postgresql
+- postgresql
 
 addons:
   postgresql: "9.3"
 
-install:
-  - pip install -U setuptools pip tox
-  - pip install -e ".[test]"
-
 before_script:
   - psql -c 'create database test;' -U postgres
   - if [ -n "$MYSQL" ]; then mysql -e 'create database test;'; fi
-
-script:
-  - if [ -n "$BCRYPT" ]; then pip install bcrypt; fi
-  - if [ -n "$PYBCRYPT" ]; then pip install py-bcrypt; fi
-  - if [ -n "$BCRYPT" ]; then pip install psycopg2-binary; fi
-  - if [ -n "$PYBCRYPT" ]; then pip install psycopg2cffi; fi
-  - if [ -n "$MYSQL" ]; then pip install http://cdn.mysql.com/Downloads/Connector-Python/mysql-connector-python-2.0.4.zip#md5=3df394d89300db95163f17c843ef49df; fi
-
-  - if [ -n "$LINT" ]; then pip install -e ".[lint]" ; fi
-  # PyLint
-  - if [ -n "$LINT" ]; then pylint --disable=all --enable=F,unreachable,duplicate-key,unnecessary-semicolon,global-variable-not-assigned,unused-variable,binary-op-exception,bad-format-string,anomalous-backslash-in-string,bad-open-mode,jobs=4 ziggurat_foundations/ ; fi
-
-  - if [ -n "$LINT" ]; then  black --check --verbose ziggurat_foundations ; fi
-  - py.test ziggurat_foundations/tests/
-
-  # flake8 and rstcheck
-  - if [ -n "$RSTCHECK" ]; then ./test.sh; fi
 
 after_success:
   - pip install coveralls
