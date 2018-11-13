@@ -60,7 +60,7 @@ services:
 
 
 before_script:
-  - if [ -n "$POSTGRESQL" ]; psql -c 'create database test;' -U postgres; fi
+  - if [ -n "$POSTGRESQL" ]; then psql -c 'create database test;' -U postgres; fi
   - if [ -n "$MYSQL" ]; then mysql -e 'create database test;'; fi
 
 after_success:
