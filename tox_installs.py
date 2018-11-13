@@ -4,11 +4,11 @@ import subprocess
 if os.environ.get('BCRYPT'):
     subprocess.check_call(["pip", "install", 'bcrypt'])
 
-if os.environ.get('POSTGRESQL'):
+if os.environ.get('DB') == 'postgres':
     subprocess.check_call(["pip", "install", 'psycopg2-binary'])
 
-if os.environ.get('MYSQL'):
+if os.environ.get('DB') == 'mysql':
     subprocess.check_call(["pip", "install", 'http://cdn.mysql.com/Downloads/Connector-Python/mysql-connector-python-2.0.4.zip#md5=3df394d89300db95163f17c843ef49df'])
 
-if os.environ.get('MYSQL'):
+if os.environ.get('DB') == 'mysql':
     subprocess.check_call(["pip", "install", 'mysqlclient'])
