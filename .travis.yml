@@ -25,7 +25,7 @@ matrix:
       addons:
         postgresql: "9.6"
     - python: 3.6
-      env: TOXENV=py36 BCRYPT="enabled" DB_STRING="postgres://postgres@127.0.0.1:5433/test" POSTGRESQL=1
+      env: TOXENV=py36 BCRYPT="enabled" DB_STRING="postgres://postgres@127.0.0.1:5433/test" POSTGRESQL=1 PGPORT=5433
       addons:
         postgresql: "10"
         apt:
