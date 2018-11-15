@@ -136,10 +136,7 @@ def upgrade():
         )  # noqa
 
     groups_permissions_table = sa.Table(
-        "groups_permissions",
-        sa.MetaData(),
-        autoload=True,
-        autoload_with=c.connection,
+        "groups_permissions", sa.MetaData(), autoload=True, autoload_with=c.connection
     )
     stmt = (
         groups_permissions_table.update()
@@ -299,10 +296,7 @@ def upgrade():
         )  # noqa
 
     users_permissions_table = sa.Table(
-        "users_permissions",
-        sa.MetaData(),
-        autoload=True,
-        autoload_with=c.connection,
+        "users_permissions", sa.MetaData(), autoload=True, autoload_with=c.connection
     )
     stmt = (
         users_permissions_table.update()
