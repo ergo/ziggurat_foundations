@@ -111,13 +111,13 @@ def upgrade():
         .values(owner_user_id=users_table.c.id)
         .where(users_table.c.user_name == resources_table.c.owner_user_name)
     )
-    c.connection.execute(stmt)
+    op.execute(stmt)
     stmt = (
         resources_table.update()
         .values(owner_group_id=groups_table.c.id)
         .where(groups_table.c.group_name == resources_table.c.owner_group_name)
     )
-    c.connection.execute(stmt)
+    op.execute(stmt)
 
     # mysql is stupid as usual so we cant create FKEY and add PKEY later,
     # need to set PKEY first and then set FKEY
@@ -146,7 +146,7 @@ def upgrade():
         .values(group_id=groups_table.c.id)
         .where(groups_table.c.group_name == groups_permissions_table.c.group_name)
     )
-    c.connection.execute(stmt)
+    op.execute(stmt)
 
     op.drop_constraint(groups_permissions_pkey, "groups_permissions", type_="primary")
     op.create_primary_key(
@@ -190,7 +190,7 @@ def upgrade():
             groups_table.c.group_name == groups_resources_permissions_table.c.group_name
         )
     )
-    c.connection.execute(stmt)
+    op.execute(stmt)
     op.drop_constraint(
         groups_resources_permissions_pkey,
         "groups_resources_permissions",
@@ -235,7 +235,7 @@ def upgrade():
         .values(group_id=groups_table.c.id)
         .where(groups_table.c.group_name == users_groups_table.c.group_name)
     )
-    c.connection.execute(stmt)
+    op.execute(stmt)
 
     if isinstance(c.connection.engine.dialect, MySQLDialect):
         op.add_column("users_groups", sa.Column("user_id", sa.Integer()))
@@ -259,7 +259,7 @@ def upgrade():
         .values(user_id=users_table.c.id)
         .where(users_table.c.user_name == users_groups_table.c.user_name)
     )
-    c.connection.execute(stmt)
+    op.execute(stmt)
     op.drop_constraint(users_groups_pkey, "users_groups", type="primary")
     op.create_primary_key(
         users_groups_pkey, "users_groups", cols=["user_id", "group_id"]
@@ -309,7 +309,7 @@ def upgrade():
         .values(user_id=users_table.c.id)
         .where(users_table.c.user_name == users_permissions_table.c.user_name)
     )
-    c.connection.execute(stmt)
+    op.execute(stmt)
     op.drop_constraint(users_permissions_pkey, "users_permissions", type="primary")
     op.create_primary_key(
         users_permissions_pkey, "users_permissions", cols=["user_id", "perm_name"]
@@ -348,7 +348,7 @@ def upgrade():
         .values(user_id=users_table.c.id)
         .where(users_table.c.user_name == users_resources_permissions_table.c.user_name)
     )
-    c.connection.execute(stmt)
+    op.execute(stmt)
 
     op.drop_constraint(
         users_resources_permissions_pkey, "users_resources_permissions", type="primary"
