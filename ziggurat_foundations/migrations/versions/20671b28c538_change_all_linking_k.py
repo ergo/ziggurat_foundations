@@ -97,14 +97,27 @@ def upgrade():
         ),
     )
     # update the data
-    op.execute(
-        """update resources set owner_user_id =
-                (select id from users where users.user_name=owner_user_name)"""
-    )  # noqa
-    op.execute(
-        """update resources set owner_group_id =
-                (select id from users where users.user_name=owner_group_name)"""
-    )  # noqa
+    resources_table = sa.Table(
+        "resources", sa.MetaData(), autoload=True, autoload_with=c.connection.engine
+    )
+    users_table = sa.Table(
+        "users", sa.MetaData(), autoload=True, autoload_with=c.connection.engine
+    )
+    groups_table = sa.Table(
+        "groups", sa.MetaData(), autoload=True, autoload_with=c.connection.engine
+    )
+    stmt = (
+        resources_table.update()
+        .values(owner_user_id=users_table.c.id)
+        .where(users_table.c.user_name == resources_table.c.owner_user_name)
+    )
+    c.connection.execute(stmt)
+    stmt = (
+        resources_table.update()
+        .values(owner_group_id=groups_table.c.id)
+        .where(groups_table.c.group_name == resources_table.c.owner_group_name)
+    )
+    c.connection.execute(stmt)
 
     # mysql is stupid as usual so we cant create FKEY and add PKEY later,
     # need to set PKEY first and then set FKEY
@@ -122,10 +135,18 @@ def upgrade():
             ),
         )  # noqa
 
-    op.execute(
-        """update groups_permissions set group_id =
-    (select id from groups where groups.group_name=groups_permissions.group_name)"""
-    )  # noqa
+    groups_permissions_table = sa.Table(
+        "groups_permissions",
+        sa.MetaData(),
+        autoload=True,
+        autoload_with=c.connection.engine,
+    )
+    stmt = (
+        groups_permissions_table.update()
+        .values(group_id=groups_table.c.id)
+        .where(groups_table.c.group_name == groups_permissions_table.c.group_name)
+    )
+    c.connection.execute(stmt)
 
     op.drop_constraint(groups_permissions_pkey, "groups_permissions", type_="primary")
     op.create_primary_key(
@@ -156,10 +177,20 @@ def upgrade():
             ),
         )
 
-    op.execute(
-        """update groups_resources_permissions set group_id =
-    (select id from groups where groups.group_name=groups_resources_permissions.group_name)"""
-    )  # noqa
+    groups_resources_permissions_table = sa.Table(
+        "groups_resources_permissions",
+        sa.MetaData(),
+        autoload=True,
+        autoload_with=c.connection.engine,
+    )
+    stmt = (
+        groups_resources_permissions_table.update()
+        .values(group_id=groups_table.c.id)
+        .where(
+            groups_table.c.group_name == groups_resources_permissions_table.c.group_name
+        )
+    )
+    c.connection.execute(stmt)
     op.drop_constraint(
         groups_resources_permissions_pkey,
         "groups_resources_permissions",
@@ -195,10 +226,16 @@ def upgrade():
                 ),
             ),
         )  # noqa
-    op.execute(
-        """update users_groups set group_id =
-    (select id from groups where groups.group_name=users_groups.group_name)"""
+
+    users_groups_table = sa.Table(
+        "users_groups", sa.MetaData(), autoload=True, autoload_with=c.connection.engine
     )
+    stmt = (
+        users_groups_table.update()
+        .values(group_id=groups_table.c.id)
+        .where(groups_table.c.group_name == users_groups_table.c.group_name)
+    )
+    c.connection.execute(stmt)
 
     if isinstance(c.connection.engine.dialect, MySQLDialect):
         op.add_column("users_groups", sa.Column("user_id", sa.Integer()))
@@ -213,10 +250,16 @@ def upgrade():
                 ),
             ),
         )  # noqa
-    op.execute(
-        """update users_groups set user_id =
-    (select id from users where users.user_name=users_groups.user_name)"""
+
+    users_groups_table = sa.Table(
+        "users_groups", sa.MetaData(), autoload=True, autoload_with=c.connection.engine
     )
+    stmt = (
+        users_groups_table.update()
+        .values(user_id=users_table.c.id)
+        .where(users_table.c.user_name == users_groups_table.c.user_name)
+    )
+    c.connection.execute(stmt)
     op.drop_constraint(users_groups_pkey, "users_groups", type="primary")
     op.create_primary_key(
         users_groups_pkey, "users_groups", cols=["user_id", "group_id"]
@@ -254,10 +297,19 @@ def upgrade():
                 ),
             ),
         )  # noqa
-    op.execute(
-        """update users_permissions set user_id =
-    (select id from groups where groups.group_name=users_permissions.user_name)"""
-    )  # noqa
+
+    users_permissions_table = sa.Table(
+        "users_permissions",
+        sa.MetaData(),
+        autoload=True,
+        autoload_with=c.connection.engine,
+    )
+    stmt = (
+        users_permissions_table.update()
+        .values(user_id=users_table.c.id)
+        .where(users_table.c.user_name == users_permissions_table.c.user_name)
+    )
+    c.connection.execute(stmt)
     op.drop_constraint(users_permissions_pkey, "users_permissions", type="primary")
     op.create_primary_key(
         users_permissions_pkey, "users_permissions", cols=["user_id", "perm_name"]
@@ -285,10 +337,19 @@ def upgrade():
             ),
         )
 
-    op.execute(
-        """update users_resources_permissions set user_id =
-    (select id from users where users.user_name=users_resources_permissions.user_name)"""
-    )  # noqa
+    users_resources_permissions_table = sa.Table(
+        "users_resources_permissions",
+        sa.MetaData(),
+        autoload=True,
+        autoload_with=c.connection.engine,
+    )
+    stmt = (
+        users_resources_permissions_table.update()
+        .values(user_id=users_table.c.id)
+        .where(users_table.c.user_name == users_resources_permissions_table.c.user_name)
+    )
+    c.connection.execute(stmt)
+
     op.drop_constraint(
         users_resources_permissions_pkey, "users_resources_permissions", type="primary"
     )
