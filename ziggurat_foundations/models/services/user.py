@@ -237,7 +237,11 @@ class UserService(BaseService):
         :param raw_password:
         :return:
         """
-        password = instance.passwordmanager.encrypt(raw_password)
+        # support API for both passlib 1.x and 2.x
+        hash_callable = getattr(
+            instance.passwordmanager, "hash", instance.passwordmanager.encrypt
+        )
+        password = hash_callable(raw_password)
         if six.PY2:
             instance.user_password = password.decode("utf8")
         else:
