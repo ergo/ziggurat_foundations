@@ -1,48 +1,67 @@
-Changelog
-=========
+# Change Log
 
-2018-09-28
-----------
-* Release 0.8 and 0.8.1 (pypi readme rendering fix)
-* Most of deprecated model methods got removed, please use services instead
-* ziggurat_model_init has now explicit order of model classes set
+All notable changes to this project will be documented in this file.
 
-2018-02-19
-----------
-* Release 0.7.3
+The format is based on [Keep a Changelog](http://keepachangelog.com/)
+and this project adheres to [Semantic Versioning](http://semver.org/).
+
+<!--
+   PRs should document their user-visible changes (if any) in the
+   Unreleased section, uncommenting the header as necessary.
+-->
+
+<!--
+## Unreleased
+### Added
+None
+
+### Changed
+None
+
+### Removed
+None
+-->
+
+## [0.8.2] - 2018-11-08
+### Fixed
+* Fixed migrations under Mysql 8.x
+
+## [0.8.0] [0.8.1] - 2018-09-28
+### Changed
+* [Breaking] Most of deprecated model methods got removed, please use services instead
+* [Breaking] ziggurat_model_init has now explicit order of model classes set
+
+## [0.7.3] - 2018-02-19
+### Changed
 * Use pbkdf2_sha256 by default (bcypt hashes will work and will be migrated on first login for users)
 
-** Important **
+**Important**
+
 By default `check_password` will migrate your existing bcrypt hashes to pbkdf2_sha256, if you want to keep bcrypt,
 you can either pass `passwordmanager_schemes` list to `ziggurat_model_init` or use your own passwordmanager.
 
-2018-02-17
-----------
 
-* Release 0.7.2
+## [0.7.2] - 2018-02-17
+### Changed
 * Fixed some minor issues that resulted in bad migrations when someone used `autogenerate in alembic`
 * Added a way to read sqlalchemy.url from environment variable (thanks René Jochum)
 
-2017-02-19
-----------
 
-* Release 0.7.1
+## [0.7.1] - 2017-02-19
+### Changed
 * fixed tree ordering for nested elements
 * fixed `perm_by_group_and_perm_name` method
 
-2016-11-25
-----------
 
-* Release 0.7.0
+## [0.7.0] - 2016-11-25
+### Added
 * Introduced ResourceTreeService for nested resource management
   (currently only PostgreSQL support is implemented)
-* added deprecation warnings
 * lots of new tests
-
-**BACKWARDS INCOMPATIBLE CHANGES**
-
-- code reorganization that might break existing code
-- _ziggurat_services is now a list
+### Changed
+* added deprecation warnings
+* [breaking] code reorganization that might break existing code
+* [breaking] _ziggurat_services is now a list
 
 
 2016-07-05
