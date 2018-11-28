@@ -92,7 +92,7 @@ Implementing ziggurat_foundations within your application
 We need to *include ALL mixins inside our application*
 and map classes together so internal methods can function properly.
 
-In order to use the mixins inside your application, you need to include the follwing code 
+In order to use the mixins inside your application, you need to include the follwing code
 inside your models file, to extend your existing models (if following the basic pyramid tutorial):
 
 .. code-block:: python
