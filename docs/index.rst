@@ -13,12 +13,12 @@ ziggurat_foundations
 .. image:: /_static/flask_small.png
    :alt: Flask Logo
 
-Top layer to make authentication, resource ownership and permission management
-fast, simple and easy. In summary, Ziggurat Foundations (Zigg), is a set of framework agnostic
-set of sqlalchemy classes, so it can be used with Flask, Pyramid or other popular frameworks.
+High level mixins for adding authorization, resource ownership and permission management
+fast, simple and easy. In summary, Ziggurat Foundations is a set of framework agnostic
+set of SQLAalchemy classes, so it can be used with Flask, Pyramid or other popular frameworks.
 It is the perfect solution for handling complex login and user
-management systems, from e-commerce systems, to private intranets or large (and small)
-CMS systems.  It can easily be extended to support any additional features you may need (explained
+management systems, from e-commerce systems, to private intranets or large CMS systems.
+It can easily be extended to support any additional features you may need (explained
 further in the documentation)
 
 .. hint::

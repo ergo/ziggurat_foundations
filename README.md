@@ -6,12 +6,12 @@
 
 **BUG TRACKER**: https://github.com/ergo/ziggurat_foundations
 
-Top layer to make authentication, resource ownership and permission management
-fast, simple and easy. In summary, Ziggurat Foundations (Zigg), is a set of framework agnostic
+High level mixins for adding authorization, resource ownership and permission management
+fast, simple and easy. In summary, Ziggurat Foundations is a set of framework agnostic
 set of SQLAalchemy classes, so it can be used with Flask, Pyramid or other popular frameworks.
 It is the perfect solution for handling complex login and user
-management systems, from e-commerce systems, to private intranets or large (and small)
-CMS systems.  It can easily be extended to support any additional features you may need (explained
+management systems, from e-commerce systems, to private intranets or large CMS systems.
+It can easily be extended to support any additional features you may need (explained
 further in the documentation)
 
 Zigg has been used (at scale) for very large implementations (millions of real users) and
@@ -20,19 +20,18 @@ on pin-point accuracy for a users location. Zigg has been designed to work for
 high end environments, where the user(s) are at the main focus of the application
 (for example Zigg could become the backbone for a social media style application).
 
-
 The aim of this project is to supply set of generic models that cover the most
 common needs in application development when it comes to authorization - using
-flat and tree like data structures. We provide nearly every feature you will need in
-a standard application, but provide the mixins as we understand that every implementation
+flat and tree like data structures. We provide most commonly needed features in a "standard"
+application, but provide them as mixins as we understand that every implementation
 has its own use case and in doing so, extending the base models is very easy.
-
 
 Zigg supplies extendable, robust and well tested models that include:
 
 - User - base for user accounts
 - Group - container for many users
-- Resource - Arbitrary database entity that can represent various object hierarchies - blogs, forums, cms documents, pages etc.
+- Resource - Arbitrary database entity that can represent various object hierarchies -
+  blogs, forums, cms documents, pages etc.
 
 Zigg provides standard functions that let you:
 
@@ -45,7 +44,7 @@ Zigg provides standard functions that let you:
 - Assign a user o an external identity (such as facebook/twitter)
 - Manage the sign in/sign out process
 - Change users password and generate security codes
-- Example root factory for assigning permissions per request
+- Example root context factory for assigning permissions per request (framework integration)
 
 
 Ziggurat Foundations is BSD Licensed
