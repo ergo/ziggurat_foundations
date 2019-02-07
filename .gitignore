@@ -12,3 +12,4 @@ ziggurat_foundations.egg-info
 venv*
 *.pyc
 .idea
+.eggs

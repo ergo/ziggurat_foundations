@@ -44,4 +44,4 @@ def includeme(config):
             return UserService.by_id(userid, db_session=db_session)
 
     # add in request.user function
-    config.set_request_property(get_user, "user", reify=True)
+    config.add_request_method(get_user, "user", reify=True, property=True)

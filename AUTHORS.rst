@@ -39,3 +39,4 @@ Contributors:
 * Łukasz Bołdys (utek) 2013-11-22
 * Christian Benke (peletiah) 2017-02-19
 * René Jochum (pcdummy) 2018-02-13
+* Francis Charette Migneault (fmigneault) 2019-02-07
