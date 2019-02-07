@@ -30,7 +30,7 @@ Current or previous core committers:
 
 Contributors:
 
-* Luke Crooks (crooksey)
+* Luke Crooks (crooksey) 2014-08-22
 * Svintsov Dmitry (uralbash) 2014-12-24
 * Marcin Kuzminski (marcinkuzminski) 2011-11-14
 * Lukasz Fidosz (virhilo) 2011-01-01
