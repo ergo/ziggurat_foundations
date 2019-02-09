@@ -25,10 +25,13 @@ def includeme(config):
 
         test_session_callable = None
     else:
-        parts = session_provider_callable_config.split(":")
-        _tmp = importlib.import_module(parts[0])
-        session_provider_callable = getattr(_tmp, parts[1])
-        test_session_callable = "session exists"
+        if callable(session_provider_callable_config):
+            session_provider_callable = session_provider_callable_config
+        else:
+            parts = session_provider_callable_config.split(":")
+            _tmp = importlib.import_module(parts[0])
+            session_provider_callable = getattr(_tmp, parts[1])
+            test_session_callable = "session exists"
 
     # This function is bundled into the request, so for each request you can
     # do request.user
