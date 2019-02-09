@@ -21,7 +21,7 @@ test_deps = [
 
 setup(
     name="ziggurat_foundations",
-    version="0.8.2",
+    version="0.8.3",
     description=""" Set of SQLAlchemy mixins that make application building an easy task. Provides users, groups,
     permissions, resource tree handling and authorization solutions for Pyramid and Flask frameworks.
     """,

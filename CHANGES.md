@@ -17,11 +17,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 <!-- ### Fixed -->
 
 
-## Unreleased
+## [0.8.3] - 2019-02-09
 ### Added
 * pyramid extensions can now accept `session_provider_callable` not only as a path to callable but
   also as plain callable object
 * tests for pyramid extensions
+### Changed
+* fixed deprecated usage of `set_request_property` (thanks Francis Charette Migneault)
 
 ## [0.8.2] - 2018-11-08
 ### Fixed
