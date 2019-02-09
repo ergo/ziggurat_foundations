@@ -17,13 +17,14 @@ def includeme(config):
     session_provider_callable_config = settings.get(
         "%s.session_provider_callable" % CONFIG_KEY
     )
+    try_global_session = False
 
     if not session_provider_callable_config:
 
         def session_provider_callable(request):
             return get_db_session()
 
-        test_session_callable = None
+        try_global_session = True
     else:
         if callable(session_provider_callable_config):
             session_provider_callable = session_provider_callable_config
@@ -31,14 +32,13 @@ def includeme(config):
             parts = session_provider_callable_config.split(":")
             _tmp = importlib.import_module(parts[0])
             session_provider_callable = getattr(_tmp, parts[1])
-            test_session_callable = "session exists"
 
     # This function is bundled into the request, so for each request you can
     # do request.user
     def get_user(request):
         userid = request.unauthenticated_userid
-        if test_session_callable is None:
-            # set db_session to none to pass to the UserModel.by_id
+        if try_global_session:
+            # set db_session to none to pass to the UserModel.by_id so it can try to autodiscover
             db_session = None
         else:
             # Else assign the request.session
