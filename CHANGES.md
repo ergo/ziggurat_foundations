@@ -10,17 +10,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
    Unreleased section, uncommenting the header as necessary.
 -->
 
-<!--
+<!-- ## Unreleased -->
+<!-- ### Changed -->
+<!-- ### Added -->
+<!-- ### Removed -->
+<!-- ### Fixed -->
+
+
 ## Unreleased
 ### Added
-None
-
-### Changed
-None
-
-### Removed
-None
--->
+* pyramid extensions can now accept `session_provider_callable` not only as a path to callable but
+  also as plain callable object
+* tests for pyramid extensions
 
 ## [0.8.2] - 2018-11-08
 ### Fixed

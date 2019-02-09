@@ -163,3 +163,54 @@ def db_session2(request):
     request.addfinalizer(teardown)
 
     return session
+
+
+@pytest.fixture
+def pyramid_app(request, db_session):
+    from webtest import TestApp
+    from pyramid.authentication import AuthTktAuthenticationPolicy
+    from pyramid.authorization import ACLAuthorizationPolicy
+    from pyramid.config import Configurator
+    from ziggurat_foundations.ext.pyramid.sign_in import ZigguratSignInSuccess
+    from ziggurat_foundations.ext.pyramid.sign_in import ZigguratSignInBadAuth
+    from ziggurat_foundations.ext.pyramid.sign_in import ZigguratSignOut
+
+    auth_policy = AuthTktAuthenticationPolicy("secret")
+    authorization_policy = ACLAuthorizationPolicy()
+
+    settings = {"ziggurat_foundations.session_provider_callable": lambda x: db_session}
+
+    config = Configurator(
+        settings=settings,
+        authentication_policy=auth_policy,
+        authorization_policy=authorization_policy,
+    )
+    config.include("pyramid_jinja2")
+    config.include("ziggurat_foundations.ext.pyramid.get_user")
+    config.include("ziggurat_foundations.ext.pyramid.sign_in")
+
+    # add ziggurat context handlers
+    def sign_in(req):
+        user = req.context.user
+        for h in req.context.headers:
+            req.response.headers.add(h[0], value=h[1])
+        return {"view": "sign_in", "username": user.user_name, "user_id": user.id}
+
+    def sign_out(req):
+        return {"view": "sign_out"}
+
+    def bad_auth(req):
+        return {"view": "bad_auth"}
+
+    def index(req):
+        username = None
+        if req.user:
+            username = req.user.user_name
+        return {"view": "index", "username": username}
+
+    config.add_view(sign_in, context=ZigguratSignInSuccess, renderer="json")
+    config.add_view(sign_out, context=ZigguratSignOut, renderer="json")
+    config.add_view(bad_auth, context=ZigguratSignInBadAuth, renderer="json")
+    config.add_route("/", "/")
+    config.add_view(index, route_name="/", renderer="json")
+    return TestApp(config.make_wsgi_app())

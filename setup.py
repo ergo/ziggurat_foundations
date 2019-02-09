@@ -8,7 +8,16 @@ with open(os.path.join(here, "README.md")) as f:
 with open(os.path.join(here, "CHANGES.md")) as f:
     CHANGES = f.read()
 
-test_deps = ["coverage", "pytest", "pytest-cov", "tox", "mock"]
+test_deps = [
+    "coverage",
+    "pytest",
+    "pytest-cov",
+    "tox",
+    "mock",
+    "pyramid",
+    "webtest",
+    "pyramid_jinja2",
+]
 
 setup(
     name="ziggurat_foundations",
