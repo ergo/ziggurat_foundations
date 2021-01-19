@@ -94,7 +94,7 @@ for example in your ini configuration file:
                        ziggurat_foundations.ext.pyramid.sign_in
 
 or by adding the following to your applications __init__.py configurator file
-(both methods yeild the same result):
+(both methods yield the same result):
 
 .. code-block:: python
 
@@ -295,7 +295,7 @@ enable it by adding the following to your applications __init__.py configurator 
 
     config.include('ziggurat_foundations.ext.pyramid.get_user')
 
-Or in your ini configuration file (both methods yeild the same result):
+Or in your ini configuration file (both methods yield the same result):
 
 .. code-block:: ini
 
