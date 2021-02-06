@@ -49,7 +49,7 @@ def upgrade():
         op.add_column(
             "groups", sa.Column("id", sa.Integer, primary_key=True, autoincrement=False)
         )
-        op.create_primary_key(groups_pkey, "groups", cols=["id"])
+        op.create_primary_key(groups_pkey, "groups", columns=["id"])
         op.alter_column(
             "groups",
             "id",
@@ -63,7 +63,7 @@ def upgrade():
         op.add_column(
             "groups", sa.Column("id", sa.Integer, primary_key=True, autoincrement=True)
         )
-        op.create_primary_key(groups_pkey, "groups", cols=["id"])
+        op.create_primary_key(groups_pkey, "groups", columns=["id"])
 
     if isinstance(c.connection.engine.dialect, MySQLDialect):
         for t in ["groups_permissions", "groups_resources_permissions", "users_groups"]:
@@ -147,7 +147,7 @@ def upgrade():
 
     op.drop_constraint(groups_permissions_pkey, "groups_permissions", type_="primary")
     op.create_primary_key(
-        groups_permissions_pkey, "groups_permissions", cols=["group_id", "perm_name"]
+        groups_permissions_pkey, "groups_permissions", columns=["group_id", "perm_name"]
     )
     if isinstance(c.connection.engine.dialect, MySQLDialect):
         op.create_foreign_key(
@@ -196,7 +196,7 @@ def upgrade():
     op.create_primary_key(
         groups_resources_permissions_pkey,
         "groups_resources_permissions",
-        cols=["group_id", "resource_id", "perm_name"],
+        columns=["group_id", "resource_id", "perm_name"],
     )
 
     if isinstance(c.connection.engine.dialect, MySQLDialect):
@@ -257,9 +257,9 @@ def upgrade():
         .where(users_table.c.user_name == users_groups_table.c.user_name)
     )
     op.execute(stmt)
-    op.drop_constraint(users_groups_pkey, "users_groups", type="primary")
+    op.drop_constraint(users_groups_pkey, "users_groups", type_="primary")
     op.create_primary_key(
-        users_groups_pkey, "users_groups", cols=["user_id", "group_id"]
+        users_groups_pkey, "users_groups", columns=["user_id", "group_id"]
     )
     if isinstance(c.connection.engine.dialect, MySQLDialect):
         op.create_foreign_key(
@@ -304,9 +304,9 @@ def upgrade():
         .where(users_table.c.user_name == users_permissions_table.c.user_name)
     )
     op.execute(stmt)
-    op.drop_constraint(users_permissions_pkey, "users_permissions", type="primary")
+    op.drop_constraint(users_permissions_pkey, "users_permissions", type_="primary")
     op.create_primary_key(
-        users_permissions_pkey, "users_permissions", cols=["user_id", "perm_name"]
+        users_permissions_pkey, "users_permissions", columns=["user_id", "perm_name"]
     )
     if isinstance(c.connection.engine.dialect, MySQLDialect):
         op.create_foreign_key(
@@ -345,12 +345,12 @@ def upgrade():
     op.execute(stmt)
 
     op.drop_constraint(
-        users_resources_permissions_pkey, "users_resources_permissions", type="primary"
+        users_resources_permissions_pkey, "users_resources_permissions", type_="primary"
     )
     op.create_primary_key(
         users_resources_permissions_pkey,
         "users_resources_permissions",
-        cols=["user_id", "resource_id", "perm_name"],
+        columns=["user_id", "resource_id", "perm_name"],
     )
     if isinstance(c.connection.engine.dialect, MySQLDialect):
         op.create_foreign_key(

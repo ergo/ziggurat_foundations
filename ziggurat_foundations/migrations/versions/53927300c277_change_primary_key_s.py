@@ -30,7 +30,7 @@ def upgrade():
         ]:
             for constraint in insp.get_foreign_keys(t):
                 if constraint["referred_columns"] == ["resource_id"]:
-                    op.drop_constraint(constraint["name"], t, type="foreignkey")
+                    op.drop_constraint(constraint["name"], t, type_="foreignkey")
 
     op.alter_column(
         "resources",

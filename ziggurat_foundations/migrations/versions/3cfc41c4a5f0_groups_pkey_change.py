@@ -30,13 +30,13 @@ def upgrade():
         ]:
             for constraint in insp.get_foreign_keys(t):
                 if constraint["referred_columns"] == ["group_name"]:
-                    op.drop_constraint(constraint["name"], t, type="foreignkey")
+                    op.drop_constraint(constraint["name"], t, type_="foreignkey")
 
     op.drop_column("groups", "id")
     op.alter_column(
         "groups", "group_name", type_=sa.Unicode(128), existing_type=sa.Unicode(50)
     )
-    op.create_primary_key("groups_pkey", "groups", cols=["group_name"])
+    op.create_primary_key("groups_pkey", "groups", columns=["group_name"])
 
     if isinstance(c.connection.engine.dialect, MySQLDialect):
         op.create_foreign_key(
