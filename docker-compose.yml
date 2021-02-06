@@ -16,6 +16,7 @@ services:
       - host.docker.internal:host-gateway
     depends_on:
       - db
+      - db_mysql
   db:
     image: postgres:13.1
     restart: unless-stopped

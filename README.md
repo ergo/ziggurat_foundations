@@ -62,6 +62,9 @@ To run postgres tests:
 
     DB_STRING="postgres://test:test@db:5432/test" DB=postgres tox
 
+To run mysql tests:
+
+    DB_STRING="mysql+mysqldb://test:test@db_mysql/test" DB=mysql tox
 
 [Build Status]: https://travis-ci.org/ergo/ziggurat_foundations.svg?branch=master
 [logo]: https://badges.gitter.im/ergo/ziggurat_foundations.svg
