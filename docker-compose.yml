@@ -1,0 +1,62 @@
+version: "3.9"
+services:
+  app:
+    stdin_open: true
+    tty: true
+    build:
+      context: .
+      args:
+        TAG: "${TAG:-latest}"
+    image: "ziggurat-foundations:${TAG:-latest}"
+    volumes:
+      - type: bind
+        source: .
+        target: /opt/application
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    depends_on:
+      - db
+  db:
+    image: postgres:13.1
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: test
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - type: bind
+        source: ./docker/postgres-entrypoint-initdb.d
+        target: /docker-entrypoint-initdb.d
+        read_only: true
+      - type: volume
+        source: pg_data
+        target: /var/lib/postgresql/data
+  db_mysql:
+    image: mysql:8.0.22
+    command: --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
+    # to avoid mbind: Operation not permitted log entries
+    cap_add:
+      - SYS_NICE  # CAP_SYS_NICE
+    environment:
+      MYSQL_ROOT_PASSWORD: test
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
+      MYSQL_DATABASE: test
+    volumes:
+      - type: volume
+        source: mysql_data
+        target: /var/lib/mysql
+  # pg administration
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: test@cint.com
+      PGADMIN_DEFAULT_PASSWORD: test
+volumes:
+  pg_data:
+    labels:
+      "keep": 1
+  mysql_data:
+    labels:
+      "keep": 1

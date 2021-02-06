@@ -13,3 +13,4 @@ venv*
 *.pyc
 .idea
 .eggs
+.tox

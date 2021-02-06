@@ -49,5 +49,21 @@ Zigg provides standard functions that let you:
 
 Ziggurat Foundations is BSD Licensed
 
+# Local development using docker
+
+    docker-compose run --rm app bash
+    cd ../application;
+
+To run sqlite tests:
+    
+    tox
+
+To run postgres tests:
+
+    DB_STRING="postgres://test:test@db:5432/test" DB=postgres tox
+
+
 [Build Status]: https://travis-ci.org/ergo/ziggurat_foundations.svg?branch=master
 [logo]: https://badges.gitter.im/ergo/ziggurat_foundations.svg
+
+

@@ -1,0 +1,5 @@
+.idea
+**/*.pyc
+docker-compose.yml
+Dockerfile
+.tox
