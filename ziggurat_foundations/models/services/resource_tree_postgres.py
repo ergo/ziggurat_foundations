@@ -136,7 +136,7 @@ class ResourceTreeServicePostgreSQL(object):
         return query
 
     @classmethod
-    def build_subtree_strut(self, result, *args, **kwargs):
+    def build_subtree_strut(cls, result, *args, **kwargs):
         """
         Returns a dictionary in form of
         {node:Resource, children:{node_id: Resource}}
@@ -149,7 +149,8 @@ class ResourceTreeServicePostgreSQL(object):
         if len(items) == 0:
             return root_elem
         for _, node in enumerate(items):
-            new_elem = {"node": node.Resource, "children": OrderedDict()}
+            node_res = getattr(node, cls.model.__name__)
+            new_elem = {"node": node_res, "children": OrderedDict()}
             path = list(map(int, node.path.split("/")))
             parent_node = root_elem
             normalized_path = path[:-1]
