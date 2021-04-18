@@ -60,7 +60,7 @@ To run sqlite tests:
 
 To run postgres tests:
 
-    DB_STRING="postgres://test:test@db:5432/test" DB=postgres tox
+    DB_STRING="postgresql://test:test@db:5432/test" DB=postgres tox
 
 To run mysql tests:
 

@@ -16,6 +16,22 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 <!-- ### Removed -->
 <!-- ### Fixed -->
 
+## [0.8.4] - 2021-04-18
+
+**This is the last release that is compatible with Python versions older than 3.6** 
+
+### Added
+* pyramid extensions can now accept `session_provider_callable` not only as a path to callable but
+  also as plain callable object
+* tests for pyramid extensions
+### Changed
+* Become compatible with sqlalchemy 1.4.x
+* Allow obtaining node resource by model name #70 (thanks Francis Charette Migneault)
+* remove deprecated base model code
+* reduce warnings generated
+* prepare for pyramid versions higher than 2.0
+### Fixed
+* missing argument in specific permission fetching codepath #69
 
 ## [0.8.3] - 2019-02-09
 ### Added
