@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 import importlib
 import logging
 
-import pyramid.security
+from pyramid.security import remember, forget
 
 from ziggurat_foundations.models.base import get_db_session
 from ziggurat_foundations.models.services.user import UserService
@@ -112,15 +112,15 @@ class ZigguratSignInProvider(object):
         if user:
             password = request.params.get(self.signin_password_key)
             if UserService.check_password(user, password):
-                headers = pyramid.security.remember(request, user.id)
+                headers = remember(request, user.id)
                 return ZigguratSignInSuccess(
                     headers=headers, came_from=came_from, user=user
                 )
-        headers = pyramid.security.forget(request)
+        headers = forget(request)
         return ZigguratSignInBadAuth(headers=headers, came_from=came_from)
 
     def sign_out(self, request):
-        headers = pyramid.security.forget(request)
+        headers = forget(request)
         return ZigguratSignOut(headers=headers)
 
     def session_getter(self, request):
