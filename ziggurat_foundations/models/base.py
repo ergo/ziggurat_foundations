@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 import sqlalchemy as sa
-from zope.deprecation import deprecation
 
 from ziggurat_foundations.exc import ZigguratSessionException
 
@@ -130,34 +129,6 @@ class BaseModel(object):
         """
         db_session = get_db_session(db_session, self)
         db_session.delete(self)
-
-    @classmethod
-    @deprecation.deprecate(
-        "BaseModel.all " "will be removed in 0.8, use service instead"
-    )
-    def base_query(cls, db_session=None):
-        """
-        Returns a base query object one can use to search on simple properties
-
-        :param db_session:
-        :return:
-        """
-        return get_db_session(db_session).query(cls)
-
-    @classmethod
-    @deprecation.deprecate(
-        "BaseModel.all " "will be removed in 0.8, use service instead"
-    )
-    def all(cls, db_session=None):
-        """
-        Alias for base_query()
-
-        :param db_session:
-        :return:
-        """
-        db_session = get_db_session(db_session)
-        return cls.base_query(db_session)
-
 
 def get_db_session(session=None, obj=None):
     """
