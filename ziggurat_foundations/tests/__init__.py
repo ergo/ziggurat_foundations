@@ -9,8 +9,8 @@ from ziggurat_foundations.tests.conftest import (
     UserResourcePermission,
     GroupResourcePermission,
     Resource,
-    TestResource,
-    TestResourceB,
+    ResourceTestObj,
+    ResourceTestobjB,
 )
 from ziggurat_foundations.models.services.user import UserService
 
@@ -55,7 +55,7 @@ def add_resource(
         "group_perm",
         "group_perm2",
     ]
-    resource = TestResource(
+    resource = ResourceTestObj(
         resource_id=resource_id,
         resource_name=resource_name,
         parent_id=parent_id,
@@ -75,7 +75,7 @@ def add_resource_b(db_session, resource_id, resource_name="test_resource"):
         "group_perm",
         "group_perm2",
     ]
-    resource = TestResourceB(resource_id=resource_id, resource_name=resource_name)
+    resource = ResourceTestobjB(resource_id=resource_id, resource_name=resource_name)
     db_session.add(resource)
     db_session.flush()
     return resource

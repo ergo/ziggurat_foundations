@@ -2,6 +2,7 @@
 from __future__ import with_statement, unicode_literals
 
 from ziggurat_foundations.models.services.group import GroupService
+from ziggurat_foundations.models.services import BaseService
 from ziggurat_foundations.tests import add_user, add_group, BaseTestCase
 from ziggurat_foundations.tests.conftest import Group
 
@@ -69,7 +70,7 @@ class TestGroup(BaseTestCase):
         group1 = add_group(db_session, "group1")
         group2 = add_group(db_session, "group2")
 
-        all_groups = Group.all(db_session=db_session).all()
+        all_groups = BaseService.all(Group, db_session=db_session).all()
 
         assert len(all_groups) == 2
         assert all_groups[0] == group1

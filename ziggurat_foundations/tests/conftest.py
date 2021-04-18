@@ -64,11 +64,11 @@ class Resource(ResourceMixin, Base):
         return acls
 
 
-class TestResource(Resource):
+class ResourceTestObj(Resource):
     __mapper_args__ = {"polymorphic_identity": "test_resource"}
 
 
-class TestResourceB(Resource):
+class ResourceTestobjB(Resource):
     __mapper_args__ = {"polymorphic_identity": "test_resource_b"}
 
 

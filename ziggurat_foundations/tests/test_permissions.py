@@ -29,7 +29,7 @@ from ziggurat_foundations.tests.conftest import (
     GroupPermission,
     UserResourcePermission,
     GroupResourcePermission,
-    TestResourceB,
+    ResourceTestobjB,
 )
 from ziggurat_foundations.models.services.group import GroupService
 from ziggurat_foundations.models.services.user import UserService
@@ -463,7 +463,7 @@ class TestUserPermissions(BaseTestCase):
     def test_resource_users_limited_group_ownage(self, db_session):
         self.maxDiff = 9999
         self.set_up_user_group_and_perms(db_session)
-        resource = TestResourceB(
+        resource = ResourceTestobjB(
             resource_id=99, resource_name="other", owner_user_id=self.user2.id
         )
         group3 = add_group(db_session, "group 3")
@@ -530,11 +530,11 @@ class TestUserPermissions(BaseTestCase):
 
     def test_resources_with_possible_perms(self, db_session):
         self.set_up_user_group_and_perms(db_session)
-        resource = TestResourceB(
+        resource = ResourceTestobjB(
             resource_id=3, resource_name="other", owner_user_id=self.user.id
         )
         self.user.resources.append(resource)
-        resource_g = TestResourceB(resource_id=4, resource_name="group owned")
+        resource_g = ResourceTestobjB(resource_id=4, resource_name="group owned")
         self.group.resources.append(resource_g)
         db_session.flush()
         perms = UserService.resources_with_possible_perms(
