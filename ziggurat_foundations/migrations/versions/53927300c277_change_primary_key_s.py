@@ -21,7 +21,9 @@ down_revision = "54d08f9adc8c"
 def upgrade():
     c = get_context()
     # drop foreign keys for mysql
+    kwargs = {}
     if isinstance(c.connection.engine.dialect, MySQLDialect):
+        kwargs["autoincrement"] = True
         insp = Inspector.from_engine(c.connection.engine)
         for t in [
             "groups_resources_permissions",
@@ -32,13 +34,15 @@ def upgrade():
                 if constraint["referred_columns"] == ["resource_id"]:
                     op.drop_constraint(constraint["name"], t, type_="foreignkey")
 
+
+
     op.alter_column(
         "resources",
         "resource_id",
         type_=sa.Integer(),
         existing_type=sa.BigInteger(),
-        autoincrement=True,
         nullable=False,
+        **kwargs
     )
     op.alter_column(
         "resources", "parent_id", type_=sa.Integer(), existing_type=sa.BigInteger()
