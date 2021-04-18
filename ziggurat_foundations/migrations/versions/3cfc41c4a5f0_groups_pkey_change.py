@@ -11,7 +11,6 @@ import sqlalchemy as sa
 from alembic import op
 from alembic.context import get_context
 from sqlalchemy.dialects.mysql.base import MySQLDialect
-from sqlalchemy.engine.reflection import Inspector
 
 # revision identifiers, used by Alembic.
 revision = "3cfc41c4a5f0"
@@ -21,7 +20,7 @@ down_revision = "53927300c277"
 def upgrade():
     c = get_context()
     if isinstance(c.connection.engine.dialect, MySQLDialect):
-        insp = Inspector.from_engine(c.connection.engine)
+        insp = sa.inspect(c.connection.engine)
         for t in [
             "groups_permissions",
             "groups_resources_permissions",

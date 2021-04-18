@@ -11,7 +11,6 @@ import sqlalchemy as sa
 from alembic import op
 from alembic.context import get_context
 from sqlalchemy.dialects.mysql.base import MySQLDialect
-from sqlalchemy.engine.reflection import Inspector
 
 # revision identifiers, used by Alembic.
 revision = "20671b28c538"
@@ -20,7 +19,7 @@ down_revision = "4c10d97c509"
 
 def upgrade():
     c = get_context()
-    insp = Inspector.from_engine(c.connection.engine)
+    insp = sa.inspect(c.connection.engine)
 
     # existing migration
     # pre naming convention keys

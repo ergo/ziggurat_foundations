@@ -11,7 +11,7 @@ from __future__ import unicode_literals
 from alembic import op
 from alembic.context import get_context
 from sqlalchemy.dialects.postgresql.base import PGDialect
-from sqlalchemy.engine.reflection import Inspector
+import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = "438c27ec1c9"
@@ -23,7 +23,7 @@ down_revision = "439766f6104d"
 
 def upgrade():
     c = get_context()
-    insp = Inspector.from_engine(c.connection.engine)
+    insp = sa.inspect(c.connection.engine)
     # existing migration
     # pre naming convention keys
     groups_permissions_pkey = "groups_permissions_pkey"
