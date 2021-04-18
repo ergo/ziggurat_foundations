@@ -56,6 +56,10 @@ class TestUserPermissions(BaseTestCase):
             created_user, ["test_perm"], db_session=db_session
         ).all()
         assert resources[0] == resource
+        permission = ResourceService.direct_perms_for_user(resource, created_user)[0]
+        assert permission.owner is True
+        assert permission.allowed is True
+        assert permission.user.id == created_user.id
 
     def test_resources_with_perm(self, db_session):
         created_user = add_user(db_session)

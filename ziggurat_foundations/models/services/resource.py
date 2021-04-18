@@ -134,7 +134,7 @@ class ResourceService(BaseService):
         # include all perms if user is the owner of this resource
         if instance.owner_user_id == user.id:
             perms.append(
-                PermissionTuple(user, ALL_PERMISSIONS, "user", None, instance, True)
+                PermissionTuple(user, ALL_PERMISSIONS, "user", None, instance, True, True)
             )
         return perms
 
