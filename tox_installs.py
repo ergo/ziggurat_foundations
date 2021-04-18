@@ -7,6 +7,10 @@ if os.environ.get("BCRYPT"):
 if os.environ.get("DB") == "postgres":
     subprocess.check_call(["pip", "install", "psycopg2-binary"])
 
+sqlalchemy_version = os.environ.get("SQLALCHEMY_VERSION")
+if sqlalchemy_version:
+    subprocess.check_call(["pip", "install", f"sqlalchemy=={sqlalchemy_version}"])
+
 if os.environ.get("DB") == "mysql":
     subprocess.check_call(
         [

@@ -52,7 +52,7 @@ class ResourceTreeServicePostgreSQL(object):
         )  # noqa
         db_session = get_db_session(db_session)
         text_obj = sa.text(raw_q)
-        query = db_session.query(cls.model, "depth", "sorting", "path")
+        query = db_session.query(cls.model, sa.column("depth"), sa.column("sorting"), sa.column("path"))
         query = query.from_statement(text_obj)
         query = query.params(resource_id=resource_id, depth=limit_depth)
         return query
@@ -130,7 +130,7 @@ class ResourceTreeServicePostgreSQL(object):
         )  # noqa
         db_session = get_db_session(db_session)
         text_obj = sa.text(raw_q)
-        query = db_session.query(cls.model, "depth", "sorting", "path")
+        query = db_session.query(cls.model, sa.column("depth"), sa.column("sorting"), sa.column("path"))
         query = query.from_statement(text_obj)
         query = query.params(parent_id=parent_id, depth=limit_depth)
         return query
