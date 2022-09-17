@@ -95,7 +95,7 @@ class UserService(BaseService):
         :return:
         """
         # owned entities have ALL permissions so we return those resources too
-        # even without explict perms set
+        # even without explicit perms set
         # TODO: implement admin superrule perm - maybe return all apps
         db_session = get_db_session(db_session, instance)
         query = db_session.query(cls.models_proxy.Resource).distinct()
