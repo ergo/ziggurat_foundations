@@ -6,7 +6,7 @@ DBSession = None
 
 def groupfinder(userid, request):
     """
-    Default groupfinder implementaion for pyramid applications
+    Default groupfinder implementation for pyramid applications
 
     :param userid:
     :param request:

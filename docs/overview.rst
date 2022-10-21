@@ -27,11 +27,11 @@ Ziggurat provides standard functions that let you:
 - Assign a user o an external identity (such as facebook/twitter)
 - Change users password and generate security codes
 - Manage the sign in/sign out process (pyramid extension)
-- Example root factory for assiginging permissions per request (for pyramid)
+- Example root factory for assigning permissions per request (for pyramid)
 
 
 Functions that we supply between those patterns allow for complex and flexible permission
-systems that are easly understandable for non-technical users, whilst at the same time
+systems that are easily understandable for non-technical users, whilst at the same time
 providing a stable base for systems coping with millions of users.
 
 Due to the fact that we supply all models as mixins, the base of Ziggurat can be very easily

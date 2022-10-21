@@ -237,7 +237,7 @@ class ResourceService(BaseService):
     @classmethod
     def by_resource_id(cls, resource_id, db_session=None):
         """
-        fetch the resouce by id
+        fetch the resource by id
 
         :param resource_id:
         :param db_session:

@@ -33,7 +33,7 @@ only authenticated users to view:
 
 This example covers the case where every view is secured with a default "view" permission,
 and some pages require other permissions like "view_admin_panel", "create_objects" etc.
-Those permissions are appended dynamicly if authenticated user is present, and has additional
+Those permissions are appended dynamically if authenticated user is present, and has additional
 custom permissions.
 
 Example resource based pyramid context factory that can be used with url dispatch
@@ -197,7 +197,7 @@ some base imports:
 
 **ZigguratSignInSuccess context view example**
 
-Now we can provide a fuction, based off of the ZigguratSignInSuccess context
+Now we can provide a function, based off of the ZigguratSignInSuccess context
 
 .. code-block:: python
 
@@ -303,7 +303,7 @@ Or in your ini configuration file (both methods yield the same result):
                        ziggurat_foundations.ext.pyramid.get_user
 
 Then inside each pyramid view that contains a request, you can access user information
-with (the code behind this is as described in the offical pyramid cookbook, but
+with (the code behind this is as described in the official pyramid cookbook, but
 we include in within Ziggurat to make your life easier):
 
 .. code-block:: python
