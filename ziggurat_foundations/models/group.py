@@ -56,7 +56,7 @@ class GroupMixin(BaseModel):
         """ dynamic relationship for users belonging to this group
             one can use filter """
         return sa.orm.relationship(
-            "User", secondary="users_groups", order_by="User.user_name", lazy="dynamic"
+            "User", secondary="users_groups", order_by="User.user_name", lazy="dynamic", overlaps="groups,users"
         )
 
     @declared_attr
@@ -107,6 +107,7 @@ class GroupMixin(BaseModel):
             passive_deletes=True,
             passive_updates=True,
             lazy="dynamic",
+            overlaps="owner_group,resources"
         )
 
     @sa.orm.validates("permissions")

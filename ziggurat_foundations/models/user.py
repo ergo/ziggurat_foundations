@@ -95,6 +95,7 @@ class UserMixin(BaseModel):
             lazy="dynamic",
             passive_deletes=True,
             passive_updates=True,
+            overlaps="groups,users,users_dynamic"
         )
 
     @declared_attr
@@ -120,6 +121,7 @@ class UserMixin(BaseModel):
             cascade="all, delete-orphan",
             passive_deletes=True,
             passive_updates=True,
+            overlaps="users"
         )
 
     @declared_attr

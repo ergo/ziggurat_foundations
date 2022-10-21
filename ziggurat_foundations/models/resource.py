@@ -92,6 +92,7 @@ class ResourceMixin(BaseModel):
             secondary="groups_resources_permissions",
             passive_deletes=True,
             passive_updates=True,
+            overlaps="groups,resource_permissions,group_permissions",
         )
 
     @declared_attr
@@ -102,6 +103,7 @@ class ResourceMixin(BaseModel):
             secondary="users_resources_permissions",
             passive_deletes=True,
             passive_updates=True,
+            overlaps="user_permissions"
         )
 
     __mapper_args__ = {"polymorphic_on": resource_type}
