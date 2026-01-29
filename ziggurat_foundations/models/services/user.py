@@ -109,7 +109,7 @@ class UserService(BaseService):
                 cls.models_proxy.GroupResourcePermission.perm_name.in_(perms),
             )
             query = query.outerjoin(
-                (cls.models_proxy.GroupResourcePermission, sa.and_(*join_conditions))
+                cls.models_proxy.GroupResourcePermission, sa.and_(*join_conditions)
             )
             # ensure outerjoin permissions are correct -
             # dont add empty rows from join
