@@ -20,7 +20,7 @@ class GroupPermissionService(BaseService):
         :return:
         """
         db_session = get_db_session(db_session)
-        return db_session.query(cls.model).get([group_id, perm_name])
+        return db_session.get(cls.model, [group_id, perm_name])
 
     @classmethod
     def by_group_and_perm(cls, group_id, perm_name, db_session=None):

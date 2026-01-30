@@ -21,9 +21,7 @@ class ExternalIdentityService(BaseService):
         :return:
         """
         db_session = get_db_session(db_session)
-        return db_session.query(cls.model).get(
-            [external_id, local_user_id, provider_name]
-        )
+        return db_session.get(cls.model, [external_id, local_user_id, provider_name])
 
     @classmethod
     def by_external_id_and_provider(cls, external_id, provider_name, db_session=None):

@@ -21,7 +21,7 @@ class UserResourcePermissionService(BaseService):
         :return:
         """
         db_session = get_db_session(db_session)
-        return db_session.query(cls.model).get([user_id, resource_id, perm_name])
+        return db_session.get(cls.model, [user_id, resource_id, perm_name])
 
     @classmethod
     def by_resource_user_and_perm(

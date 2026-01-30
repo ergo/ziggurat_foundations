@@ -21,4 +21,4 @@ class GroupResourcePermissionService(BaseService):
         :return:
         """
         db_session = get_db_session(db_session)
-        return db_session.query(cls.model).get([group_id, resource_id, perm_name])
+        return db_session.get(cls.model, [group_id, resource_id, perm_name])

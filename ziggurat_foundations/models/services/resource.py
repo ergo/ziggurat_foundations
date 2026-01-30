@@ -27,7 +27,7 @@ class ResourceService(BaseService):
         :return:
         """
         db_session = get_db_session(db_session)
-        return db_session.query(cls.model).get(resource_id)
+        return db_session.get(cls.model, resource_id)
 
     @classmethod
     def perms_for_user(cls, instance, user, db_session=None):

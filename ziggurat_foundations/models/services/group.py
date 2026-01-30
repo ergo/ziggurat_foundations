@@ -26,7 +26,7 @@ class GroupService(BaseService):
         :return:
         """
         db_session = get_db_session(db_session)
-        return db_session.query(cls.model).get(group_id)
+        return db_session.get(cls.model, group_id)
 
     @classmethod
     def by_group_name(cls, group_name, db_session=None):

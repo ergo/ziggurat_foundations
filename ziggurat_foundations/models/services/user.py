@@ -31,7 +31,7 @@ class UserService(BaseService):
         :return:
         """
         db_session = get_db_session(db_session)
-        return db_session.query(cls.model).get(user_id)
+        return db_session.get(cls.model, user_id)
 
     @classmethod
     def permissions(cls, instance, db_session=None):
