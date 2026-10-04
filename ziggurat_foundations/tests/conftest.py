@@ -111,10 +111,10 @@ def db_session(request):
     maker = sessionmaker(bind=engine)
     Base.metadata.bind = engine
     Base.metadata.drop_all(engine)
+    # engine.begin() commits on exit; Connection.commit() does not exist in 1.4
     with engine.begin() as conn:
-            sql = "DROP TABLE IF EXISTS alembic_ziggurat_foundations_version"
-            conn.execute(text(sql)) 
-            conn.commit() 
+        sql = "DROP TABLE IF EXISTS alembic_ziggurat_foundations_version"
+        conn.execute(text(sql))
 
     if sql_str.startswith("sqlite"):
         # sqlite will not work with alembic
@@ -147,10 +147,10 @@ def db_session2(request):
     maker = sessionmaker(bind=engine)
     Base.metadata.bind = engine
     Base.metadata.drop_all(engine)
+    # engine.begin() commits on exit; Connection.commit() does not exist in 1.4
     with engine.begin() as conn:
-            sql = "DROP TABLE IF EXISTS alembic_ziggurat_foundations_version"
-            conn.execute(text(sql)) 
-            conn.commit() 
+        sql = "DROP TABLE IF EXISTS alembic_ziggurat_foundations_version"
+        conn.execute(text(sql))
     if sql_str.startswith("sqlite"):
         # sqlite will not work with alembic
         Base.metadata.create_all(engine)
