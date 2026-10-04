@@ -1,5 +1,6 @@
 # Use an official Python runtime as a parent image
-FROM python:3.9.1-buster
+# Debian 13 (trixie); minor-version tag so rebuilds pick up Python patch releases
+FROM python:3.14-trixie
 RUN apt-get update && apt-get install -y \
     gosu \
  && rm -rf /var/lib/apt/lists/*
@@ -23,10 +24,10 @@ USER application
 
 RUN python -m venv /opt/venv
 # Install any needed packages specified in requirements.txt
-RUN /opt/venv/bin/pip install --upgrade pip==21.0.1 setuptools
-RUN /opt/venv/bin/pip install --disable-pip-version-check --trusted-host pypi.python.org -r /tmp/requirements-docs.txt --no-cache-dir
+RUN /opt/venv/bin/pip install --upgrade pip setuptools
+RUN /opt/venv/bin/pip install --disable-pip-version-check -r /tmp/requirements-docs.txt --no-cache-dir
 # make application scripts visible
-ENV PATH /opt/venv/bin:$PATH
+ENV PATH=/opt/venv/bin:$PATH
 # expose build tag to application
 ARG TAG
 ENV TAG=$TAG
