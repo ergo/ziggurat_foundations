@@ -21,7 +21,7 @@ test_deps = [
 
 setup(
     name="ziggurat_foundations",
-    version="0.9.0",
+    version="1.0.0",
     description=""" Set of SQLAlchemy mixins that make application building an easy task. Provides users, groups,
     permissions, resource tree handling and authorization solutions for Pyramid and Flask frameworks.
     """,
@@ -46,11 +46,10 @@ setup(
     tests_require=test_deps,
     install_requires=[
         "sqlalchemy",
-        "passlib>=1.6.1",
+        "passlib",
         "paginate",
         "paginate_sqlalchemy",
         "alembic",
-        "zope.deprecation >= 3.5.0",
         "six",
     ],
     setup_requires=["pytest-runner"],

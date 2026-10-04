@@ -109,7 +109,7 @@ class UserService(BaseService):
                 cls.models_proxy.GroupResourcePermission.perm_name.in_(perms),
             )
             query = query.outerjoin(
-                (cls.models_proxy.GroupResourcePermission, sa.and_(*join_conditions))
+                cls.models_proxy.GroupResourcePermission, sa.and_(*join_conditions)
             )
             # ensure outerjoin permissions are correct -
             # dont add empty rows from join
@@ -159,14 +159,14 @@ class UserService(BaseService):
     @classmethod
     def groups_with_resources(cls, instance):
         """
-        Returns a list of groups users belongs to with eager loaded
+        Returns a list of groups users belongs to with join loaded
         resources owned by those groups
 
         :param instance:
         :return:
         """
         return instance.groups_dynamic.options(
-            sa.orm.eagerload(cls.models_proxy.Group.resources)
+            sa.orm.joinedload(cls.models_proxy.Group.resources)
         )
 
     @classmethod
@@ -309,7 +309,7 @@ class UserService(BaseService):
         db_session = get_db_session(db_session)
         query = db_session.query(cls.model)
         query = query.filter(cls.model.id == user_id)
-        query = query.options(sa.orm.eagerload("groups"))
+        query = query.options(sa.orm.joinedload(cls.model.groups))
         return query.first()
 
     @classmethod
@@ -326,7 +326,7 @@ class UserService(BaseService):
         query = query.filter(
             sa.func.lower(cls.model.user_name) == (user_name or "").lower()
         )
-        query = query.options(sa.orm.eagerload("groups"))
+        query = query.options(sa.orm.joinedload(cls.model.groups))
         return query.first()
 
     @classmethod
@@ -360,7 +360,6 @@ class UserService(BaseService):
         db_session = get_db_session(db_session)
         query = db_session.query(cls.model)
         query = query.filter(sa.func.lower(cls.model.user_name).in_(user_names))
-        # q = q.options(sa.orm.eagerload(cls.groups))
         return query
 
     @classmethod
@@ -378,7 +377,6 @@ class UserService(BaseService):
             sa.func.lower(cls.model.user_name).like((user_name or "").lower())
         )
         query = query.order_by(cls.model.user_name)
-        # q = q.options(sa.orm.eagerload('groups'))
         return query
 
     @classmethod
@@ -394,7 +392,7 @@ class UserService(BaseService):
         query = db_session.query(cls.model).filter(
             sa.func.lower(cls.model.email) == (email or "").lower()
         )
-        query = query.options(sa.orm.eagerload("groups"))
+        query = query.options(sa.orm.joinedload(cls.model.groups))
         return query.first()
 
     @classmethod
@@ -412,7 +410,7 @@ class UserService(BaseService):
         query = query.filter(
             sa.func.lower(cls.model.user_name) == (user_name or "").lower()
         )
-        query = query.options(sa.orm.eagerload("groups"))
+        query = query.options(sa.orm.joinedload(cls.model.groups))
         return query.first()
 
     @classmethod

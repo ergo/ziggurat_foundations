@@ -96,15 +96,9 @@ def upgrade():
         ),
     )
     # update the data
-    resources_table = sa.Table(
-        "resources", sa.MetaData(), autoload=True, autoload_with=c.connection
-    )
-    users_table = sa.Table(
-        "users", sa.MetaData(), autoload=True, autoload_with=c.connection
-    )
-    groups_table = sa.Table(
-        "groups", sa.MetaData(), autoload=True, autoload_with=c.connection
-    )
+    resources_table = sa.Table("resources", sa.MetaData(), autoload_with=c.connection)
+    users_table = sa.Table("users", sa.MetaData(), autoload_with=c.connection)
+    groups_table = sa.Table("groups", sa.MetaData(), autoload_with=c.connection)
     stmt = (
         resources_table.update()
         .values(owner_user_id=users_table.c.id)
@@ -135,7 +129,7 @@ def upgrade():
         )  # noqa
 
     groups_permissions_table = sa.Table(
-        "groups_permissions", sa.MetaData(), autoload=True, autoload_with=c.connection
+        "groups_permissions", sa.MetaData(), autoload_with=c.connection
     )
     stmt = (
         groups_permissions_table.update()
@@ -176,7 +170,6 @@ def upgrade():
     groups_resources_permissions_table = sa.Table(
         "groups_resources_permissions",
         sa.MetaData(),
-        autoload=True,
         autoload_with=c.connection,
     )
     stmt = (
@@ -224,7 +217,7 @@ def upgrade():
         )  # noqa
 
     users_groups_table = sa.Table(
-        "users_groups", sa.MetaData(), autoload=True, autoload_with=c.connection
+        "users_groups", sa.MetaData(), autoload_with=c.connection
     )
     stmt = (
         users_groups_table.update()
@@ -248,7 +241,7 @@ def upgrade():
         )  # noqa
 
     users_groups_table = sa.Table(
-        "users_groups", sa.MetaData(), autoload=True, autoload_with=c.connection
+        "users_groups", sa.MetaData(), autoload_with=c.connection
     )
     stmt = (
         users_groups_table.update()
@@ -295,7 +288,7 @@ def upgrade():
         )  # noqa
 
     users_permissions_table = sa.Table(
-        "users_permissions", sa.MetaData(), autoload=True, autoload_with=c.connection
+        "users_permissions", sa.MetaData(), autoload_with=c.connection
     )
     stmt = (
         users_permissions_table.update()
@@ -333,7 +326,6 @@ def upgrade():
     users_resources_permissions_table = sa.Table(
         "users_resources_permissions",
         sa.MetaData(),
-        autoload=True,
         autoload_with=c.connection,
     )
     stmt = (

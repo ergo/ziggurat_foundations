@@ -51,7 +51,7 @@ Ziggurat Foundations is BSD Licensed
 
 # Local development using docker
 
-    docker-compose run --rm app bash
+    docker compose run --rm app bash
     cd ../application;
 
 To run sqlite tests:
@@ -68,5 +68,3 @@ To run mysql tests:
 
 [Build Status]: https://travis-ci.org/ergo/ziggurat_foundations.svg?branch=master
 [logo]: https://badges.gitter.im/ergo/ziggurat_foundations.svg
-
-
