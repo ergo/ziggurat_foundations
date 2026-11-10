@@ -24,7 +24,7 @@ lint_deps = [
     "flake8",
     "pylint",
     "pre-commit",
-    "rstcheck",
+    "rstcheck[sphinx]",
 ]
 
 build_deps = ["build"]

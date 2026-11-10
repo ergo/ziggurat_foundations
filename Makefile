@@ -9,7 +9,7 @@ lint:
 	pre-commit run --all-files
 	tox -e lint
 	rst_files=($$(find . -name '*.rst' -print)); \
-	rstcheck "$${rst_files[@]}" --report 2
+	rstcheck --sphinx-source-dir docs --report-level WARNING "$${rst_files[@]}"
 	flake8 ./ziggurat_foundations/
 
 .PHONY: test
