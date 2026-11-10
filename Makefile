@@ -8,7 +8,9 @@ lint:
 	python -m pip install ".[dev]"
 	pre-commit run --all-files
 	tox -e lint
-	rst_files=($$(find . -name '*.rst' -print)); \
+	rst_files=($$(find . \
+		-type d \( -name .git -o -name .tox -o -name .venv -o -name build \) -prune \
+		-o -name '*.rst' -print)); \
 	rstcheck --sphinx-source-dir docs --report-level WARNING "$${rst_files[@]}"
 	flake8 ./ziggurat_foundations/
 
