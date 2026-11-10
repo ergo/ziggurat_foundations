@@ -7,6 +7,7 @@ exclude = '''
   | \.hg
   | \.mypy_cache
   | \.tox
+  | \.eggs
   | \.venv
   | _build
   | buck-out
