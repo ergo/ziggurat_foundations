@@ -119,7 +119,7 @@ class UserService(BaseService):
                 sa.or_(
                     cls.models_proxy.Resource.owner_user_id == instance.id,
                     cls.models_proxy.Resource.owner_group_id.in_(group_ids),
-                    cls.models_proxy.GroupResourcePermission.perm_name != None,
+                    cls.models_proxy.GroupResourcePermission.perm_name.is_not(None),
                 )  # noqa
             )
         else:

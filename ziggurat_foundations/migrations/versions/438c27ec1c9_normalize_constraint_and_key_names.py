@@ -36,14 +36,16 @@ def upgrade():
 
     if isinstance(c.connection.engine.dialect, PGDialect):
         op.execute(
-            "ALTER INDEX groups_unique_group_name_key RENAME to ix_groups_uq_group_name_key"
+            "ALTER INDEX groups_unique_group_name_key "
+            "RENAME to ix_groups_uq_group_name_key"
         )  # noqa
 
         op.drop_constraint("groups_permissions_perm_name_check", "groups_permissions")
         op.execute(
             """
         ALTER TABLE groups_permissions
-            ADD CONSTRAINT ck_groups_permissions_perm_name CHECK (perm_name::text = lower(perm_name::text));
+            ADD CONSTRAINT ck_groups_permissions_perm_name
+            CHECK (perm_name::text = lower(perm_name::text));
         """
         )  # noqa
 
@@ -54,7 +56,8 @@ def upgrade():
         op.execute(
             """
         ALTER TABLE groups_resources_permissions
-              ADD CONSTRAINT ck_groups_resources_permissions_perm_name CHECK (perm_name::text = lower(perm_name::text));
+            ADD CONSTRAINT ck_groups_resources_permissions_perm_name
+            CHECK (perm_name::text = lower(perm_name::text));
         """
         )  # noqa
 
@@ -62,7 +65,8 @@ def upgrade():
         op.execute(
             """
         ALTER TABLE users_permissions
-          ADD CONSTRAINT ck_user_permissions_perm_name CHECK (perm_name::text = lower(perm_name::text));
+            ADD CONSTRAINT ck_user_permissions_perm_name
+            CHECK (perm_name::text = lower(perm_name::text));
         """
         )  # noqa
 
@@ -72,7 +76,8 @@ def upgrade():
         op.execute(
             """
         ALTER TABLE users_resources_permissions
-          ADD CONSTRAINT ck_users_resources_permissions_perm_name CHECK (perm_name::text = lower(perm_name::text));
+            ADD CONSTRAINT ck_users_resources_permissions_perm_name
+            CHECK (perm_name::text = lower(perm_name::text));
         """
         )  # noqa
 
@@ -98,7 +103,8 @@ def upgrade():
             == insp.get_pk_constraint("groups_resources_permissions")["name"]
         ):
             op.execute(
-                "ALTER INDEX groups_resources_permissions_pkey RENAME to pk_groups_resources_permissions"
+                "ALTER INDEX groups_resources_permissions_pkey "
+                "RENAME to pk_groups_resources_permissions"
             )  # noqa
 
         if users_groups_pkey == insp.get_pk_constraint("users_groups")["name"]:
@@ -117,7 +123,8 @@ def upgrade():
             == insp.get_pk_constraint("users_resources_permissions")["name"]
         ):
             op.execute(
-                "ALTER INDEX users_resources_permissions_pkey RENAME to pk_users_resources_permissions"
+                "ALTER INDEX users_resources_permissions_pkey "
+                "RENAME to pk_users_resources_permissions"
             )  # noqa
 
         if (

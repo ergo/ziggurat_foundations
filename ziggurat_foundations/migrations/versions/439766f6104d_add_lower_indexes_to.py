@@ -32,28 +32,32 @@ def upgrade():
         op.execute(
             """
         ALTER TABLE groups_permissions
-            ADD CONSTRAINT groups_permissions_perm_name_check CHECK (perm_name::text = lower(perm_name::text));
+            ADD CONSTRAINT groups_permissions_perm_name_check
+            CHECK (perm_name::text = lower(perm_name::text));
         """
         )  # noqa
 
         op.execute(
             """
         ALTER TABLE groups_resources_permissions
-              ADD CONSTRAINT groups_resources_permissions_perm_name_check CHECK (perm_name::text = lower(perm_name::text));
+            ADD CONSTRAINT groups_resources_permissions_perm_name_check
+            CHECK (perm_name::text = lower(perm_name::text));
         """
         )  # noqa
 
         op.execute(
             """
         ALTER TABLE users_permissions
-          ADD CONSTRAINT user_permissions_perm_name_check CHECK (perm_name::text = lower(perm_name::text));
+            ADD CONSTRAINT user_permissions_perm_name_check
+            CHECK (perm_name::text = lower(perm_name::text));
         """
         )  # noqa
 
         op.execute(
             """
         ALTER TABLE users_resources_permissions
-          ADD CONSTRAINT users_resources_permissions_perm_name_check CHECK (perm_name::text = lower(perm_name::text));
+            ADD CONSTRAINT users_resources_permissions_perm_name_check
+            CHECK (perm_name::text = lower(perm_name::text));
         """
         )  # noqa
 

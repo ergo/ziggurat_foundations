@@ -36,13 +36,20 @@ class ResourceTreeServicePostgreSQL(object):
         tablename = cls.model.__table__.name
         raw_q = """
             WITH RECURSIVE subtree AS (
-                    SELECT res.*, 1 AS depth, LPAD(res.ordering::CHARACTER VARYING, 7, '0') AS sorting,
+                    SELECT res.*, 1 AS depth,
+                    LPAD(res.ordering::CHARACTER VARYING, 7, '0') AS sorting,
                     res.resource_id::CHARACTER VARYING AS path
                     FROM {tablename} AS res WHERE res.resource_id = :resource_id
                   UNION ALL
                     SELECT res_u.*, depth+1 AS depth,
-                    (st.sorting::CHARACTER VARYING || '/' || LPAD(res_u.ordering::CHARACTER VARYING, 7, '0') ) AS sorting,
-                    (st.path::CHARACTER VARYING || '/' || res_u.resource_id::CHARACTER VARYING ) AS path
+                    (
+                        st.sorting::CHARACTER VARYING || '/' ||
+                        LPAD(res_u.ordering::CHARACTER VARYING, 7, '0')
+                    ) AS sorting,
+                    (
+                        st.path::CHARACTER VARYING || '/' ||
+                        res_u.resource_id::CHARACTER VARYING
+                    ) AS path
                     FROM {tablename} res_u, subtree st
                     WHERE res_u.parent_id = st.resource_id
             )
@@ -116,13 +123,20 @@ class ResourceTreeServicePostgreSQL(object):
         tablename = cls.model.__table__.name
         raw_q = """
             WITH RECURSIVE subtree AS (
-                    SELECT res.*, 1 AS depth, LPAD(res.ordering::CHARACTER VARYING, 7, '0') AS sorting,
+                    SELECT res.*, 1 AS depth,
+                    LPAD(res.ordering::CHARACTER VARYING, 7, '0') AS sorting,
                     res.resource_id::CHARACTER VARYING AS path
                     FROM {tablename} AS res WHERE {limiting_clause}
                   UNION ALL
                     SELECT res_u.*, depth+1 AS depth,
-                    (st.sorting::CHARACTER VARYING || '/' || LPAD(res_u.ordering::CHARACTER VARYING, 7, '0') ) AS sorting,
-                    (st.path::CHARACTER VARYING || '/' || res_u.resource_id::CHARACTER VARYING ) AS path
+                    (
+                        st.sorting::CHARACTER VARYING || '/' ||
+                        LPAD(res_u.ordering::CHARACTER VARYING, 7, '0')
+                    ) AS sorting,
+                    (
+                        st.path::CHARACTER VARYING || '/' ||
+                        res_u.resource_id::CHARACTER VARYING
+                    ) AS path
                     FROM {tablename} res_u, subtree st
                     WHERE res_u.parent_id = st.resource_id
             )
