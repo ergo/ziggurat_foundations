@@ -20,7 +20,7 @@ test_deps = [
 ]
 
 lint_deps = [
-    "black==24.10.0",
+    "black==26.10.1",
     "flake8",
     "pylint",
     "pre-commit",
