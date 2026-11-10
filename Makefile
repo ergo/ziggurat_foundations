@@ -22,7 +22,7 @@ test:
 .PHONY: build
 build:
 	python -m pip install ".[build]"
-	@if [[ -n "$${GITHUB_REF_NAME:-}" ]]; then \
+	@if [[ "$${GITHUB_REF_TYPE:-}" == "tag" ]]; then \
 		package_version=$$(python setup.py --version); \
 		if [[ "$$package_version" != "$$GITHUB_REF_NAME" ]]; then \
 			echo "Tag $$GITHUB_REF_NAME does not match package version $$package_version" >&2; \
