@@ -20,14 +20,14 @@ test_deps = [
 ]
 
 lint_deps = [
-    "black==26.10.1",
+    "black==24.10.0",
     "flake8",
     "pylint",
     "pre-commit",
     "rstcheck[sphinx]",
 ]
 
-build_deps = ["build"]
+build_deps = ["build", "setuptools"]
 ci_deps = ["tox<4", "tox-gh-matrix"]
 maintain_deps = ["bump-my-version"]
 dev_deps = test_deps + lint_deps + build_deps + maintain_deps
