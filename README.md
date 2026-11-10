@@ -55,7 +55,7 @@ Ziggurat Foundations is BSD Licensed
     cd ../application;
 
 To run sqlite tests:
-    
+
     tox
 
 To run postgres tests:

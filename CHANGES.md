@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.8.4] - 2021-04-18
 
-**This is the last release that is compatible with Python versions older than 3.6** 
+**This is the last release that is compatible with Python versions older than 3.6**
 
 ### Added
 * pyramid extensions can now accept `session_provider_callable` not only as a path to callable but

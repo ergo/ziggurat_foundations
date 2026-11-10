@@ -7,13 +7,13 @@ from ziggurat_foundations.exc import ZigguratSessionException
 
 
 class BaseModel(object):
-    """ Basic class that all other classes inherit from that supplies some
+    """Basic class that all other classes inherit from that supplies some
     basic methods useful for interaction with packages like:
-    deform, colander or wtforms """
+    deform, colander or wtforms"""
 
     @classmethod
     def _get_keys(cls):
-        """ returns column names for this model """
+        """returns column names for this model"""
         return sa.orm.class_mapper(cls).c.keys()
 
     @classmethod
@@ -42,8 +42,8 @@ class BaseModel(object):
         return d
 
     def get_appstruct(self):
-        """ return list of tuples keys and values corresponding to this model's
-        data """
+        """return list of tuples keys and values corresponding to this model's
+        data"""
         result = []
         for k in self._get_keys():
             result.append((k, getattr(self, k)))
@@ -129,6 +129,7 @@ class BaseModel(object):
         """
         db_session = get_db_session(db_session, self)
         db_session.delete(self)
+
 
 def get_db_session(session=None, obj=None):
     """

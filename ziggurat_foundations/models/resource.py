@@ -66,7 +66,7 @@ class ResourceMixin(BaseModel):
 
     @declared_attr
     def group_permissions(self):
-        """ returns all group permissions for this resource"""
+        """returns all group permissions for this resource"""
         return sa.orm.relationship(
             "GroupResourcePermission",
             cascade="all, delete-orphan",
@@ -76,7 +76,7 @@ class ResourceMixin(BaseModel):
 
     @declared_attr
     def user_permissions(self):
-        """ returns all user permissions for this resource"""
+        """returns all user permissions for this resource"""
         return sa.orm.relationship(
             "UserResourcePermission",
             cascade="all, delete-orphan",
@@ -86,7 +86,7 @@ class ResourceMixin(BaseModel):
 
     @declared_attr
     def groups(self):
-        """ returns all groups that have permissions for this resource"""
+        """returns all groups that have permissions for this resource"""
         return sa.orm.relationship(
             "Group",
             secondary="groups_resources_permissions",
@@ -97,13 +97,13 @@ class ResourceMixin(BaseModel):
 
     @declared_attr
     def users(self):
-        """ returns all users that have permissions for this resource"""
+        """returns all users that have permissions for this resource"""
         return sa.orm.relationship(
             "User",
             secondary="users_resources_permissions",
             passive_deletes=True,
             passive_updates=True,
-            overlaps="user_permissions"
+            overlaps="user_permissions",
         )
 
     __mapper_args__ = {"polymorphic_on": resource_type}
@@ -123,7 +123,7 @@ class ResourceMixin(BaseModel):
 
     @sa.orm.validates("user_permissions", "group_permissions")
     def validate_permission(self, key, permission):
-        """ validate if resource can have specific permission """
+        """validate if resource can have specific permission"""
         if permission.perm_name not in self.__possible_permissions__:
             raise AssertionError(
                 "perm_name is not one of {}".format(self.__possible_permissions__)
