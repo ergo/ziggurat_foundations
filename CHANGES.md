@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
    Use sections as appropriate for the applied changes.
 
    ## Unreleased
+
+## [1.0.0] - 2026-11-10
    ### Changed
    ### Added
    ### Removed
@@ -18,6 +20,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 -->
 
 ## Unreleased
+
+## [1.0.0] - 2026-11-10
 ### Changed
 * Add support for SQLAlchemy 2.0+
 
