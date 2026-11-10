@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
    Use sections as appropriate for the applied changes.
 
    ## Unreleased
+   ### Fixed
+   * Include setuptools in the build dependencies for release builds
 
 ## [1.0.0] - 2026-11-10
    ### Changed

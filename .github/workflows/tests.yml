@@ -8,6 +8,17 @@ permissions:
   contents: read
 
 jobs:
+  build:
+    # ensure the build is functional, such that a release using it will also work as intended
+    name: Build for publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - run: make build
+
   lint:
     runs-on: ubuntu-latest
     steps:
