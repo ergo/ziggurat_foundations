@@ -1,6 +1,7 @@
 SHELL := /bin/bash
 .SHELLFLAGS := -eu -o pipefail -c
 .DEFAULT_GOAL := lint
+TOX_ENV ?= py$(shell python -V | cut -d' ' -f2 | cut -d. -f1-2 | tr -d .)
 
 .PHONY: lint
 lint:
@@ -13,7 +14,6 @@ lint:
 
 .PHONY: test
 test:
-	@test -n "$(TOX_ENV)" || { echo "Usage: make test TOX_ENV=py311" >&2; exit 2; }
 	python -m pip install ".[test]"
 	tox -e "$(TOX_ENV)"
 
