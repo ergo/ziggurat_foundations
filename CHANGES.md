@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 -->
 
 ## Unreleased
+
+## [1.0.1] - 2026-11-10
 ### Fixed
 * Include `setuptools` in the build dependencies for release builds
 
