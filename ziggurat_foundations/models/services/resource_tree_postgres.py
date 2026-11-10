@@ -54,9 +54,7 @@ class ResourceTreeServicePostgreSQL(object):
                     WHERE res_u.parent_id = st.resource_id
             )
             SELECT * FROM subtree WHERE depth<=:depth ORDER BY sorting;
-        """.format(
-            tablename=tablename
-        )  # noqa
+        """.format(tablename=tablename)  # noqa
         db_session = get_db_session(db_session)
         text_obj = sa.text(raw_q)
         query = db_session.query(
@@ -93,9 +91,7 @@ class ResourceTreeServicePostgreSQL(object):
                     WHERE res_u.parent_id = st.resource_id
             )
             DELETE FROM resources where resource_id in (select * from subtree);
-        """.format(
-            tablename=tablename
-        )  # noqa
+        """.format(tablename=tablename)  # noqa
         db_session = get_db_session(db_session)
         text_obj = sa.text(raw_q)
         db_session.execute(text_obj, params={"resource_id": resource_id})
@@ -141,9 +137,7 @@ class ResourceTreeServicePostgreSQL(object):
                     WHERE res_u.parent_id = st.resource_id
             )
             SELECT * FROM subtree WHERE depth<=:depth ORDER BY sorting;
-        """.format(
-            tablename=tablename, limiting_clause=limiting_clause
-        )  # noqa
+        """.format(tablename=tablename, limiting_clause=limiting_clause)  # noqa
         db_session = get_db_session(db_session)
         text_obj = sa.text(raw_q)
         query = db_session.query(
@@ -202,9 +196,7 @@ class ResourceTreeServicePostgreSQL(object):
                     WHERE res_u.resource_id = st.parent_id
             )
             SELECT * FROM subtree WHERE depth<=:depth;
-        """.format(
-            tablename=tablename
-        )
+        """.format(tablename=tablename)
         db_session = get_db_session(db_session)
         q = (
             db_session.query(cls.model)
