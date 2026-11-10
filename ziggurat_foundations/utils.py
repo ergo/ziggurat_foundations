@@ -2,6 +2,7 @@
 """
 Utility functions.
 """
+
 import random
 import string
 

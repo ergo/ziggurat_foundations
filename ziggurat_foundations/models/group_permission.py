@@ -7,7 +7,6 @@ from sqlalchemy.orm import validates
 
 from ziggurat_foundations.models.base import BaseModel
 
-
 __all__ = ["GroupPermissionMixin"]
 
 
