@@ -11,7 +11,7 @@ __all__ = ["GroupMixin"]
 
 
 class GroupMixin(BaseModel):
-    """ Mixin for Group model """
+    """Mixin for Group model"""
 
     __table_args__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8"}
 
@@ -40,7 +40,7 @@ class GroupMixin(BaseModel):
 
     @declared_attr
     def users(self):
-        """ relationship for users belonging to this group"""
+        """relationship for users belonging to this group"""
         return sa.orm.relationship(
             "User",
             secondary="users_groups",
@@ -53,15 +53,19 @@ class GroupMixin(BaseModel):
     # dynamic property - useful
     @declared_attr
     def users_dynamic(self):
-        """ dynamic relationship for users belonging to this group
-            one can use filter """
+        """dynamic relationship for users belonging to this group
+        one can use filter"""
         return sa.orm.relationship(
-            "User", secondary="users_groups", order_by="User.user_name", lazy="dynamic", overlaps="groups,users"
+            "User",
+            secondary="users_groups",
+            order_by="User.user_name",
+            lazy="dynamic",
+            overlaps="groups,users",
         )
 
     @declared_attr
     def permissions(self):
-        """ non-resource permissions assigned to this group"""
+        """non-resource permissions assigned to this group"""
         return sa.orm.relationship(
             "GroupPermission",
             backref="groups",
@@ -72,7 +76,7 @@ class GroupMixin(BaseModel):
 
     @declared_attr
     def resource_permissions(self):
-        """ permissions to specific resources this group has"""
+        """permissions to specific resources this group has"""
         return sa.orm.relationship(
             "GroupResourcePermission",
             backref="groups",
@@ -83,10 +87,10 @@ class GroupMixin(BaseModel):
 
     @declared_attr
     def resources(self):
-        """ Returns all resources directly owned by group, can be used to assign
+        """Returns all resources directly owned by group, can be used to assign
         ownership of new resources::
 
-            user.resources.append(resource) """
+            user.resources.append(resource)"""
         return sa.orm.relationship(
             "Resource",
             cascade="all",
@@ -97,22 +101,22 @@ class GroupMixin(BaseModel):
 
     @declared_attr
     def resources_dynamic(self):
-        """ Returns all resources directly owned by group, can be used to assign
+        """Returns all resources directly owned by group, can be used to assign
         ownership of new resources::
 
-            user.resources.append(resource) """
+            user.resources.append(resource)"""
         return sa.orm.relationship(
             "Resource",
             cascade="all",
             passive_deletes=True,
             passive_updates=True,
             lazy="dynamic",
-            overlaps="owner_group,resources"
+            overlaps="owner_group,resources",
         )
 
     @sa.orm.validates("permissions")
     def validate_permission(self, key, permission):
-        """ validates if group can get assigned with permission"""
+        """validates if group can get assigned with permission"""
         if permission.perm_name not in self.__possible_permissions__:
             raise AssertionError(
                 "perm_name is not one of {}".format(self.__possible_permissions__)

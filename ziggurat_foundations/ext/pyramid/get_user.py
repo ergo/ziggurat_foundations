@@ -38,7 +38,7 @@ def includeme(config):
     def get_user(request):
         userid = request.unauthenticated_userid
         if try_global_session:
-            # set db_session to none to pass to the UserModel.by_id so it can try to autodiscover
+            # Set db_session to None for UserModel.by_id to autodiscover it.
             db_session = None
         else:
             # Else assign the request.session

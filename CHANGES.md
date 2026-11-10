@@ -8,17 +8,27 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 <!--
    PRs should document their user-visible changes (if any) in the
    Unreleased section, uncommenting the header as necessary.
+   Use sections as appropriate for the applied changes.
+
+   ## Unreleased
+   ### Changed
+   ### Added
+   ### Removed
+   ### Fixed
 -->
 
-<!-- ## Unreleased -->
-<!-- ### Changed -->
-<!-- ### Added -->
-<!-- ### Removed -->
-<!-- ### Fixed -->
+## Unreleased
+### Changed
+* Add support for SQLAlchemy 2.0+
+
+## [0.9.1] - 2023-03-08
+### Changed
+* Suppress SQLAlchemy relationship overlap warnings
+* Update the test matrix to cover Python 3.6-3.10
 
 ## [0.8.4] - 2021-04-18
 
-**This is the last release that is compatible with Python versions older than 3.6** 
+**This is the last release that is compatible with Python versions older than 3.6**
 
 ### Added
 * pyramid extensions can now accept `session_provider_callable` not only as a path to callable but

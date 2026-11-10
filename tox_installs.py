@@ -10,7 +10,9 @@ if os.environ.get("DB") == "postgres":
 
 sqlalchemy_version = os.environ.get("SQLALCHEMY_VERSION")
 if sqlalchemy_version:
-    subprocess.check_call(["pip", "install", "sqlalchemy=={}".format(sqlalchemy_version)])
+    subprocess.check_call(
+        ["pip", "install", "sqlalchemy=={}".format(sqlalchemy_version)]
+    )
 
 if os.environ.get("DB") == "mysql":
     subprocess.check_call(

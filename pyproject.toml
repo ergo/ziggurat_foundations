@@ -14,3 +14,21 @@ exclude = '''
   | dist
 )/
 '''
+
+[tool.bumpversion]
+current_version = "0.9.1"
+commit = true
+tag = true
+tag_name = "{new_version}"
+
+[[tool.bumpversion.files]]
+filename = "setup.py"
+search = 'version="{current_version}"'
+replace = 'version="{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "CHANGES.md"
+search = "## Unreleased"
+replace = """## Unreleased
+
+## [{new_version}] - {utcnow:%Y-%m-%d}"""

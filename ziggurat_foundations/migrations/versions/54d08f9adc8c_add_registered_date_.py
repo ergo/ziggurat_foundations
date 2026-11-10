@@ -5,6 +5,7 @@ Revises: 2d472fe79b95
 Create Date: 2012-03-10 11:12:39.353857
 
 """
+
 from __future__ import unicode_literals
 
 import sqlalchemy as sa

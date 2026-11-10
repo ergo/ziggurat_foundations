@@ -48,8 +48,8 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = u"ziggurat_foundations"
-copyright = u"2012-2015, Marcin Lulek - Webreactor.eu"
+project = "ziggurat_foundations"
+copyright = "2012-2015, Marcin Lulek - Webreactor.eu"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -204,8 +204,8 @@ latex_documents = [
     (
         "index",
         "ziggurat_foundations.tex",
-        u"ziggurat\\_foundations Documentation",
-        u"Marcin Lulek - Webreactor.eu",
+        "ziggurat\\_foundations Documentation",
+        "Marcin Lulek - Webreactor.eu",
         "manual",
     )
 ]
@@ -239,8 +239,8 @@ man_pages = [
     (
         "index",
         "ziggurat_foundations",
-        u"ziggurat_foundations Documentation",
-        [u"Marcin Lulek - Webreactor.eu"],
+        "ziggurat_foundations Documentation",
+        ["Marcin Lulek - Webreactor.eu"],
         1,
     )
 ]
@@ -258,8 +258,8 @@ texinfo_documents = [
     (
         "index",
         "ziggurat_foundations",
-        u"ziggurat_foundations Documentation",
-        u"Marcin Lulek - Webreactor.eu",
+        "ziggurat_foundations Documentation",
+        "Marcin Lulek - Webreactor.eu",
         "ziggurat_foundations",
         "One line description of project.",
         "Miscellaneous",

@@ -12,7 +12,7 @@ try:
     except ImportError:
         from pyramid.security import Allow, Deny, ALL_PERMISSIONS
 
-except ImportError as e:
+except ImportError:
     Allow = "Allow"
     Deny = "Deny"
 
@@ -20,8 +20,7 @@ except ImportError as e:
     # source https://github.com/Pylons/pyramid/blob/master/pyramid/security.py
 
     class AllPermissionsList(object):
-
-        """ Stand in 'permission list' to represent all permissions """
+        """Stand in 'permission list' to represent all permissions"""
 
         def __iter__(self):
             return ()

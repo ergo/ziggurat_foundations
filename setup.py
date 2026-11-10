@@ -19,6 +19,19 @@ test_deps = [
     "pyramid_jinja2",
 ]
 
+lint_deps = [
+    "black==24.10.0",
+    "flake8",
+    "pylint",
+    "pre-commit",
+    "rstcheck[sphinx]",
+]
+
+build_deps = ["build"]
+ci_deps = ["tox<4", "tox-gh-matrix"]
+maintain_deps = ["bump-my-version"]
+dev_deps = test_deps + lint_deps + build_deps + maintain_deps
+
 setup(
     name="ziggurat_foundations",
     version="1.0.0",
@@ -55,6 +68,9 @@ setup(
     setup_requires=["pytest-runner"],
     extras_require={
         "test": test_deps,
-        "lint": ["black", "pylint", "rstcheck", "flake8"],
+        "lint": lint_deps,
+        "build": build_deps,
+        "ci": ci_deps,
+        "dev": dev_deps,
     },
 )

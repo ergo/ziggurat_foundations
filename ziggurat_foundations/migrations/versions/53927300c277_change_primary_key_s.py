@@ -5,6 +5,7 @@ Revises: 54d08f9adc8c
 Create Date: 2012-06-05 23:33:17.943844
 
 """
+
 from __future__ import unicode_literals
 
 import sqlalchemy as sa
@@ -32,8 +33,6 @@ def upgrade():
             for constraint in insp.get_foreign_keys(t):
                 if constraint["referred_columns"] == ["resource_id"]:
                     op.drop_constraint(constraint["name"], t, type_="foreignkey")
-
-
 
     op.alter_column(
         "resources",
