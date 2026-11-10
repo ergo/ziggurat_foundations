@@ -6,7 +6,6 @@ from sqlalchemy.ext.declarative import declared_attr
 
 from ziggurat_foundations.models.base import BaseModel
 
-
 __all__ = ["GroupMixin"]
 
 

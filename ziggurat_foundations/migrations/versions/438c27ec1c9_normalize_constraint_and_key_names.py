@@ -41,45 +41,37 @@ def upgrade():
         )  # noqa
 
         op.drop_constraint("groups_permissions_perm_name_check", "groups_permissions")
-        op.execute(
-            """
+        op.execute("""
         ALTER TABLE groups_permissions
             ADD CONSTRAINT ck_groups_permissions_perm_name
             CHECK (perm_name::text = lower(perm_name::text));
-        """
-        )  # noqa
+        """)  # noqa
 
         op.drop_constraint(
             "groups_resources_permissions_perm_name_check",
             "groups_resources_permissions",
         )
-        op.execute(
-            """
+        op.execute("""
         ALTER TABLE groups_resources_permissions
             ADD CONSTRAINT ck_groups_resources_permissions_perm_name
             CHECK (perm_name::text = lower(perm_name::text));
-        """
-        )  # noqa
+        """)  # noqa
 
         op.drop_constraint("user_permissions_perm_name_check", "users_permissions")
-        op.execute(
-            """
+        op.execute("""
         ALTER TABLE users_permissions
             ADD CONSTRAINT ck_user_permissions_perm_name
             CHECK (perm_name::text = lower(perm_name::text));
-        """
-        )  # noqa
+        """)  # noqa
 
         op.drop_constraint(
             "users_resources_permissions_perm_name_check", "users_resources_permissions"
         )
-        op.execute(
-            """
+        op.execute("""
         ALTER TABLE users_resources_permissions
             ADD CONSTRAINT ck_users_resources_permissions_perm_name
             CHECK (perm_name::text = lower(perm_name::text));
-        """
-        )  # noqa
+        """)  # noqa
 
         op.execute("ALTER INDEX users_email_key2 RENAME to ix_users_uq_lower_email")
 
